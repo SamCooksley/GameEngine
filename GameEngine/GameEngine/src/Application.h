@@ -9,6 +9,8 @@ namespace engine
   {
     friend class Input;
     friend class graphics::Window;
+    friend class GameObject;
+
   public:
     Application() = delete;
 

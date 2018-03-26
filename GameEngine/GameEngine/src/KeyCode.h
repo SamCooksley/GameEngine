@@ -6,7 +6,7 @@ namespace engine
   class KeyCode
   {
   public:
-    typedef int Key;
+    using Key = int;
 
     static const Key
       _0, _1, _2, _3, _4, _5, _6, _7, _8, _9,
@@ -41,7 +41,7 @@ namespace engine
   class MouseButton
   {
   public:
-    typedef int Button;
+    using Button = int;
 
     static const Button
       LEFT, RIGHT, MIDDLE,

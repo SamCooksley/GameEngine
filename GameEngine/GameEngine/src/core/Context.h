@@ -5,6 +5,8 @@
 
 #include "graphics\Window.h"
 
+#include "Scene.h"
+
 namespace engine { namespace core {
 
   enum class EngineState
@@ -25,6 +27,8 @@ namespace engine { namespace core {
     std::unique_ptr<glfw> glfwContext;
 
     std::unique_ptr<graphics::Window> window;
+
+    std::unique_ptr<Scene> scene;
   };
 
 } }

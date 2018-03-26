@@ -11,12 +11,23 @@ namespace engine {
   {
     friend class GameObject;
   public:
+    virtual ~Component();
+
+    void setEnable(bool _enable);
+
+    void Destroy();
 
   protected:
-    void OnAwake();
-    void OnStart();
-    void OnUpdate();
-    void OnRender();
+    Component();
+
+    virtual void OnAwake();
+    virtual void OnStart();
+    virtual void OnUpdate();
+    virtual void OnRender();
+
+    virtual void OnEnable(bool _enable);
+
+    virtual void OnDestroy();
 
   private:
     void Awake();
@@ -25,7 +36,10 @@ namespace engine {
 
     std::weak_ptr<GameObject> m_gameObject;
 
+    bool m_enabled;
+
     bool m_start;
+    bool m_shouldDestroy;
   };
 
 }

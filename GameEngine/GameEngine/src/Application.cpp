@@ -25,6 +25,7 @@ namespace engine
     s_context->glfwContext.reset(new core::glfw());
 
     s_context->window.reset(new graphics::Window("Engine", 640, 480));
+    s_context->window->setVsync(true);
 
     GLenum error = glewInit();
     if (error != GLEW_OK)

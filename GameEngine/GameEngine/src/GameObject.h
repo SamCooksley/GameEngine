@@ -7,9 +7,13 @@
 
 namespace engine {
 
-  class GameObject : public core::Object, public core::enable_shared_from_this<GameObject>
+  class GameObject : public core::Object
   {
+    friend class Component;
+    friend class Scene;
+
   public:
+    static std::shared_ptr<GameObject> Instantiate();
     static std::shared_ptr<GameObject> Create();
 
     ~GameObject();
@@ -21,7 +25,11 @@ namespace engine {
     std::shared_ptr<T> getComponent();
 
     template <class T> 
-    void getComponents(const std::vector<std::shared_ptr<T>> & _outComponents);
+    void getComponents(std::vector<std::shared_ptr<T>> & _outComponents);
+
+    void setEnable(bool _enable);
+
+    void Destroy();
 
   protected:
     GameObject();
@@ -30,6 +38,8 @@ namespace engine {
     void Update();
     void Render();
 
+    void OnDestroy();
+
     template <class T>
     std::shared_ptr<T> AddComponentInternal();
 
@@ -37,11 +47,14 @@ namespace engine {
     std::shared_ptr<T> getComponentInternal();
 
     template <class T>
-    void getComponentsInternal(const std::vector<std::shared_ptr<T>> & _outComponents);
+    void getComponentsInternal(std::vector<std::shared_ptr<T>> & _outComponents);
 
     bool m_enabled;
+    bool m_shouldDestroy;
 
     std::vector<std::shared_ptr<Component>> m_components;
+
+    ENGINE_SETUPSHARED(GameObject);
   };
 }
 

@@ -8,13 +8,15 @@ namespace engine
   { }
 
   Scene::~Scene()
-  { }
+  {
+    Clear();
+  }
 
   void Scene::Clear()
   {
-    for (size_t i = 0; i < m_gameObjects.size(); ++i)
+    for (auto & go : m_gameObjects)
     {
-      m_gameObjects[i]->OnDestroy();
+      go->OnDestroy();
     }
     m_gameObjects.clear();
   }

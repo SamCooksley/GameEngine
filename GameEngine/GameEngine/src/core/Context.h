@@ -7,6 +7,8 @@
 
 #include "Scene.h"
 
+#include "utilities\Timer.h"
+
 namespace engine { namespace core {
 
   enum class EngineState
@@ -26,9 +28,16 @@ namespace engine { namespace core {
 
     std::unique_ptr<glfw> glfwContext;
 
+    utilities::Timer frameTime;
+    float targetFrameTime;
+    int maxUpdatesPerFrame;
+    float totalDeltaTime;
+    float deltaTime;
+
     std::unique_ptr<graphics::Window> window;
 
-    std::unique_ptr<Scene> scene;
+    std::shared_ptr<Scene> scene;
+    std::shared_ptr<Scene> nextScene;
   };
 
 } }

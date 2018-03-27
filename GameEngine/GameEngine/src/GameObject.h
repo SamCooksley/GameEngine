@@ -4,6 +4,7 @@
 #include "core\Object.h"
 
 #include "Component.h"
+#include "Transform.h"
 
 namespace engine {
 
@@ -23,6 +24,11 @@ namespace engine {
 
     template <class T>
     std::shared_ptr<T> getComponent();
+
+    template <>
+    std::shared_ptr<Transform> AddComponent();
+    template <>
+    std::shared_ptr<Transform> getComponent();
 
     template <class T> 
     void getComponents(std::vector<std::shared_ptr<T>> & _outComponents);
@@ -53,6 +59,8 @@ namespace engine {
     bool m_shouldDestroy;
 
     std::vector<std::shared_ptr<Component>> m_components;
+
+    std::weak_ptr<Transform> m_transform;
 
     ENGINE_SETUPSHARED(GameObject);
   };

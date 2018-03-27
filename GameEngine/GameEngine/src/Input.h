@@ -16,17 +16,14 @@ namespace engine
     FIXED
   };
 
-  /**
-  * \brief Define the state of input devices.
-  */
   class Input
   {
     friend class Application;
     friend class core::glfw;
 
   private:
-    typedef std::vector<KeyCode::Key> KeyList;
-    typedef std::vector<MouseButton::Button> ButtonList;
+    using KeyList = std::vector<KeyCode::Key>;
+    using ButtonList = std::vector<MouseButton::Button>;
 
   public:
     Input() = delete;

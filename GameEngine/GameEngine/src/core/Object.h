@@ -12,13 +12,16 @@ namespace engine { namespace core {
     Object();
   };
 
+  bool operator==(const Object & _lhs, const Object & _rhs);
+  bool operator!=(const Object & _lhs, const Object & _rhs);
+
 } }
 
 #define ENGINE_SETUPSHARED(x) \
   public: \
-    inline std::shared_ptr<x>       getShared()       { \
+    inline std::shared_ptr<x> getShared()       { \
       static_assert(std::is_base_of<Object, x>::value, "Not of type Object"); \
-      return std::static_pointer_cast<x>      (this->shared_from_this()); } \
+      return std::static_pointer_cast<x>(this->shared_from_this()); } \
  \
     inline std::shared_ptr<const x> getShared() const { \
       static_assert(std::is_base_of<Object, x>::value, "Not of type Object"); \

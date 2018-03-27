@@ -10,6 +10,7 @@ namespace engine
     friend class Input;
     friend class graphics::Window;
     friend class GameObject;
+    friend class Scene;
 
   public:
     Application() = delete;
@@ -21,9 +22,13 @@ namespace engine
     static void Quit();
 
   private:
+    static void Frame();
+
     static void HandleEvents();
     static void Update();
     static void Render();
+
+    static void ChangeScene();
 
     static std::unique_ptr<core::Context> s_context;
   };

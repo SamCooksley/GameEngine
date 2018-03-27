@@ -1,21 +1,26 @@
 #ifndef _ENGINE_SCENE_H_
 #define _ENGINE_SCENE_H_
 
+#include "core\Object.h"
+
 #include "GameObject.h"
 
 namespace engine {
 
-  class Scene
+  class Scene : public core::Object
   {
     friend class Application;
     friend class GameObject;
   public:
-    Scene();
+    template <class T>
+    static void SetScene();
+
     ~Scene();
 
     void Clear();
 
   protected:
+    Scene();
     virtual void Init();
 
   private:
@@ -28,5 +33,7 @@ namespace engine {
   };
 
 }
+
+#include "Scene.inl"
 
 #endif //_ENGINE_SCENE_H_

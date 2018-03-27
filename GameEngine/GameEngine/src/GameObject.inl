@@ -29,7 +29,7 @@ namespace engine
     component->m_gameObject = getShared();
     component->Awake();
 
-    component->setEnabled(true);
+    component->setEnable(true);
 
     return component;
   }

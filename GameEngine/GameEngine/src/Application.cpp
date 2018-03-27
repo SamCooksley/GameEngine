@@ -25,7 +25,13 @@ namespace engine
     s_context->glfwContext.reset(new core::glfw());
 
     s_context->window.reset(new graphics::Window("Engine", 640, 480));
-    s_context->window->setVsync(true);
+    s_context->window->setVsync(false);
+
+    s_context->targetFrameTime = 1.f / 60.f;
+    s_context->maxUpdatesPerFrame = 5;
+    s_context->totalDeltaTime = 0.f;
+    s_context->deltaTime = 0.f;
+    
 
     GLenum error = glewInit();
     if (error != GLEW_OK)
@@ -40,12 +46,11 @@ namespace engine
   void Application::Loop()
   {
     s_context->state = core::EngineState::Running;
+    s_context->frameTime.Reset();
 
     while (s_context->state == core::EngineState::Running)
     {
-      HandleEvents();
-      Update();
-      Render();
+      Frame();
     }
   }
 
@@ -59,6 +64,30 @@ namespace engine
     s_context->state = core::EngineState::Exit;
   }
 
+  void Application::Frame()
+  {
+    s_context->totalDeltaTime += static_cast<float>(s_context->frameTime.getSeconds());
+    s_context->frameTime.Reset();
+
+    if (s_context->nextScene)
+    {
+      ChangeScene();
+    }
+
+    int count = 0;
+    while (s_context->totalDeltaTime >= s_context->targetFrameTime)
+    {
+      s_context->deltaTime = s_context->targetFrameTime;
+      HandleEvents();
+      Update();
+      s_context->totalDeltaTime -= s_context->targetFrameTime;
+
+      if (++count > s_context->maxUpdatesPerFrame) { break; }
+    }
+
+    Render();
+  }
+
   void Application::HandleEvents()
   {
     Input::Reset();
@@ -67,6 +96,11 @@ namespace engine
 
   void Application::Update()
   {
+    if (s_context->scene)
+    {
+      s_context->scene->Update();
+    }
+
     if (Input::getKeyDown(KeyCode::A))
     {
       debug::Log("A down");
@@ -85,7 +119,20 @@ namespace engine
 
   void Application::Render()
   {
+    if (s_context->scene)
+    {
+      s_context->scene->Render();
+    }
+
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     s_context->window->Present();
+  }
+
+  void Application::ChangeScene()
+  {
+    s_context->scene = s_context->nextScene;
+    s_context->nextScene = nullptr;
+
+    s_context->scene->Init();
   }
 }

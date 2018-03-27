@@ -3,6 +3,7 @@
 #include <iostream>
 
 #include "Application.h"
+#include "TestScene.h"
 #include "debug\Debug.h"
 
 int main(int _argc, char** _argv)
@@ -10,6 +11,9 @@ int main(int _argc, char** _argv)
   try
   {
     engine::Application::Init(_argc, _argv);
+
+    engine::Scene::SetScene<engine::TestScene>();
+
     engine::Application::Loop();
     engine::Application::Exit();
   }

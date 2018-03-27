@@ -1,7 +1,9 @@
 #include "stdafx.h"
 
 #include "GameObject.h"
+
 #include "Application.h"
+#include "Transform.h"
 
 namespace engine
 {
@@ -17,6 +19,7 @@ namespace engine
     class EnableCreation : public GameObject { };
 
     auto go = std::make_shared<EnableCreation>();
+    go->AddComponent<Transform>();
     
     return go;
   }
@@ -27,6 +30,24 @@ namespace engine
 
   GameObject::~GameObject()
   { }
+
+  template <>
+  std::shared_ptr<Transform> GameObject::AddComponent()
+  {
+    std::shared_ptr<Transform> trs = AddComponentInternal<Transform>();
+    m_transform = trs;
+    return trs;
+  }
+
+  template <>
+  std::shared_ptr<Transform> GameObject::getComponent()
+  {
+    if (!m_transform.expired())
+    {
+      return m_transform.lock();
+    }
+    return getComponentInternal<Transform>();
+  }
 
   void GameObject::setEnable(bool _enable)
   {

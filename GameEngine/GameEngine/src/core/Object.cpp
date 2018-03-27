@@ -10,4 +10,14 @@ namespace engine { namespace core {
   Object::~Object()
   { }
 
+  bool operator==(const Object & _lhs, const Object & _rhs)
+  {
+    return &_lhs == &_rhs;
+  }
+
+  bool operator!=(const Object & _lhs, const Object & _rhs)
+  {
+    return !(_lhs == _rhs);
+  }
+
 } }

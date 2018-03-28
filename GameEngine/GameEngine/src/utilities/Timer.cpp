@@ -16,19 +16,19 @@ namespace engine { namespace utilities {
 
   void Timer::Reset()
   {
-    m_start = std::clock();
+    m_start = Clock::now();
   }
 
-  double Timer::getSeconds() const
+  float Timer::getSeconds() const
   {
-    //get the tick difference and convert it to seconds.
-    return (std::clock() - m_start) / double(CLOCKS_PER_SEC);
+    std::chrono::duration<float> dur = Clock::now() - m_start;
+    return dur.count();
   }
 
-  double Timer::getMiliseconds() const
+  float Timer::getMiliseconds() const
   {
-    //get the tick difference and convert it to miliseconds.
-    return (std::clock() - m_start) / double(CLOCKS_PER_SEC) * 1000.0f;
+    std::chrono::duration<float, std::milli> dur = Clock::now() - m_start;
+    return dur.count();
   }
 
 } }

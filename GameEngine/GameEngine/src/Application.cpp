@@ -66,7 +66,7 @@ namespace engine
 
   void Application::Frame()
   {
-    s_context->totalDeltaTime += static_cast<float>(s_context->frameTime.getSeconds());
+    s_context->totalDeltaTime += s_context->frameTime.getSeconds();
     s_context->frameTime.Reset();
 
     if (s_context->nextScene)

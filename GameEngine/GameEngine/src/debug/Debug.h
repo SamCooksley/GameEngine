@@ -1,6 +1,8 @@
 #ifndef _ENGINE_DEBUG_H_
 #define _ENGINE_DEBUG_H_
 
+#include "core\Types.h"
+
 namespace engine
 {
   namespace debug

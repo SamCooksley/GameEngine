@@ -3,6 +3,8 @@
 
 #include <cstdint>
 
+#include "String.h"
+
 namespace engine
 {
   using int8  = std::int8_t;

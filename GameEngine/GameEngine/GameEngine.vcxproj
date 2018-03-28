@@ -24,8 +24,13 @@
     <ClCompile Include="src\core\Core.cpp" />
     <ClCompile Include="src\core\glfw.cpp" />
     <ClCompile Include="src\core\Object.cpp" />
+    <ClCompile Include="src\core\String.cpp" />
     <ClCompile Include="src\debug\Debug.cpp" />
     <ClCompile Include="src\GameObject.cpp" />
+    <ClCompile Include="src\graphics\opengl.cpp" />
+    <ClCompile Include="src\graphics\Shader.cpp" />
+    <ClCompile Include="src\graphics\ShaderParser.cpp" />
+    <ClCompile Include="src\graphics\ShaderUniform.cpp" />
     <ClCompile Include="src\graphics\Window.cpp" />
     <ClCompile Include="src\Input.cpp" />
     <ClCompile Include="src\KeyCode.cpp" />
@@ -37,6 +42,7 @@
     </ClCompile>
     <ClCompile Include="src\TestScene.cpp" />
     <ClCompile Include="src\Transform.cpp" />
+    <ClCompile Include="src\utilities\File.cpp" />
     <ClCompile Include="src\utilities\System.cpp" />
     <ClCompile Include="src\utilities\Timer.cpp" />
   </ItemGroup>
@@ -47,9 +53,14 @@
     <ClInclude Include="src\core\Core.h" />
     <ClInclude Include="src\core\glfw.h" />
     <ClInclude Include="src\core\Object.h" />
+    <ClInclude Include="src\core\String.h" />
     <ClInclude Include="src\core\Types.h" />
     <ClInclude Include="src\debug\Debug.h" />
     <ClInclude Include="src\GameObject.h" />
+    <ClInclude Include="src\graphics\opengl.h" />
+    <ClInclude Include="src\graphics\Shader.h" />
+    <ClInclude Include="src\graphics\ShaderParser.h" />
+    <ClInclude Include="src\graphics\ShaderUniform.h" />
     <ClInclude Include="src\graphics\Window.h" />
     <ClInclude Include="src\Input.h" />
     <ClInclude Include="src\KeyCode.h" />
@@ -57,6 +68,7 @@
     <ClInclude Include="src\stdafx.h" />
     <ClInclude Include="src\TestScene.h" />
     <ClInclude Include="src\Transform.h" />
+    <ClInclude Include="src\utilities\File.h" />
     <ClInclude Include="src\utilities\System.h" />
     <ClInclude Include="src\utilities\Timer.h" />
   </ItemGroup>

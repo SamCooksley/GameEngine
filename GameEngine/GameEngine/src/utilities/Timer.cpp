@@ -2,8 +2,6 @@
 
 #include "Timer.h"
 
-#include <ctime>
-
 namespace engine { namespace utilities {
 
   Timer::Timer()

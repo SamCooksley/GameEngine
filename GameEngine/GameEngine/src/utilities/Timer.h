@@ -19,7 +19,6 @@ namespace engine { namespace utilities {
 
   private:
     std::chrono::time_point<Clock> m_start;
-
   };
 
 } }

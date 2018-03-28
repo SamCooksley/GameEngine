@@ -4,12 +4,13 @@
 #pragma message("Compiling stdafx.h")
 
 #include <memory>
+#include <array>
 #include <vector>
 #include <map>
 
-#include <string>
-
 #include <exception>
 #include <cassert>
+
+#include <algorithm>
 
 #endif //_STDAFX_H_

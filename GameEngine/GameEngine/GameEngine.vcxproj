@@ -27,10 +27,16 @@
     <ClCompile Include="src\core\String.cpp" />
     <ClCompile Include="src\debug\Debug.cpp" />
     <ClCompile Include="src\GameObject.cpp" />
+    <ClCompile Include="src\graphics\DrawType.cpp" />
+    <ClCompile Include="src\graphics\IndexBuffer.cpp" />
+    <ClCompile Include="src\graphics\Mesh.cpp" />
     <ClCompile Include="src\graphics\opengl.cpp" />
     <ClCompile Include="src\graphics\Shader.cpp" />
     <ClCompile Include="src\graphics\ShaderParser.cpp" />
+    <ClCompile Include="src\graphics\ShaderType.cpp" />
     <ClCompile Include="src\graphics\ShaderUniform.cpp" />
+    <ClCompile Include="src\graphics\VertexArray.cpp" />
+    <ClCompile Include="src\graphics\VertexBuffer.cpp" />
     <ClCompile Include="src\graphics\Window.cpp" />
     <ClCompile Include="src\Input.cpp" />
     <ClCompile Include="src\KeyCode.cpp" />
@@ -45,6 +51,7 @@
     <ClCompile Include="src\utilities\File.cpp" />
     <ClCompile Include="src\utilities\System.cpp" />
     <ClCompile Include="src\utilities\Timer.cpp" />
+    <ClCompile Include="VertexBuffer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Application.h" />
@@ -57,10 +64,17 @@
     <ClInclude Include="src\core\Types.h" />
     <ClInclude Include="src\debug\Debug.h" />
     <ClInclude Include="src\GameObject.h" />
+    <ClInclude Include="src\graphics\DrawType.h" />
+    <ClInclude Include="src\graphics\IndexBuffer.h" />
+    <ClInclude Include="src\graphics\Mesh.h" />
     <ClInclude Include="src\graphics\opengl.h" />
     <ClInclude Include="src\graphics\Shader.h" />
     <ClInclude Include="src\graphics\ShaderParser.h" />
+    <ClInclude Include="src\graphics\ShaderType.h" />
     <ClInclude Include="src\graphics\ShaderUniform.h" />
+    <ClInclude Include="src\graphics\TypeData.h" />
+    <ClInclude Include="src\graphics\VertexArray.h" />
+    <ClInclude Include="src\graphics\VertexBuffer.h" />
     <ClInclude Include="src\graphics\Window.h" />
     <ClInclude Include="src\Input.h" />
     <ClInclude Include="src\KeyCode.h" />
@@ -71,6 +85,7 @@
     <ClInclude Include="src\utilities\File.h" />
     <ClInclude Include="src\utilities\System.h" />
     <ClInclude Include="src\utilities\Timer.h" />
+    <ClInclude Include="VertexBuffer.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="src\core\Core.inl" />

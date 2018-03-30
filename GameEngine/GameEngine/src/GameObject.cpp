@@ -16,9 +16,9 @@ namespace engine
 
   std::shared_ptr<GameObject> GameObject::Create()
   {
-    class EnableCreation : public GameObject { };
+    class enable_go : public GameObject { };
 
-    auto go = std::make_shared<EnableCreation>();
+    auto go = std::make_shared<enable_go>();
     go->AddComponent<Transform>();
     
     return go;

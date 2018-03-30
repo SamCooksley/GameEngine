@@ -6,17 +6,34 @@
 #include "core\Object.h"
 #include "ShaderParser.h"
 
+#include "ShaderUniform.h"
+
 namespace engine { namespace graphics {
 
   class Shader : public core::Object
   {
+    friend class Mesh;
   public:
-    static void Load(const std::string & _path);
+    static const std::string PROJECTION_NAME;
+    static const std::string VIEW_NAME;
+    static const std::string MODEL_NAME;
+
+    static const std::string ATTR_POSITION_NAME;  
+    static const std::string ATTR_UV_NAME;        
+    static const std::string ATTR_NORMAL_NAME;    
+    static const std::string ATTR_TANGENT_NAME;   
+    static const std::string ATTR_BITANGENT_NAME; 
+
+    static std::shared_ptr<Shader> Load(const std::string & _path);
 
     ~Shader();
 
-    void Bind();
-    void Unbind();
+    void Bind() const;
+    void Unbind() const;
+
+    void setModel(const glm::mat4 & _model);
+    void setView(const glm::mat4 & _view);
+    void setProjection(const glm::mat4 & _projection);
 
     void setUniform(const std::string& _name, int _val);
     void setUniform(const std::string& _name, float _val); 
@@ -30,14 +47,51 @@ namespace engine { namespace graphics {
     Shader();
 
   private:
-    bool AddShader(const std::string & _source, ShaderType _type);
-    bool LinkProgram();
+    void CreateShader(const std::string & _source, ShaderType::Type _type);
+    void LinkProgram();
     void DetachAndDeleteShaders();
 
-    uint m_program;
-    std::vector<uint> m_shaders;
+    void SetupSystemUniforms();
+
+    GLint getUniformLocation(const std::string & _name) const;
+    GLint getAttributeLocation(const std::string & _name) const;
+
+    bool AddUniform(const std::string & _name, GLenum _type, uint _size, ShaderUniform * _outUniform);
+    template <typename T>
+    bool AddUniform(const std::string & _name, ShaderUniform * _outUniform);
+    bool getUniform(const std::string & _name, ShaderUniform * _outUniform) const;
+
+    bool AddTexture(const std::string & _name, ShaderTexture * _outTexture);
+    bool getTexture(const std::string & _name, ShaderTexture * _outTexture) const;
+
+    bool AddAttribute(const std::string & _name, GLenum _type, uint _count, bool _normalize, ShaderAttribute * _outAttribute);
+    template <typename T>
+    bool AddAttribute(const std::string & _name, bool _normalized, ShaderAttribute * _outAttribute);
+    bool getAttribute(const std::string & _name, ShaderAttribute * _outAttribute) const;
+
+    void ResizeUniformBuffer(size_t _size);
+    void UpdateMaterials();
+
+    GLuint m_program;
+    std::vector<GLuint> m_shaders;
+
+    std::vector<ShaderAttribute> m_attributes;
+    std::map<std::string, size_t> m_nameToAttribute;
+
+    std::vector<ShaderUniform> m_uniforms;
+    std::map<std::string, size_t> m_nameToUniform;
+    uint m_uniformSize;
+
+    std::vector<ShaderTexture> m_textures;
+    std::map<std::string, size_t> m_nameToTexture;
+
+    GLint m_modelLoc, m_viewLoc, m_projectionLoc;
+
+    std::string m_name;
   };
 
 } }
+
+#include "Shader.inl"
 
 #endif //_ENGINE_GRAPHICS_SHADER_H_

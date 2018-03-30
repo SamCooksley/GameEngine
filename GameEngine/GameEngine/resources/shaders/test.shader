@@ -1,4 +1,5 @@
 #shader vertex
+#version 330
 
 layout(location = 0) in vec4 in_position;
 layout(location = 1) in vec2 in_texCoord;
@@ -21,17 +22,18 @@ void main()
 
   vs_out.texCoords = in_texCoord;
 
-  vs_out.normal = n;
+  vs_out.normal = in_normal;
 }
 
 #shader fragment
+#version 330
 
 in VS_OUT
 {
   vec3 position_world;
   vec2 texCoords;
   vec3 normal;
-}
+} vs_out;
 
 layout(location = 0) out vec4 out_colour;
 

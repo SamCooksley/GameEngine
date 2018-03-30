@@ -8,34 +8,24 @@
 
 namespace engine { namespace graphics {
 
-  static const std::string ShaderTypeToString(ShaderType _type)
+  ShaderParser::ShaderParser(const std::string & _path) :
+    m_name(), m_currentFile(),
+    m_currentType(ShaderType::None), m_currentSource(nullptr)
   {
-    static const std::array<std::string, static_cast<int>(ShaderType::COUNT)> shaderTypeString = {
-      "vertex", "fragment", "geometry"
-    };
-
-    size_t index = static_cast<size_t>(_type);
-    return (index < shaderTypeString.size()) ? shaderTypeString[index] : "none";
-  }
-
-  static ShaderType StringToShaderType(const std::string & _type)
-  {
-    int count = static_cast<int>(ShaderType::COUNT);
-    for (int i = static_cast<int>(ShaderType::START); i < count; ++i)
+    m_name = file::getFilenameWithoutExtension(_path);
+    std::ifstream file(_path);
+    if (!file.is_open())
     {
-      ShaderType type = static_cast<ShaderType>(i);
-      if (string::AreIEqual(_type, ShaderTypeToString(type)))
-      {
-        return type;
-      }
+      throw std::runtime_error("Failed to open file: " + _path);
     }
+    m_currentFile = _path;
 
-    return ShaderType::NONE;
+    ParseSource(file);
   }
 
   ShaderParser::ShaderParser(const std::string & _name, std::istream & _source) :
-    m_name(_name), m_currentFile(_name), 
-    m_currentType(ShaderType::NONE), m_currentSource(nullptr)
+    m_name(_name), m_currentFile(), 
+    m_currentType(ShaderType::None), m_currentSource(nullptr)
   {
     ParseSource(_source);
   }
@@ -43,44 +33,47 @@ namespace engine { namespace graphics {
   ShaderParser::~ShaderParser()
   { }
 
-  bool ShaderParser::HasShader(ShaderType _type) const
+  const std::string & ShaderParser::getName() const
   {
-    return !m_sources[static_cast<int>(_type)].empty();
+    return m_name;
   }
 
-  const std::string & ShaderParser::GetShaderSource(ShaderType _type) const
+  bool ShaderParser::HasShader(ShaderType::Type _type) const
   {
-    if (!HasShader(_type))
-    {
-      throw std::out_of_range("Shader does not exist in source");
-    }
+    return !m_sources[_type].empty();
+  }
 
-    return m_sources[static_cast<int>(_type)];
+  const std::string & ShaderParser::getShaderSource(ShaderType::Type _type) const
+  {
+    return m_sources[_type];
   }
 
   void ShaderParser::ParseSource(std::istream & _source)
   {
     std::string line;
-    int count = 0;
+    int lineNo = 0;
 
     while (std::getline(_source, line))
     { 
-      ++count;
+      ++lineNo;
 
       size_t first = line.find_first_not_of(" \t\r\n");
       if (first == std::string::npos) { continue; }
 
       if (line[first] == '#')
       {
-        Preprocessor(line, count);
-        continue;
+        line = Preprocessor(line, lineNo);
+        if (line.empty())
+        {
+          continue;
+        }
       }
 
       if (m_currentSource == nullptr)
       {
         throw std::runtime_error(
-          "Invalid shader type target. File: " + m_currentFile + 
-          ", Line: " + std::to_string(count)
+          "ShaderParser Error: " + m_name + " invalid shader type target. File: " +
+          m_currentFile + ", Line: " + std::to_string(lineNo) + ", " + line
         );
       }
 
@@ -88,7 +81,7 @@ namespace engine { namespace graphics {
     }
   }
 
-  void ShaderParser::Preprocessor(const std::string & _line, int _lineNumber)
+  std::string ShaderParser::Preprocessor(const std::string & _line, int _lineNumber)
   {
     size_t pos = std::string::npos;
     if ((pos = _line.find("#shader")) != std::string::npos)
@@ -96,27 +89,27 @@ namespace engine { namespace graphics {
       pos += 8;
 
       std::string typeText = _line.substr(pos, pos - _line.size());
-      ShaderType type = StringToShaderType(typeText);
+      ShaderType::Type type = ShaderType::FromString(typeText);
 
-      if (type == ShaderType::NONE)
+      if (type == ShaderType::None)
       {
         m_currentSource = nullptr;
-        m_currentType = ShaderType::NONE;
+        m_currentType = ShaderType::None;
 
         throw std::runtime_error(
-          "Invalid shader type. " + _line +
-          " File: " + m_currentFile + ", Line: " + std::to_string(_lineNumber) +
-          "Actual: " + typeText
+          "ShaderParser Error: " + m_name + " invalid shader type " + typeText +
+          ". File: " + m_currentFile + ", Line: " + std::to_string(_lineNumber) +
+          ", " + _line
         );
       }
 
       SetCurrentShaderType(type);
-      return;
+      return "";
     }
     else if ((pos = _line.find("#include")) != std::string::npos)
     {
       std::string lastFile = m_currentFile;
-      std::string dir = utilities::file::getDirectory(lastFile);
+      std::string dir = file::getDirectory(lastFile);
 
       size_t start = _line.find('"', pos + 9);
       size_t end = _line.find('"', start + 1);
@@ -124,31 +117,44 @@ namespace engine { namespace graphics {
       if (start == std::string::npos || end == std::string::npos)
       {
         throw std::runtime_error(
-          "Failed to find file. " + _line + 
-          " File: " + m_name + ", Line: " + std::to_string(_lineNumber)
+          "ShaderParser Error: " + m_name + " failed to find file name. File: "
+          + m_currentFile + ", Line: " + std::to_string(_lineNumber) + ", " + _line
         );
       }
 
       std::string path = dir + _line.substr(start + 1, end - start - 1);
       std::ifstream file(path);
 
+      if (!file.is_open())
+      {
+        throw std::runtime_error(
+          "ShaderParser Error: " + m_name + " failed to open file " + path + 
+          ". File: " + m_currentFile + ", Line: " + std::to_string(_lineNumber) +
+          ", " + _line
+        );
+      }
+      m_currentFile = path;
+
       ParseSource(file);
 
       m_currentFile = lastFile;
-      return;
+      return "";
     }
+
+    return _line;
   }
 
-  void ShaderParser::SetCurrentShaderType(ShaderType _type)
+  void ShaderParser::SetCurrentShaderType(ShaderType::Type _type)
   {
-    m_currentType = _type;
-    size_t index = static_cast<size_t>(_type);
-    if (index >= m_sources.size())
+    if (_type < 0 || _type >= m_sources.size())
     {
+      m_currentType = ShaderType::None;
       m_currentSource = nullptr;
-      throw std::out_of_range("Invalid shader type: " + std::to_string(index));
+      return;
     }
-    m_currentSource = &m_sources[index];
+
+    m_currentType = _type;
+    m_currentSource = &m_sources[_type];
   }
 
 } }

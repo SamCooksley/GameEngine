@@ -3,44 +3,39 @@
 
 #include "core\Types.h"
 
-namespace engine { namespace graphics {
+#include "TypeData.h"
 
-  enum class Type
+namespace engine
+{
+  namespace graphics
   {
-    INT,
-    FLOAT,
-    VEC2,
-    VEC3,
-    VEC4,
-    MAT3,
-    MAT4
-  };
 
-  struct ShaderUniform
-  {
-    std::string name;
-    Type type;
-    int location;
-    uint size;
-    uint offset;
-  };
+    struct ShaderUniform
+    {
+      std::string name;
+      GLenum type;
+      GLint location;
+      uint size;
+      uint offset;
+    };
 
-  struct ShaderTexture
-  {
-    std::string name;
-    int textureUnit;
-    int location;
-  };
+    struct ShaderTexture
+    {
+      std::string name;
+      int textureUnit;
+      GLint location;
+    };
 
-  struct ShaderAttribute
-  {
-    std::string name;
-    uint type;
-    uint count;
-    bool normalized;
-    int location;
-  };
+    struct ShaderAttribute
+    {
+      std::string name;
+      GLenum type;
+      uint count;
+      bool normalized;
+      GLint location;
+    };
 
-} }
+  }
+}
 
 #endif //_ENGINE_GRAPHICS_SHADERUNIFORM_H_

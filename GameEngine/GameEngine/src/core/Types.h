@@ -5,6 +5,9 @@
 
 #include "String.h"
 
+#include "glm\glm.hpp"
+#include "glm\ext.hpp"
+
 namespace engine
 {
   using int8  = std::int8_t;

@@ -3,20 +3,22 @@
 
 #include "glew\glew.h"
 
-namespace engine { namespace graphics {
-  namespace opengl {
+namespace engine { 
+  namespace graphics {
+    namespace opengl {
     
-    void ClearError();
-    bool LogError(const char * _function, const char * _file, int _line);
+      void ClearError();
+      bool LogError(const char * _function, const char * _file, int _line);
 
-  }
-} }
+    }
+  } 
+}
 
 #if _DEBUG
-  #define GLCALL(x) \
-    ::engine::graphics::opengl::ClearError() \
+#define GLCALL(x) \
+    ::engine::graphics::opengl::ClearError(); \
     x; \
-    ::engine::graphics::opengl::LogError(#x, __FILE__, __LINE__)
+    ::engine::graphics::opengl::LogError(#x, __FILE__, __LINE__);
 #else
   #define GLCALL(x) x;
 #endif

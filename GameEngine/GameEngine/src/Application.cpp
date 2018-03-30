@@ -6,6 +6,7 @@
 
 #include "debug\Debug.h"
 #include "Input.h"
+#include "graphics\Shader.h"
 
 namespace engine
 {
@@ -41,6 +42,9 @@ namespace engine
 
     debug::Log("OpenGL version: " + std::string((const char*)glGetString(GL_VERSION)));
     debug::Log("GLSL version: " + std::string((const char*)glGetString(GL_SHADING_LANGUAGE_VERSION)));
+ 
+    auto shader = graphics::Shader::Load("resources/shaders/test.shader");
+  
   }
 
   void Application::Loop()

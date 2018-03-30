@@ -13,6 +13,7 @@ namespace engine
       IndexBuffer(const uint8 * _data, uint _count);
       IndexBuffer(const uint16 * _data, uint _count);
       IndexBuffer(const uint32 * _data, uint _count);
+      IndexBuffer(const void * _data, uint _size, uint _count, GLenum _type);
 
       ~IndexBuffer();
 

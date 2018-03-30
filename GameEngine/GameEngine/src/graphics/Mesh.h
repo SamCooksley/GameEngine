@@ -32,13 +32,26 @@ namespace engine
       void Render() const;
       void Render(Shader & _shader) const;
 
+      void setIndices(const uint8 * _indices, uint _count);
       void setIndices(const uint16 * _indices, uint _count);
+      void setIndices(const uint32 * _indices, uint _count);
+
+      void setVertices(const glm::vec3 * _vertices, uint _count);
+      void setUVs(const glm::vec2 * _uvs, uint _count);
+      void setNormals(const glm::vec3 * _normals, uint _count);
+
+      template <typename T>
+      void setAttribute(const std::string & _name, const T * _data, uint _count);
+
+      void Apply();
 
     protected:
       Mesh();
 
     private:
-      void AddAttribute(const std::string & _name, const void * _data, uint _size);
+      void AddAttribute(const std::string & _name, const void * _data, uint _size, GLenum _type, uint _count);
+      void setAttribute(const std::string & _name, const void * _data, uint _size, GLenum _type, uint _count);
+      bool getAttribute(const std::string & _name, VertexAttribute * _outAttribute = nullptr) const;
 
       std::unique_ptr<IndexBuffer> m_indices;
       std::unique_ptr<VertexBuffer> m_vbo;
@@ -53,9 +66,12 @@ namespace engine
       std::vector<byte> m_vboData;
       uint m_vertexCount;
 
-      std::vector<uint16> m_indexData;
+      std::vector<byte> m_indexData;
+      GLenum m_indexType;
     };
   }
 }
+
+#include "Mesh.inl"
 
 #endif //_ENGINE_GRAPHICS_MESH_H_

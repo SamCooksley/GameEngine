@@ -7,7 +7,7 @@
 #include "TestScene.h"
 #include "debug\Debug.h"
 
-#include "graphics\ShaderParser.h"
+#include "graphics\Mesh.h"
 
 int main(int _argc, char** _argv)
 {

@@ -23,11 +23,12 @@ namespace engine
 
     const std::string & ShaderType::ToString(ShaderType::Type _type)
     {
-      if (_type < 0 || _type >= s_shaderTypeString.size())
+      size_t index = static_cast<size_t>(_type);
+      if (index >= s_shaderTypeString.size())
       {
         return s_shaderTypeString.back();
       }
-      return s_shaderTypeString[_type];
+      return s_shaderTypeString[index];
     }
 
     ShaderType::Type ShaderType::FromString(const std::string & _type)

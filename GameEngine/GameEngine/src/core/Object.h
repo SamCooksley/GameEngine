@@ -1,6 +1,8 @@
 #ifndef _ENGINE_CORE_OBJECT_H_
 #define _ENGINE_CORE_OBJECT_H_
 
+#include "Types.h"
+
 namespace engine { namespace core {
 
   class Object : public std::enable_shared_from_this<Object>
@@ -8,8 +10,14 @@ namespace engine { namespace core {
   public:
     virtual ~Object();
 
+    const std::string & getName() const;
+    void setName(const std::string & _name);
+
   protected:
     Object();
+
+  private:
+    std::string m_name;
   };
 
   bool operator==(const Object & _lhs, const Object & _rhs);

@@ -20,13 +20,14 @@ namespace engine
       uint size;
       GLenum type;
       uint count;
+      bool normalized;
     };
 
     class Mesh : public core::Object
     {
     public:
       static std::shared_ptr<Mesh> Load(const std::string & _path);
-
+      Mesh();
       ~Mesh();
 
       void Render() const;
@@ -41,30 +42,51 @@ namespace engine
       void setNormals(const glm::vec3 * _normals, uint _count);
 
       template <typename T>
-      void setAttribute(const std::string & _name, const T * _data, uint _count);
+      void setAttribute(
+        const std::string & _name,
+        const T * _data, uint _count, 
+        bool _normalized = false
+      );
+
+      void RemoveAttribute(const std::string & _name);
 
       void Apply();
 
     protected:
-      Mesh();
+      //Mesh();
 
     private:
-      void AddAttribute(const std::string & _name, const void * _data, uint _size, GLenum _type, uint _count);
-      void setAttribute(const std::string & _name, const void * _data, uint _size, GLenum _type, uint _count);
+      void AddAttribute(
+        const std::string & _name, 
+        const void * _data, uint _size, 
+        uint _count,
+        GLenum _componentType, uint _componentCount, 
+        bool _normalized = false
+      );
+
+      void setAttribute(
+        const std::string & _name,
+        const void * _data, uint _size, 
+        uint _count, 
+        GLenum _componentType, uint _componentCount, 
+        bool _normalized = false
+      );
+
       bool getAttribute(const std::string & _name, VertexAttribute * _outAttribute = nullptr) const;
+
+      void ClearAttributes();
 
       std::unique_ptr<IndexBuffer> m_indices;
       std::unique_ptr<VertexBuffer> m_vbo;
 
       DrawType::Type m_draw;
+      
+      std::vector<glm::vec3> m_vertices;
 
       std::vector<VertexAttribute> m_attributes;
       std::map<std::string, size_t> m_nameToAttribute;
 
-      std::vector<glm::vec3> m_vertices;
-
       std::vector<byte> m_vboData;
-      uint m_vertexCount;
 
       std::vector<byte> m_indexData;
       GLenum m_indexType;

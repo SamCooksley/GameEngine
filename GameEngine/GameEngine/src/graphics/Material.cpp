@@ -12,7 +12,7 @@ namespace engine
     {
       struct enable_mat : public Material { };
 
-      auto material = std::make_shared<enable_mat>(_shader);
+      auto material = std::make_shared<enable_mat>();
       material->setShader(_shader);
       return material;
     }
@@ -52,17 +52,15 @@ namespace engine
       ShaderUniform uniform;
       if (!m_shader->AddUniform(_name, _type, _size, &uniform))
       {
-        //TODO: name.
-        debug::LogError("Material Error: failed to find uniform " + _name);
+        debug::LogError("Material Error: failed to find uniform " + _name + " in material " + getName());
         return;
       }
 
       if (uniform.type != _type)
       {
-        //TODO: name.
         throw std::invalid_argument(
-          "Material Error: " + _name + " uniform type does not match. expected: " + 
-          std::to_string(uniform.type) + ", actual: " + std::to_string(_type)
+          "Material Error: " + _name + " uniform type does not match in material " + getName() +
+          ". expected: " + std::to_string(uniform.type) + ", actual: " + std::to_string(_type)
         );
       }
 
@@ -107,8 +105,7 @@ namespace engine
       }
       else
       {
-        //TODO: name.
-        debug::LogError("Material Error: material does not have a shader.");
+        debug::LogError("Material Error: material + " + getName() + " does not have a shader.");
         //m_shader = Graphics::getErrorShader();
         //m_shader->AddMaterial(this);
       }

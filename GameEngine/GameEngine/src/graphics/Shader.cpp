@@ -32,7 +32,7 @@ namespace engine
       {
         ShaderParser parser(_path);
         shader = std::make_shared<enable_shader>();
-        shader->m_name = parser.getName();
+        shader->setName(parser.getName());
 
         for (ShaderType::Type i = 0; i < ShaderType::Count; ++i)
         {
@@ -97,7 +97,7 @@ namespace engine
         GLCALL(glDeleteShader(shader));
 
         throw std::runtime_error(
-          "Shader Error: " + m_name + " compilation failed. " + std::string(&log[0], length)
+          "Shader Error: " + getName() + " compilation failed. " + std::string(&log[0], length)
         );
       }
 
@@ -120,7 +120,7 @@ namespace engine
         GLCALL(glGetProgramInfoLog(m_program, length, &length, &log[0]));
 
         throw std::runtime_error(
-          "Shader Error: " + m_name + " linking failed. " + std::string(&log[0], length)
+          "Shader Error: " + getName() + " linking failed. " + std::string(&log[0], length)
         );
       }
     }
@@ -193,47 +193,46 @@ namespace engine
     {
       switch (_type)
       {
-      case GL_INT:
-      {
-        setUniform(_location, *reinterpret_cast<const int*>(_data));
-        break;
-      }
-      case GL_FLOAT:
-      {
-        setUniform(_location, *reinterpret_cast<const float*>(_data));
-        break;
-      }
-      case GL_FLOAT_VEC2:
-      {
-        setUniform(_location, *reinterpret_cast<const glm::vec2*>(_data));
-        break;
-      }
-      case GL_FLOAT_VEC3:
-      {
-        setUniform(_location, *reinterpret_cast<const glm::vec3*>(_data));
-        break;
-      }
-      case GL_FLOAT_VEC4:
-      {
-        setUniform(_location, *reinterpret_cast<const glm::vec4*>(_data));
-        break;
-      }
-      case GL_FLOAT_MAT3:
-      {
-        setUniform(_location, *reinterpret_cast<const glm::mat3*>(_data));
-        break;
-      }
-      case GL_FLOAT_MAT4:
-      {
-        setUniform(_location, *reinterpret_cast<const glm::mat4*>(_data));
-        break;
-      }
-      default:
-      {
-        //TODO: name.
-        debug::LogError("Shader Error: invalid uniform type: " + std::to_string(_type));
-        break;
-      }
+        case GL_INT:
+        {
+          setUniform(_location, *reinterpret_cast<const int*>(_data));
+          break;
+        }
+        case GL_FLOAT:
+        {
+          setUniform(_location, *reinterpret_cast<const float*>(_data));
+          break;
+        }
+        case GL_FLOAT_VEC2:
+        {
+          setUniform(_location, *reinterpret_cast<const glm::vec2*>(_data));
+          break;
+        }
+        case GL_FLOAT_VEC3:
+        {
+          setUniform(_location, *reinterpret_cast<const glm::vec3*>(_data));
+          break;
+        }
+        case GL_FLOAT_VEC4:
+        {
+          setUniform(_location, *reinterpret_cast<const glm::vec4*>(_data));
+          break;
+        }
+        case GL_FLOAT_MAT3:
+        {
+          setUniform(_location, *reinterpret_cast<const glm::mat3*>(_data));
+          break;
+        }
+        case GL_FLOAT_MAT4:
+        {
+          setUniform(_location, *reinterpret_cast<const glm::mat4*>(_data));
+          break;
+        }
+        default:
+        {
+          debug::LogError("Shader Error: invalid uniform type: " + std::to_string(_type) + " in shader " + getName());
+          break;
+        }
       }
     }
 
@@ -244,7 +243,7 @@ namespace engine
       int location = getUniformLocation(_name);
       if (location < 0)
       {
-        debug::LogError("Shader Error: " + m_name + " does not contain uniform: " + _name);
+        debug::LogError("Shader Error: " + getName() + " does not contain uniform: " + _name);
         return false;
       }
 
@@ -290,7 +289,7 @@ namespace engine
 
       if (location < 0)
       {
-        debug::LogError("Shader Error: " + m_name + " does not contain texture uniform: " + _name);
+        debug::LogError("Shader Error: " + getName() + " does not contain texture uniform: " + _name);
         return false;
       }
 

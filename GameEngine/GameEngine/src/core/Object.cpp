@@ -10,6 +10,16 @@ namespace engine { namespace core {
   Object::~Object()
   { }
 
+  const std::string & Object::getName() const
+  {
+    return m_name;
+  }
+
+  void Object::setName(const std::string & _name)
+  {
+    m_name = _name;
+  }
+
   bool operator==(const Object & _lhs, const Object & _rhs)
   {
     return &_lhs == &_rhs;

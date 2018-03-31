@@ -146,7 +146,7 @@ namespace engine { namespace graphics {
 
   void ShaderParser::SetCurrentShaderType(ShaderType::Type _type)
   {
-    if (_type < 0 || _type >= m_sources.size())
+    if (_type < 0 || static_cast<size_t>(_type) >= m_sources.size())
     {
       m_currentType = ShaderType::None;
       m_currentSource = nullptr;

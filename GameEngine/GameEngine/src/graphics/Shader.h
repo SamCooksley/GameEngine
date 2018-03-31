@@ -106,8 +106,6 @@ namespace engine
 
       GLint m_modelLoc, m_viewLoc, m_projectionLoc;
 
-      std::string m_name;
-
       std::set<Material *> m_materials;
     };
   }

@@ -30,6 +30,7 @@
     <ClCompile Include="src\graphics\Camera.cpp" />
     <ClCompile Include="src\graphics\DrawType.cpp" />
     <ClCompile Include="src\graphics\IndexBuffer.cpp" />
+    <ClCompile Include="src\graphics\Material.cpp" />
     <ClCompile Include="src\graphics\Mesh.cpp" />
     <ClCompile Include="src\graphics\opengl.cpp" />
     <ClCompile Include="src\graphics\Renderer.cpp" />
@@ -53,7 +54,6 @@
     <ClCompile Include="src\utilities\File.cpp" />
     <ClCompile Include="src\utilities\System.cpp" />
     <ClCompile Include="src\utilities\Timer.cpp" />
-    <ClCompile Include="VertexBuffer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Application.h" />
@@ -69,6 +69,7 @@
     <ClInclude Include="src\graphics\Camera.h" />
     <ClInclude Include="src\graphics\DrawType.h" />
     <ClInclude Include="src\graphics\IndexBuffer.h" />
+    <ClInclude Include="src\graphics\Material.h" />
     <ClInclude Include="src\graphics\Mesh.h" />
     <ClInclude Include="src\graphics\opengl.h" />
     <ClInclude Include="src\graphics\Renderer.h" />
@@ -95,6 +96,7 @@
     <None Include="scr\graphics\Shader.inl" />
     <None Include="src\core\Core.inl" />
     <None Include="src\GameObject.inl" />
+    <None Include="src\graphics\Material.inl" />
     <None Include="src\graphics\Mesh.inl" />
     <None Include="src\graphics\Shader.inl" />
     <None Include="src\Scene.inl" />

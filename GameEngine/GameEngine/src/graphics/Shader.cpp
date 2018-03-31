@@ -8,6 +8,8 @@
 
 #include "Material.h"
 
+#include "utilities\ShaderParser.h"
+
 namespace engine 
 {
   namespace graphics 
@@ -30,7 +32,7 @@ namespace engine
 
       try
       {
-        ShaderParser parser(_path);
+        file::ShaderParser parser(_path);
         shader = std::make_shared<enable_shader>();
         shader->setName(parser.getName());
 

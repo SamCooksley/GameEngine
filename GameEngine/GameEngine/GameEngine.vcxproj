@@ -35,7 +35,6 @@
     <ClCompile Include="src\graphics\opengl.cpp" />
     <ClCompile Include="src\graphics\Renderer.cpp" />
     <ClCompile Include="src\graphics\Shader.cpp" />
-    <ClCompile Include="src\graphics\ShaderParser.cpp" />
     <ClCompile Include="src\graphics\ShaderType.cpp" />
     <ClCompile Include="src\graphics\ShaderUniform.cpp" />
     <ClCompile Include="src\graphics\VertexArray.cpp" />
@@ -52,8 +51,10 @@
     <ClCompile Include="src\TestScene.cpp" />
     <ClCompile Include="src\Transform.cpp" />
     <ClCompile Include="src\utilities\File.cpp" />
+    <ClCompile Include="src\utilities\ShaderParser.cpp" />
     <ClCompile Include="src\utilities\System.cpp" />
     <ClCompile Include="src\utilities\Timer.cpp" />
+    <ClCompile Include="src\utilities\WavefrontParser.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Application.h" />
@@ -74,7 +75,6 @@
     <ClInclude Include="src\graphics\opengl.h" />
     <ClInclude Include="src\graphics\Renderer.h" />
     <ClInclude Include="src\graphics\Shader.h" />
-    <ClInclude Include="src\graphics\ShaderParser.h" />
     <ClInclude Include="src\graphics\ShaderType.h" />
     <ClInclude Include="src\graphics\ShaderUniform.h" />
     <ClInclude Include="src\graphics\TypeData.h" />
@@ -88,12 +88,13 @@
     <ClInclude Include="src\TestScene.h" />
     <ClInclude Include="src\Transform.h" />
     <ClInclude Include="src\utilities\File.h" />
+    <ClInclude Include="src\utilities\ShaderParser.h" />
     <ClInclude Include="src\utilities\System.h" />
     <ClInclude Include="src\utilities\Timer.h" />
+    <ClInclude Include="src\utilities\WavefrontParser.h" />
     <ClInclude Include="VertexBuffer.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="scr\graphics\Shader.inl" />
     <None Include="src\core\Core.inl" />
     <None Include="src\GameObject.inl" />
     <None Include="src\graphics\Material.inl" />

@@ -4,15 +4,15 @@
 #include "core\Types.h"
 #include "glm\glm.hpp"
 #include "core\Object.h"
-#include "ShaderParser.h"
 
 #include "ShaderUniform.h"
+
+#include "ShaderType.h"
 
 namespace engine
 {
   namespace graphics
   {
-
     class Material;
 
     class Shader : public core::Object
@@ -40,14 +40,6 @@ namespace engine
       void setModel(const glm::mat4 & _model);
       void setView(const glm::mat4 & _view);
       void setProjection(const glm::mat4 & _projection);
-
-      void setUniform(const std::string& _name, int _val);
-      void setUniform(const std::string& _name, float _val);
-      void setUniform(const std::string& _name, const glm::vec2& _vec);
-      void setUniform(const std::string& _name, const glm::vec3& _vec);
-      void setUniform(const std::string& _name, const glm::vec4& _vec);
-      void setUniform(const std::string& _name, const glm::mat3& _mat);
-      void setUniform(const std::string& _name, const glm::mat4& _mat);
 
     protected:
       Shader();

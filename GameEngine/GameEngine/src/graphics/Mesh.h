@@ -27,7 +27,7 @@ namespace engine
     {
     public:
       static std::shared_ptr<Mesh> Load(const std::string & _path);
-      Mesh();
+
       ~Mesh();
 
       void Render() const;
@@ -53,7 +53,7 @@ namespace engine
       void Apply();
 
     protected:
-      //Mesh();
+      Mesh();
 
     private:
       void AddAttribute(

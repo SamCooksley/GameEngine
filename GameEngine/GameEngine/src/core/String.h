@@ -3,10 +3,12 @@
 
 #include <string>
 
-namespace engine { namespace string {
-
-  bool AreIEqual(const std::string & _lhs, const std::string & _rhs);
-
-} }
+namespace engine
+{
+  namespace string
+  {
+    bool AreIEqual(const std::string & _lhs, const std::string & _rhs);
+  }
+}
 
 #endif //_ENGINE_CORE_STRING_H_

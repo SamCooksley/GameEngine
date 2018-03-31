@@ -4,13 +4,71 @@
 
 #include "debug\Debug.h"
 
+#include "utilities\WavefrontParser.h"
+
 namespace engine
 {
   namespace graphics
   {
     std::shared_ptr<Mesh> Mesh::Load(const std::string & _path)
     {
-      return nullptr;
+      class enable_mesh : public Mesh { };
+
+      std::shared_ptr<Mesh> mesh;
+
+      try
+      {
+        file::WavefrontParser parser(_path);
+        mesh = std::make_shared<enable_mesh>();
+        mesh->setName(parser.getName());
+
+        auto vertices = parser.getVertices();
+
+        mesh->setVertices(&vertices[0], vertices.size());
+        
+        if (parser.HasUVs())
+        {
+          auto uvs = parser.getUVs();
+          mesh->setUVs(&uvs[0], uvs.size());
+        }
+
+        if (parser.HasNormals())
+        {
+          auto normals = parser.getNormals();
+          mesh->setNormals(&normals[0], normals.size());
+        }
+
+        if (parser.CanUseIndex8())
+        {
+          std::vector<uint8> indices;
+          parser.getIndices(indices);
+
+          mesh->setIndices(&indices[0], indices.size());
+        }
+        else if (parser.CanUseIndex16())
+        {
+          std::vector<uint16> indices;
+          parser.getIndices(indices);
+
+          mesh->setIndices(&indices[0], indices.size());
+        }
+        else
+        {
+          std::vector<uint32> indices;
+          parser.getIndices(indices);
+
+          mesh->setIndices(&indices[0], indices.size());
+        }  
+
+        mesh->Apply();
+      }
+      catch (std::exception & _e)
+      {
+        debug::LogError(_e.what());
+        return nullptr;
+      }
+
+      return mesh;
     }
 
     Mesh::Mesh()

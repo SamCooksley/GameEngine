@@ -40,7 +40,7 @@ namespace engine
         case GL_UNSIGNED_INT:   { m_count = _size / sizeof(uint32); break; }
         default:
         {
-          throw std::invalid_argument("Invalid index buffer type: " + _type);
+          throw std::invalid_argument("Invalid index buffer type: " + std::to_string(_type));
         }
       }
 

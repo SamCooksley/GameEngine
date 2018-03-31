@@ -129,6 +129,12 @@
     <ClCompile Include="src\graphics\DrawType.cpp">
       <Filter>Source Files\graphics</Filter>
     </ClCompile>
+    <ClCompile Include="src\graphics\Camera.cpp">
+      <Filter>Source Files\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\graphics\Renderer.cpp">
+      <Filter>Source Files\graphics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\stdafx.h">
@@ -227,6 +233,12 @@
     <ClInclude Include="src\graphics\TypeData.h">
       <Filter>Header Files\graphics</Filter>
     </ClInclude>
+    <ClInclude Include="src\graphics\Camera.h">
+      <Filter>Header Files\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\graphics\Renderer.h">
+      <Filter>Header Files\graphics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\GameObject.inl">
@@ -237,6 +249,15 @@
     </None>
     <None Include="src\Scene.inl">
       <Filter>Header Files</Filter>
+    </None>
+    <None Include="scr\graphics\Shader.inl">
+      <Filter>Header Files\graphics</Filter>
+    </None>
+    <None Include="src\graphics\Shader.inl">
+      <Filter>Header Files\graphics</Filter>
+    </None>
+    <None Include="src\graphics\Mesh.inl">
+      <Filter>Header Files\graphics</Filter>
     </None>
   </ItemGroup>
 </Project>

@@ -6,6 +6,8 @@
 
 #include "debug\Debug.h"
 
+#include "Material.h"
+
 namespace engine 
 {
   namespace graphics 
@@ -152,6 +154,89 @@ namespace engine
       return loc;
     }
 
+    void Shader::setUniform(GLint _location, int _val)
+    {
+      GLCALL(glUniform1i(_location, _val));
+    }
+
+    void Shader::setUniform(GLint _location, float _val)
+    {
+      GLCALL(glUniform1f(_location, _val));
+    }
+
+    void Shader::setUniform(GLint _location, const glm::vec2& _vec)
+    {
+      GLCALL(glUniform2fv(_location, 1, glm::value_ptr(_vec)));
+    }
+
+    void Shader::setUniform(GLint _location, const glm::vec3& _vec)
+    {
+      GLCALL(glUniform3fv(_location, 1, glm::value_ptr(_vec)));
+    }
+
+    void Shader::setUniform(GLint _location, const glm::vec4& _vec)
+    {
+      GLCALL(glUniform4fv(_location, 1, glm::value_ptr(_vec)));
+    }
+
+    void Shader::setUniform(GLint _location, const glm::mat3& _mat)
+    {
+      GLCALL(glUniformMatrix3fv(_location, 1, GL_FALSE, glm::value_ptr(_mat)));
+    }
+
+    void Shader::setUniform(GLint _location, const glm::mat4& _mat)
+    {
+      GLCALL(glUniformMatrix4fv(_location, 1, GL_FALSE, glm::value_ptr(_mat)));
+    }
+
+    void Shader::setUniform(GLint _location, GLenum _type, const void * _data)
+    {
+      switch (_type)
+      {
+      case GL_INT:
+      {
+        setUniform(_location, *reinterpret_cast<const int*>(_data));
+        break;
+      }
+      case GL_FLOAT:
+      {
+        setUniform(_location, *reinterpret_cast<const float*>(_data));
+        break;
+      }
+      case GL_FLOAT_VEC2:
+      {
+        setUniform(_location, *reinterpret_cast<const glm::vec2*>(_data));
+        break;
+      }
+      case GL_FLOAT_VEC3:
+      {
+        setUniform(_location, *reinterpret_cast<const glm::vec3*>(_data));
+        break;
+      }
+      case GL_FLOAT_VEC4:
+      {
+        setUniform(_location, *reinterpret_cast<const glm::vec4*>(_data));
+        break;
+      }
+      case GL_FLOAT_MAT3:
+      {
+        setUniform(_location, *reinterpret_cast<const glm::mat3*>(_data));
+        break;
+      }
+      case GL_FLOAT_MAT4:
+      {
+        setUniform(_location, *reinterpret_cast<const glm::mat4*>(_data));
+        break;
+      }
+      default:
+      {
+        //TODO: name.
+        debug::LogError("Shader Error: invalid uniform type: " + std::to_string(_type));
+        break;
+      }
+      }
+    }
+
     bool Shader::AddUniform(const std::string & _name, GLenum _type, uint _size, ShaderUniform * _outUniform)
     {
       if (getUniform(_name, _outUniform)) { return true; }
@@ -287,7 +372,20 @@ namespace engine
 
     void Shader::UpdateMaterials()
     {
+      for (auto & mat : m_materials)
+      {
+        mat->UpdateSizes();
+      }
+    }
 
+    void Shader::AddMaterial(Material * _material)
+    {
+      m_materials.insert(_material);
+    }
+
+    void Shader::RemoveMaterial(Material * _material)
+    {
+      m_materials.erase(_material);
     }
   }
 }

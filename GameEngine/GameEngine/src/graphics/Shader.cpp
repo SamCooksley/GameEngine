@@ -2,8 +2,6 @@
 
 #include "Shader.h"
 
-#include "debug\Debug.h"
-
 #include "Material.h"
 
 #include "utilities\ShaderParser.h"

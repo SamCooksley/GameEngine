@@ -2,8 +2,6 @@
 
 #include "Mesh.h"
 
-#include "debug\Debug.h"
-
 #include "utilities\WavefrontParser.h"
 
 namespace engine

@@ -21,12 +21,14 @@
   <ItemGroup>
     <ClCompile Include="src\Application.cpp" />
     <ClCompile Include="src\Camera.cpp" />
+    <ClCompile Include="src\CameraMovement.cpp" />
     <ClCompile Include="src\Component.cpp" />
     <ClCompile Include="src\core\Core.cpp" />
     <ClCompile Include="src\core\glfw.cpp" />
     <ClCompile Include="src\core\Object.cpp" />
     <ClCompile Include="src\core\String.cpp" />
     <ClCompile Include="src\debug\Debug.cpp" />
+    <ClCompile Include="src\Engine_Time.cpp" />
     <ClCompile Include="src\GameObject.cpp" />
     <ClCompile Include="src\graphics\BaseRenderer.cpp" />
     <ClCompile Include="src\graphics\Graphics_Camera.cpp" />
@@ -65,6 +67,7 @@
   <ItemGroup>
     <ClInclude Include="src\Application.h" />
     <ClInclude Include="src\Camera.h" />
+    <ClInclude Include="src\CameraMovement.h" />
     <ClInclude Include="src\Component.h" />
     <ClInclude Include="src\core\Context.h" />
     <ClInclude Include="src\core\Core.h" />
@@ -73,6 +76,7 @@
     <ClInclude Include="src\core\String.h" />
     <ClInclude Include="src\core\Types.h" />
     <ClInclude Include="src\debug\Debug.h" />
+    <ClInclude Include="src\Engine_Time.h" />
     <ClInclude Include="src\GameObject.h" />
     <ClInclude Include="src\graphics\BaseRenderer.h" />
     <ClInclude Include="src\graphics\Graphics_Camera.h" />

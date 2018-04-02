@@ -3,7 +3,7 @@
 #include "MeshRenderer.h"
 
 #include "GameObject.h"
-#include "debug\Debug.h"
+
 #include "graphics\Graphics.h"
 
 namespace engine

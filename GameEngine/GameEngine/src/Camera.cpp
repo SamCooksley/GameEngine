@@ -6,8 +6,6 @@
 
 #include "graphics\Graphics.h"
 
-#include "debug\Debug.h"
-
 namespace engine
 {
   Camera::Camera()

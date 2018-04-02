@@ -2,8 +2,6 @@
 
 #include "Material.h"
 
-#include "debug\Debug.h"
-
 #include "Graphics.h"
 
 namespace engine

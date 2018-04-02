@@ -9,6 +9,7 @@ namespace engine
   {
     friend class Input;
     friend class Resources;
+    friend class Time;
     friend class graphics::Window;
     friend class GameObject;
     friend class Scene;

@@ -4,7 +4,6 @@
 
 #include "graphics\opengl.h"
 
-#include "debug\Debug.h"
 #include "Input.h"
 #include "graphics\Shader.h"
 
@@ -114,21 +113,6 @@ namespace engine
     if (s_context->scene)
     {
       s_context->scene->Update();
-    }
-
-    if (Input::getKeyDown(KeyCode::A))
-    {
-      debug::Log("A down");
-    }
-
-    if (Input::getKeyUp(KeyCode::A))
-    {
-      debug::Log("A up");
-    }
-
-    if (Input::getKey(KeyCode::A))
-    {
-      debug::Log("A");
     }
   }
 

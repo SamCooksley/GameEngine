@@ -4,8 +4,6 @@
 
 #include "GameObject.h"
 
-#include "debug\Debug.h"
-
 namespace engine
 {
   Component::Component()

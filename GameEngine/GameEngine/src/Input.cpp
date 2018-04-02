@@ -176,7 +176,7 @@ namespace engine
     {
       case CursorMode::FREE:
       {
-        glfwSetInputMode(Application::s_context->window->m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+        glfwSetInputMode(Application::s_context->window->m_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
         break;
       }
       case CursorMode::HIDDEN:

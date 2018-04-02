@@ -5,6 +5,7 @@
 #include "GameObject.h"
 
 #include "MeshRenderer.h"
+#include "CameraMovement.h"
 
 #include "Resources.h"
 
@@ -22,6 +23,7 @@ namespace engine
 
     auto camera = GameObject::Instantiate();
     camera->AddComponent<Camera>();
+    camera->AddComponent<CameraMovement>();
 
     auto mesh = Resources::Load<graphics::Mesh>("resources/models/cube.obj");
 

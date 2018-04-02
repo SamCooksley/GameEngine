@@ -3,27 +3,31 @@
 
 #include "Types.h"
 
-namespace engine { namespace core {
+#include "debug\Debug.h"
 
-  class Object : public std::enable_shared_from_this<Object>
+namespace engine
+{
+  namespace core
   {
-  public:
-    virtual ~Object();
+    class Object : public std::enable_shared_from_this<Object>
+    {
+    public:
+      virtual ~Object();
 
-    const std::string & getName() const;
-    void setName(const std::string & _name);
+      const std::string & getName() const;
+      void setName(const std::string & _name);
 
-  protected:
-    Object();
+    protected:
+      Object();
 
-  private:
-    std::string m_name;
-  };
+    private:
+      std::string m_name;
+    };
 
-  bool operator==(const Object & _lhs, const Object & _rhs);
-  bool operator!=(const Object & _lhs, const Object & _rhs);
-
-} }
+    bool operator==(const Object & _lhs, const Object & _rhs);
+    bool operator!=(const Object & _lhs, const Object & _rhs);
+  }
+}
 
 #define ENGINE_SETUPSHARED(x) \
   public: \

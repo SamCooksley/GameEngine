@@ -19,6 +19,11 @@ namespace engine
     return m_gameObject.lock();
   }
 
+  std::shared_ptr<const GameObject> Component::getGameObject() const
+  {
+    return m_gameObject.lock();
+  }
+
   void Component::OnAwake()
   { }
 
@@ -79,6 +84,11 @@ namespace engine
         OnEnable(m_enabled);
       }
     }
+  }
+
+  bool Component::getEnabled() const
+  {
+    return m_enabled;
   }
 
   void Component::Destroy()

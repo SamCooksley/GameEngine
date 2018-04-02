@@ -20,6 +20,9 @@ namespace engine
   {
     Scene::Init();
 
+    auto camera = GameObject::Instantiate();
+    camera->AddComponent<Camera>();
+
     auto mesh = Resources::Load<graphics::Mesh>("resources/models/cube.obj");
 
     auto go = GameObject::Instantiate();

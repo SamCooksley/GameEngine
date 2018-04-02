@@ -8,6 +8,8 @@
 
 #include "VertexArray.h"
 
+#include "Camera.h"
+
 namespace engine
 {
   namespace graphics
@@ -22,13 +24,17 @@ namespace engine
       std::unique_ptr<BaseRenderer> renderer;
 
       std::unique_ptr<VertexArray> vao;
+
+      std::vector<std::weak_ptr<::engine::Camera>> cameras;
     };
   }
 
   class Graphics
   {
+    friend class Application;
     friend class graphics::Shader;
     friend class graphics::Material;
+    friend class Camera;
 
   public:
     Graphics() = delete;
@@ -37,6 +43,9 @@ namespace engine
 
   private:
     static std::shared_ptr<graphics::Shader> getErrorShader();
+
+    static void AddCamera(std::shared_ptr<Camera> _camera);
+    static void RemoveCamera(std::shared_ptr<Camera> _camera);
   };
 }
 

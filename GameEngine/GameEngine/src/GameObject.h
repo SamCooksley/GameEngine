@@ -20,18 +20,16 @@ namespace engine {
     ~GameObject();
 
     template <class T>
-    std::shared_ptr<T> AddComponent();
+    inline std::shared_ptr<T> AddComponent();
 
     template <class T>
-    std::shared_ptr<T> getComponent();
-
-    template <>
-    std::shared_ptr<Transform> AddComponent();
-    template <>
-    std::shared_ptr<Transform> getComponent();
+    inline std::shared_ptr<T> getComponent();
+    
+    template <class T> 
+    inline std::shared_ptr<const T> getComponent() const;
 
     template <class T> 
-    void getComponents(std::vector<std::shared_ptr<T>> & _outComponents);
+    inline void getComponents(std::vector<std::shared_ptr<T>> & _outComponents);
 
     void setEnable(bool _enable);
 
@@ -51,6 +49,9 @@ namespace engine {
 
     template <class T>
     std::shared_ptr<T> getComponentInternal();
+
+    template <class T>
+    std::shared_ptr<const T> getComponentInternal() const;
 
     template <class T>
     void getComponentsInternal(std::vector<std::shared_ptr<T>> & _outComponents);

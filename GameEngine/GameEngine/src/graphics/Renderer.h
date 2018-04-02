@@ -1,7 +1,7 @@
 #ifndef _ENGINE_GRAPHICS_RENDERER_H_
 #define _ENGINE_GRAPHICS_RENDERER_H_
 
-#include "Camera.h"
+#include "Graphics_Camera.h"
 
 #include "Mesh.h"
 #include "Material.h"

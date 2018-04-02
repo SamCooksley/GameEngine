@@ -1,19 +1,25 @@
 namespace engine
 {
   template <class T>
-  std::shared_ptr<T> GameObject::AddComponent()
+  inline std::shared_ptr<T> GameObject::AddComponent()
   {
     return AddComponentInternal<T>();
   }
 
   template <class T>
-  std::shared_ptr<T> GameObject::getComponent()
+  inline std::shared_ptr<T> GameObject::getComponent()
+  {
+    return getComponentInternal<T>();
+  }
+
+  template <class T>
+  inline std::shared_ptr<const T> GameObject::getComponent() const
   {
     return getComponentInternal<T>();
   }
 
   template <>
-  std::shared_ptr<Transform> GameObject::AddComponent()
+  inline std::shared_ptr<Transform> GameObject::AddComponent()
   {
     std::shared_ptr<Transform> trs = AddComponentInternal<Transform>();
     m_transform = trs;
@@ -21,7 +27,17 @@ namespace engine
   }
 
   template <>
-  std::shared_ptr<Transform> GameObject::getComponent()
+  inline std::shared_ptr<Transform> GameObject::getComponent()
+  {
+    if (!m_transform.expired())
+    {
+      return m_transform.lock();
+    }
+    return getComponentInternal<Transform>();
+  }
+
+  template <>
+  inline std::shared_ptr<const Transform> GameObject::getComponent() const
   {
     if (!m_transform.expired())
     {
@@ -31,7 +47,7 @@ namespace engine
   }
 
   template <class T>
-  void GameObject::getComponents(std::vector<std::shared_ptr<T>> & _outComponents)
+  inline void GameObject::getComponents(std::vector<std::shared_ptr<T>> & _outComponents)
   {
     getComponentsInternal<T>(_outComponents);
   }
@@ -63,7 +79,21 @@ namespace engine
 
     for (auto & component : m_components)
     {
-      std::shared_ptr<T> c = std::dynamic_pointer_cast<T>(component);
+      auto c = std::dynamic_pointer_cast<T>(component);
+      if (c) { return c; }
+    }
+
+    return nullptr;
+  }
+
+  template <class T>
+  std::shared_ptr<const T> GameObject::getComponentInternal() const
+  {
+    static_assert(std::is_base_of<Component, T>::value, "Object must be type of Component");
+
+    for (auto & component : m_components)
+    {
+      auto c = std::dynamic_pointer_cast<const T>(component);
       if (c) { return c; }
     }
 

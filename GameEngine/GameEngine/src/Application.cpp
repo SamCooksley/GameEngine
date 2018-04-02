@@ -134,20 +134,42 @@ namespace engine
 
   void Application::Render()
   {
-    graphics::Camera c(glm::perspective(60.f, 1.f, 0.001f, 100.0f), glm::mat4(1.f), glm::vec3(0.f));
-    s_context->graphics.renderer->Start(c);
-
-    if (s_context->scene)
-    {
-      s_context->scene->Render(*s_context->graphics.renderer);
-    }
-
-    s_context->graphics.renderer->End();
-
     GLCALL(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
 
-    s_context->graphics.renderer->Render();
-    
+    if (s_context->graphics.cameras.empty())
+    {
+      debug::LogError("Camera Error: no cameras in scene");
+    }
+
+    for (auto & cam : s_context->graphics.cameras)
+    {
+      auto camera = cam.lock();
+      if (!camera)
+      {
+        debug::LogError("Camera Error: destroyed camera in camera list");
+        Graphics::RemoveCamera(nullptr);
+        continue;
+      }
+
+      if (!camera->getEnabled())
+      {
+        continue;
+      }
+
+      auto cameraData = camera->getCamera();
+
+      s_context->graphics.renderer->Start(cameraData);
+
+      if (s_context->scene)
+      {
+        s_context->scene->Render(*s_context->graphics.renderer);
+      }
+
+      s_context->graphics.renderer->End();
+
+      s_context->graphics.renderer->Render();
+    }
+
     s_context->window->Present();
   }
 

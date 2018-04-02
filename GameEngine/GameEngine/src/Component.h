@@ -16,8 +16,10 @@ namespace engine {
     virtual ~Component();
 
     std::shared_ptr<GameObject> getGameObject();
+    std::shared_ptr<const GameObject> getGameObject() const;
 
     void setEnable(bool _enable);
+    bool getEnabled() const;
 
     void Destroy();
 

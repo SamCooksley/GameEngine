@@ -123,9 +123,6 @@
     <ClCompile Include="src\graphics\DrawType.cpp">
       <Filter>Source Files\graphics</Filter>
     </ClCompile>
-    <ClCompile Include="src\graphics\Camera.cpp">
-      <Filter>Source Files\graphics</Filter>
-    </ClCompile>
     <ClCompile Include="src\graphics\Renderer.cpp">
       <Filter>Source Files\graphics</Filter>
     </ClCompile>
@@ -152,6 +149,12 @@
     </ClCompile>
     <ClCompile Include="src\MeshRenderer.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Camera.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\graphics\Graphics_Camera.cpp">
+      <Filter>Source Files\graphics</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -248,9 +251,6 @@
     <ClInclude Include="src\graphics\TypeData.h">
       <Filter>Header Files\graphics</Filter>
     </ClInclude>
-    <ClInclude Include="src\graphics\Camera.h">
-      <Filter>Header Files\graphics</Filter>
-    </ClInclude>
     <ClInclude Include="src\graphics\Renderer.h">
       <Filter>Header Files\graphics</Filter>
     </ClInclude>
@@ -277,6 +277,12 @@
     </ClInclude>
     <ClInclude Include="src\MeshRenderer.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Camera.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\graphics\Graphics_Camera.h">
+      <Filter>Header Files\graphics</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#include "Camera.h"
+#include "Graphics_Camera.h"
 
 namespace engine
 {

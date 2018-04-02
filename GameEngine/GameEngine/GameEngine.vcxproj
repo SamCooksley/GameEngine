@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Application.cpp" />
+    <ClCompile Include="src\Camera.cpp" />
     <ClCompile Include="src\Component.cpp" />
     <ClCompile Include="src\core\Core.cpp" />
     <ClCompile Include="src\core\glfw.cpp" />
@@ -28,7 +29,7 @@
     <ClCompile Include="src\debug\Debug.cpp" />
     <ClCompile Include="src\GameObject.cpp" />
     <ClCompile Include="src\graphics\BaseRenderer.cpp" />
-    <ClCompile Include="src\graphics\Camera.cpp" />
+    <ClCompile Include="src\graphics\Graphics_Camera.cpp" />
     <ClCompile Include="src\graphics\DefaultRenderer.cpp" />
     <ClCompile Include="src\graphics\DrawType.cpp" />
     <ClCompile Include="src\graphics\Graphics.cpp" />
@@ -63,6 +64,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Application.h" />
+    <ClInclude Include="src\Camera.h" />
     <ClInclude Include="src\Component.h" />
     <ClInclude Include="src\core\Context.h" />
     <ClInclude Include="src\core\Core.h" />
@@ -73,7 +75,7 @@
     <ClInclude Include="src\debug\Debug.h" />
     <ClInclude Include="src\GameObject.h" />
     <ClInclude Include="src\graphics\BaseRenderer.h" />
-    <ClInclude Include="src\graphics\Camera.h" />
+    <ClInclude Include="src\graphics\Graphics_Camera.h" />
     <ClInclude Include="src\graphics\DefaultRenderer.h" />
     <ClInclude Include="src\graphics\DrawType.h" />
     <ClInclude Include="src\graphics\Graphics.h" />

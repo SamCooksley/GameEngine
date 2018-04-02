@@ -2,13 +2,13 @@
 
 #include "Shader.h"
 
-#include "opengl.h"
-
 #include "debug\Debug.h"
 
 #include "Material.h"
 
 #include "utilities\ShaderParser.h"
+
+#include "Graphics.h"
 
 namespace engine 
 {
@@ -50,8 +50,7 @@ namespace engine
       catch (std::exception & _e)
       {
         debug::LogError(_e.what());
-        //return Graphics::getErrorShader();
-        return nullptr;
+        return Graphics::getErrorShader();
       }
 
       return shader;
@@ -142,6 +141,30 @@ namespace engine
       m_modelLoc = getUniformLocation(MODEL_NAME);
       m_viewLoc = getUniformLocation(VIEW_NAME);
       m_projectionLoc = getUniformLocation(PROJECTION_NAME);
+    }
+
+    void Shader::setModel(const glm::mat4 & _model)
+    {
+      if (m_modelLoc >= 0)
+      {
+        setUniform(m_modelLoc, _model);
+      }
+    }
+
+    void Shader::setView(const glm::mat4 & _view)
+    {
+      if (m_viewLoc >= 0)
+      {
+        setUniform(m_viewLoc, _view);
+      }
+    }
+
+    void Shader::setProjection(const glm::mat4 & _projection)
+    {
+      if (m_projectionLoc >= 0)
+      {
+        setUniform(m_projectionLoc, _projection);
+      }
     }
 
     GLint Shader::getUniformLocation(const std::string & _name) const

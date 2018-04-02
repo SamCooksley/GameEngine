@@ -47,11 +47,11 @@ namespace engine
     }
   }
 
-  void Scene::Render()
+  void Scene::Render(graphics::Renderer & _renderer)
   {
     for (auto & go : m_gameObjects)
     {
-      go->Render();
+      go->Render(_renderer);
     }
   }
 }

@@ -27,7 +27,7 @@ namespace engine {
     void Add(std::shared_ptr<GameObject> _gameObject);
 
     void Update();
-    void Render();
+    void Render(graphics::Renderer & _renderer);
 
     std::vector<std::shared_ptr<GameObject>> m_gameObjects;
   };

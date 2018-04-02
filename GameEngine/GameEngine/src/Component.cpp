@@ -4,6 +4,8 @@
 
 #include "GameObject.h"
 
+#include "debug\Debug.h"
+
 namespace engine
 {
   Component::Component()
@@ -11,6 +13,11 @@ namespace engine
 
   Component::~Component()
   { }
+
+  std::shared_ptr<GameObject> Component::getGameObject()
+  {
+    return m_gameObject.lock();
+  }
 
   void Component::OnAwake()
   { }
@@ -21,16 +28,14 @@ namespace engine
   void Component::OnUpdate()
   { }
 
-  void Component::OnRender()
+  void Component::OnRender(graphics::Renderer & _renderer)
   { }
 
   void Component::OnEnable(bool _enable)
   { }
 
   void Component::OnDestroy()
-  {
-    setEnable(false);
-  }
+  { }
 
   void Component::Awake()
   {
@@ -55,11 +60,11 @@ namespace engine
     }
   }
 
-  void Component::Render()
+  void Component::Render(graphics::Renderer & _renderer)
   {
     if (m_enabled)
     {
-      OnRender();
+      OnRender(_renderer);
     }
   }
 

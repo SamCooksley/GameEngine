@@ -1,45 +1,53 @@
 #ifndef _ENGINE_CORE_CONTEXT_H_
 #define _ENGINE_CORE_CONTEXT_H_
 
-#include "glfw.h"
+#include "graphics\Graphics.h"
+
 
 #include "graphics\Window.h"
 
+#include "glfw.h"
 #include "Scene.h"
 
 #include "utilities\Timer.h"
 
-namespace engine { namespace core {
-
-  enum class EngineState
+namespace engine
+{
+  namespace core
   {
-    None,
-    Init,
-    Running,
-    Exit
-  };
+    enum class EngineState
+    {
+      None,
+      Init,
+      Running,
+      Exit
+    };
 
-  struct Context
-  {
-  public:
-    EngineState state;
+    struct Context
+    {
+    public:
+      EngineState state;
 
-    std::vector<std::string> args;
+      std::vector<std::string> args;
 
-    std::unique_ptr<glfw> glfwContext;
+      std::map<std::string, std::shared_ptr<core::Object>> resources;
 
-    utilities::Timer frameTime;
-    float targetFrameTime;
-    int maxUpdatesPerFrame;
-    float totalDeltaTime;
-    float deltaTime;
+      std::unique_ptr<glfw> glfwContext;
 
-    std::unique_ptr<graphics::Window> window;
+      utilities::Timer frameTime;
+      float targetFrameTime;
+      int maxUpdatesPerFrame;
+      float totalDeltaTime;
+      float deltaTime;
 
-    std::shared_ptr<Scene> scene;
-    std::shared_ptr<Scene> nextScene;
-  };
+      std::unique_ptr<graphics::Window> window;
 
-} }
+      std::shared_ptr<Scene> scene;
+      std::shared_ptr<Scene> nextScene;
+
+      graphics::Context graphics;
+    };
+  }
+}
 
 #endif //_ENGINE_CORE_CONTEXT_H_

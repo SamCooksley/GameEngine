@@ -2,10 +2,10 @@
 
 #include "Window.h"
 
-#include "glfw\glfw3.h"
-
 #include "core\glfw.h"
 #include "Application.h"
+
+#include "glfw\glfw3.h"
 
 namespace engine { namespace graphics {
 

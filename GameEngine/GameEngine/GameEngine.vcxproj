@@ -27,8 +27,11 @@
     <ClCompile Include="src\core\String.cpp" />
     <ClCompile Include="src\debug\Debug.cpp" />
     <ClCompile Include="src\GameObject.cpp" />
+    <ClCompile Include="src\graphics\BaseRenderer.cpp" />
     <ClCompile Include="src\graphics\Camera.cpp" />
+    <ClCompile Include="src\graphics\DefaultRenderer.cpp" />
     <ClCompile Include="src\graphics\DrawType.cpp" />
+    <ClCompile Include="src\graphics\Graphics.cpp" />
     <ClCompile Include="src\graphics\IndexBuffer.cpp" />
     <ClCompile Include="src\graphics\Material.cpp" />
     <ClCompile Include="src\graphics\Mesh.cpp" />
@@ -43,6 +46,8 @@
     <ClCompile Include="src\Input.cpp" />
     <ClCompile Include="src\KeyCode.cpp" />
     <ClCompile Include="src\Main.cpp" />
+    <ClCompile Include="src\MeshRenderer.cpp" />
+    <ClCompile Include="src\Resources.cpp" />
     <ClCompile Include="src\Scene.cpp" />
     <ClCompile Include="src\stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -67,8 +72,11 @@
     <ClInclude Include="src\core\Types.h" />
     <ClInclude Include="src\debug\Debug.h" />
     <ClInclude Include="src\GameObject.h" />
+    <ClInclude Include="src\graphics\BaseRenderer.h" />
     <ClInclude Include="src\graphics\Camera.h" />
+    <ClInclude Include="src\graphics\DefaultRenderer.h" />
     <ClInclude Include="src\graphics\DrawType.h" />
+    <ClInclude Include="src\graphics\Graphics.h" />
     <ClInclude Include="src\graphics\IndexBuffer.h" />
     <ClInclude Include="src\graphics\Material.h" />
     <ClInclude Include="src\graphics\Mesh.h" />
@@ -83,6 +91,8 @@
     <ClInclude Include="src\graphics\Window.h" />
     <ClInclude Include="src\Input.h" />
     <ClInclude Include="src\KeyCode.h" />
+    <ClInclude Include="src\MeshRenderer.h" />
+    <ClInclude Include="src\Resources.h" />
     <ClInclude Include="src\Scene.h" />
     <ClInclude Include="src\stdafx.h" />
     <ClInclude Include="src\TestScene.h" />
@@ -100,6 +110,7 @@
     <None Include="src\graphics\Material.inl" />
     <None Include="src\graphics\Mesh.inl" />
     <None Include="src\graphics\Shader.inl" />
+    <None Include="src\Resources.inl" />
     <None Include="src\Scene.inl" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

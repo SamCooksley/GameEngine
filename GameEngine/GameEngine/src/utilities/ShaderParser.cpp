@@ -66,8 +66,7 @@ namespace engine
 
         if (line[first] == '#')
         {
-          line = Preprocessor(line, lineNo);
-          if (line.empty())
+          if (!Preprocessor(line, lineNo))
           {
             continue;
           }
@@ -85,7 +84,7 @@ namespace engine
       }
     }
 
-    std::string ShaderParser::Preprocessor(const std::string & _line, int _lineNumber)
+    bool ShaderParser::Preprocessor(const std::string & _line, int _lineNumber)
     {
       size_t pos = std::string::npos;
       if ((pos = _line.find("#shader")) != std::string::npos)
@@ -108,7 +107,7 @@ namespace engine
         }
 
         SetCurrentShaderType(type);
-        return "";
+        return false;
       }
       else if ((pos = _line.find("#include")) != std::string::npos)
       {
@@ -142,10 +141,10 @@ namespace engine
         ParseSource(file);
 
         m_currentFile = lastFile;
-        return "";
+        return false;
       }
 
-      return _line;
+      return true;
     }
 
     void ShaderParser::SetCurrentShaderType(ShaderType::Type _type)

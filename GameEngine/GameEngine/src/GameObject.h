@@ -42,7 +42,7 @@ namespace engine {
 
   private:
     void Update();
-    void Render();
+    void Render(graphics::Renderer & _renderer);
 
     void OnDestroy();
 

@@ -55,7 +55,7 @@ namespace engine
 
     void WavefrontParser::getIndices(std::vector<uint8> & _out) const
     {
-      if (CanUseIndex8())
+      if (!CanUseIndex8())
       {
         throw std::overflow_error(
           "WavefrontParser Error: " + m_name + " indices cannot be converted to uint8"
@@ -71,7 +71,7 @@ namespace engine
 
     void WavefrontParser::getIndices(std::vector<uint16> & _out) const
     {
-      if (CanUseIndex16())
+      if (!CanUseIndex16())
       {
         throw std::overflow_error(
           "WavefrontParser Error: " + m_name + " indices cannot be converted to uint16"

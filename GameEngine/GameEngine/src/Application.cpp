@@ -2,11 +2,13 @@
 
 #include "Application.h"
 
-#include "glew\glew.h"
+#include "graphics\opengl.h"
 
 #include "debug\Debug.h"
 #include "Input.h"
 #include "graphics\Shader.h"
+
+#include "graphics\DefaultRenderer.h"
 
 namespace engine
 {
@@ -40,11 +42,20 @@ namespace engine
       throw std::runtime_error("glew error: " + std::to_string(error) + ": " + std::string((const char*)glewGetErrorString(error)));
     }
 
-    debug::Log("OpenGL version: " + std::string((const char*)glGetString(GL_VERSION)));
-    debug::Log("GLSL version: " + std::string((const char*)glGetString(GL_SHADING_LANGUAGE_VERSION)));
+    debug::Log("OpenGL version: " + std::string(reinterpret_cast<const char*>(glGetString(GL_VERSION))));
+    debug::Log("GLSL version: " + std::string(reinterpret_cast<const char*>(glGetString(GL_SHADING_LANGUAGE_VERSION))));
  
-    auto shader = graphics::Shader::Load("resources/shaders/test.shader");
-  
+    glEnable(GL_CULL_FACE);
+    glEnable(GL_DEPTH_TEST);
+
+    s_context->graphics.vao = std::make_unique<graphics::VertexArray>();
+
+    s_context->graphics.renderer = std::make_unique<graphics::DefaultRenderer>();
+    
+    s_context->graphics.errorShader = graphics::Shader::Load("resources/shaders/error.shader");
+    
+    auto defaultShader = graphics::Shader::Load("resources/shaders/default.shader");
+    s_context->graphics.defaultMaterial = graphics::Material::Create(defaultShader);
   }
 
   void Application::Loop()
@@ -123,18 +134,26 @@ namespace engine
 
   void Application::Render()
   {
+    graphics::Camera c(glm::perspective(60.f, 1.f, 0.001f, 100.0f), glm::mat4(1.f), glm::vec3(0.f));
+    s_context->graphics.renderer->Start(c);
+
     if (s_context->scene)
     {
-      s_context->scene->Render();
+      s_context->scene->Render(*s_context->graphics.renderer);
     }
 
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    s_context->graphics.renderer->End();
+
+    GLCALL(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
+
+    s_context->graphics.renderer->Render();
+    
     s_context->window->Present();
   }
 
   void Application::ChangeScene()
   {
-    s_context->scene = s_context->nextScene;
+    s_context->scene = std::move(s_context->nextScene);
     s_context->nextScene = nullptr;
 
     s_context->scene->Init();

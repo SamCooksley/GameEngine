@@ -2,10 +2,11 @@
 
 #include "Input.h"
 
-#include "glfw\glfw3.h"
 
 #include "debug\Debug.h"
 #include "Application.h"
+
+#include "glfw\glfw3.h"
 
 namespace engine
 {

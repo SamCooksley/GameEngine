@@ -4,6 +4,8 @@
 
 #include "debug\Debug.h"
 
+#include "Graphics.h"
+
 namespace engine
 {
   namespace graphics
@@ -97,7 +99,7 @@ namespace engine
     {
       RemoveFromShader();
 
-      m_shader = _shader;
+      m_shader = std::move(_shader);
 
       if (m_shader)
       {
@@ -105,9 +107,12 @@ namespace engine
       }
       else
       {
-        debug::LogError("Material Error: material + " + getName() + " does not have a shader.");
-        //m_shader = Graphics::getErrorShader();
-        //m_shader->AddMaterial(this);
+        debug::LogError("Material Error: material " + getName() + " does not have a shader.");
+        m_shader = Graphics::getErrorShader();
+        if (m_shader)
+        {
+          m_shader->AddMaterial(this);
+        }
       }
 
       UpdateSizes();

@@ -3,6 +3,8 @@
 
 #include "core\Object.h"
 
+#include "graphics\Renderer.h"
+
 namespace engine {
 
   class GameObject;
@@ -12,6 +14,8 @@ namespace engine {
     friend class GameObject;
   public:
     virtual ~Component();
+
+    std::shared_ptr<GameObject> getGameObject();
 
     void setEnable(bool _enable);
 
@@ -23,7 +27,7 @@ namespace engine {
     virtual void OnAwake();
     virtual void OnStart();
     virtual void OnUpdate();
-    virtual void OnRender();
+    virtual void OnRender(graphics::Renderer & _renderer);
 
     virtual void OnEnable(bool _enable);
 
@@ -32,7 +36,7 @@ namespace engine {
   private:
     void Awake();
     void Update();
-    void Render();
+    void Render(graphics::Renderer & _renderer);
 
     std::weak_ptr<GameObject> m_gameObject;
 

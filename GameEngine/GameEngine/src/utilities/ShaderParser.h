@@ -22,7 +22,7 @@ namespace engine
 
     private:
       void ParseSource(std::istream & _source);
-      std::string Preprocessor(const std::string & _line, int _lineNumber);
+      bool Preprocessor(const std::string & _line, int _lineNumber);
 
       void SetCurrentShaderType(graphics::ShaderType::Type _type);
 

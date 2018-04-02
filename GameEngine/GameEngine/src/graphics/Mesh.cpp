@@ -23,7 +23,6 @@ namespace engine
         mesh->setName(parser.getName());
 
         auto vertices = parser.getVertices();
-
         mesh->setVertices(&vertices[0], vertices.size());
         
         if (parser.HasUVs())
@@ -71,7 +70,8 @@ namespace engine
       return mesh;
     }
 
-    Mesh::Mesh()
+    Mesh::Mesh() :
+      m_draw(DrawType::Triangles)
     { }
 
     Mesh::~Mesh()

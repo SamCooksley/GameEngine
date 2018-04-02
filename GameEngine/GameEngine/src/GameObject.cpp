@@ -31,24 +31,6 @@ namespace engine
   GameObject::~GameObject()
   { }
 
-  template <>
-  std::shared_ptr<Transform> GameObject::AddComponent()
-  {
-    std::shared_ptr<Transform> trs = AddComponentInternal<Transform>();
-    m_transform = trs;
-    return trs;
-  }
-
-  template <>
-  std::shared_ptr<Transform> GameObject::getComponent()
-  {
-    if (!m_transform.expired())
-    {
-      return m_transform.lock();
-    }
-    return getComponentInternal<Transform>();
-  }
-
   void GameObject::setEnable(bool _enable)
   {
     if (m_enabled != _enable)
@@ -83,6 +65,7 @@ namespace engine
     {
       if (m_components[i]->m_shouldDestroy)
       {
+        m_components[i]->setEnable(false);
         m_components[i]->OnDestroy();
         m_components.erase(m_components.begin() + i);
       }
@@ -90,20 +73,20 @@ namespace engine
     }
   }
 
-  void GameObject::Render()
+  void GameObject::Render(graphics::Renderer & _renderer)
   {
     if (m_enabled)
     {
       for (auto & c : m_components)
       {
-        c->Render();
+        c->Render(_renderer);
       }
     }
   }
 
   void GameObject::OnDestroy()
   {
-    //setEnable(false);
+    setEnable(false);
 
     for (auto & c : m_components)
     {

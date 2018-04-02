@@ -66,7 +66,7 @@ namespace engine
 
     void IndexBuffer::Draw(DrawType::Type _draw) const
     {
-      GLCALL(glDrawElements(DrawType::ToOpenGL(_draw), m_count, m_type, (const void*)0));
+      GLCALL(glDrawElements(DrawType::ToOpenGL(_draw), m_count, m_type, reinterpret_cast<const void *>(0)));
     }
   }
 }

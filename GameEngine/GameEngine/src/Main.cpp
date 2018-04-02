@@ -1,13 +1,10 @@
 #include "stdafx.h"
 
 #include <iostream>
-#include <fstream>
 
 #include "Application.h"
 #include "TestScene.h"
 #include "debug\Debug.h"
-
-#include "graphics\Mesh.h"
 
 int main(int _argc, char** _argv)
 {

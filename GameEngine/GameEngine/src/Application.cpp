@@ -9,6 +9,10 @@
 
 #include "graphics\DefaultRenderer.h"
 
+#include "graphics\Texture2D.h"
+
+#include "Resources.h"
+
 namespace engine
 {
   std::unique_ptr<core::Context> Application::s_context;
@@ -51,10 +55,13 @@ namespace engine
 
     s_context->graphics.renderer = std::make_unique<graphics::DefaultRenderer>();
     
-    s_context->graphics.errorShader = graphics::Shader::Load("resources/shaders/error.shader");
+    s_context->graphics.errorShader = Resources::Load<graphics::Shader>("resources/shaders/error.shader");
     
-    auto defaultShader = graphics::Shader::Load("resources/shaders/default.shader");
+    auto defaultShader = Resources::Load<graphics::Shader>("resources/shaders/default.shader");
     s_context->graphics.defaultMaterial = graphics::Material::Create(defaultShader);
+   
+    auto texture = Resources::Load<graphics::Texture2D>("resources/textures/diffuse.png");
+    s_context->graphics.defaultMaterial->setTexture("diffuse", texture);
   }
 
   void Application::Loop()

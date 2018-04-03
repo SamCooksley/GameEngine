@@ -318,7 +318,7 @@ namespace engine
 
       ShaderTexture texture = {
         _name,
-        static_cast<int>(m_textures.size()),
+        m_textures.size(),
         location
       };
 

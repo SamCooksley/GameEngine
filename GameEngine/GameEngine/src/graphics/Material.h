@@ -2,6 +2,7 @@
 #define _ENGINE_GRAPHICS_MATERIAL_H_
 
 #include "Shader.h"
+#include "Texture.h"
 
 namespace engine
 {
@@ -25,8 +26,8 @@ namespace engine
       template <typename T>
       bool getUniform(const std::string & _name, T * _outValue) const;
 
-      //void setTexture(const std::string & _name, const std::shared_ptr<Texture> _texture);
-      //std::shared_ptr<Texture> getTexture(const std::string & _name) const;
+      void setTexture(const std::string & _name, std::shared_ptr<Texture> _texture);
+      bool getTexture(const std::string & _name, std::shared_ptr<Texture> * _outTexture) const;
 
       std::shared_ptr<Shader> getShader();
 
@@ -46,6 +47,8 @@ namespace engine
       std::shared_ptr<Shader> m_shader;
 
       std::vector<byte> m_uniformData;
+
+      std::vector<std::shared_ptr<Texture>> m_textures;
     };
   }
 }

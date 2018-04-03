@@ -22,7 +22,7 @@ namespace engine
     struct ShaderTexture
     {
       std::string name;
-      int textureUnit;
+      uint textureUnit;
       GLint location;
     };
 

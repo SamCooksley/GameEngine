@@ -40,6 +40,16 @@ namespace engine
       {
         m_shader->setUniform(uniform.location, uniform.type, &m_uniformData[uniform.offset]);
       }
+
+      for (size_t i = 0; i < m_textures.size(); ++i)
+      {
+        m_shader->m_textures[i].location = m_shader->getUniformLocation(m_shader->m_textures[i].name);
+        m_shader->setUniform(m_shader->m_textures[i].location, (int)m_shader->m_textures[i].textureUnit);
+        if (m_textures[i])
+        {
+          m_textures[i]->Bind(i);
+        }
+      }
     }
 
     void Material::Unbind() const
@@ -88,6 +98,50 @@ namespace engine
       return true;
     }
 
+    void Material::setTexture(const std::string & _name, std::shared_ptr<Texture> _texture)
+    {
+      ShaderTexture texture;
+      if (!m_shader->AddTexture(_name, &texture))
+      {
+        debug::LogError("Material Error: failed to find texture " + _name + " in material " + getName());
+        return;
+      }
+
+      if (texture.textureUnit >= m_textures.size())
+      {
+        throw std::out_of_range("Material Error: texture unit out of range in " +
+          getName() + ". max: " + std::to_string(m_textures.size()) + ", index: " +
+          std::to_string(texture.textureUnit)
+        );
+      }
+
+      m_textures.at(texture.textureUnit) = std::move(_texture);
+    }
+
+    bool Material::getTexture(const std::string & _name, std::shared_ptr<Texture> * _outTexture) const
+    {
+      ShaderTexture texture;
+      if (!m_shader->getTexture(_name, &texture))
+      {
+        return false;
+      }
+
+      if (_outTexture != nullptr)
+      {
+        if (texture.textureUnit >= m_textures.size())
+        {
+          throw std::out_of_range("Material Error: texture unit out of range in " +
+            getName() + ". max: " + std::to_string(m_textures.size()) + ", index: " +
+            std::to_string(texture.textureUnit)
+          );
+        }
+
+        *_outTexture = m_textures.at(texture.textureUnit);
+      }
+
+      return true;
+    }
+
     std::shared_ptr<Shader> Material::getShader()
     {
       return m_shader;
@@ -131,10 +185,12 @@ namespace engine
       if (m_shader)
       {
         m_uniformData.resize(m_shader->m_uniformSize);
+        m_textures.resize(m_shader->m_textures.size());
       }
       else
       {
         m_uniformData.clear();
+        m_textures.clear();
       }
     }
 
@@ -143,6 +199,11 @@ namespace engine
       if (!m_uniformData.empty())
       {
         memset(&m_uniformData[0], 0, m_uniformData.size());
+      }
+
+      for (auto & texture : m_textures)
+      {
+        texture.reset();
       }
     }
   }

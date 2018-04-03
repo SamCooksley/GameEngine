@@ -27,6 +27,8 @@ namespace engine
         const glm::mat4 & _transform
       ) override;
 
+      virtual void Add(const Light & _light) override;
+
       virtual void End();
 
       virtual void Reset();
@@ -36,6 +38,7 @@ namespace engine
 
     protected:
       std::vector<Command> m_commands;
+      std::vector<Light> m_lights;
       Camera m_camera;
     };
   }

@@ -35,6 +35,11 @@ namespace engine
       });
     }
 
+    void BaseRenderer::Add(const Light & _light)
+    {
+      m_lights.push_back(_light);
+    }
+
     void BaseRenderer::End()
     { }
 

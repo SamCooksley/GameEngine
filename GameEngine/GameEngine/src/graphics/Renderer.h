@@ -6,6 +6,8 @@
 #include "Mesh.h"
 #include "Material.h"
 
+#include "Graphics_Light.h"
+
 namespace engine
 {
   namespace graphics
@@ -30,6 +32,8 @@ namespace engine
         std::weak_ptr<Material> _material, 
         const glm::mat4 & _transform
       );
+
+      virtual void Add(const Light & _light);
 
       virtual void Render() = 0;
 

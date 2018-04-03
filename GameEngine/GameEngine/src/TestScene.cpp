@@ -6,7 +6,7 @@
 
 #include "MeshRenderer.h"
 #include "CameraMovement.h"
-
+#include "Light.h"
 #include "Resources.h"
 
 namespace engine
@@ -33,5 +33,14 @@ namespace engine
     mr->setMesh(mesh);
 
     go->getComponent<Transform>()->setPosition(glm::vec3(0, 0, -5));
+
+    go = GameObject::Instantiate();
+
+    auto light = go->AddComponent<Light>();
+    light->setColour(glm::vec3(.0f, .1f, .0f));
+    light->setPoint(0, 0);
+
+    go->getComponent<Transform>()->setPosition(glm::vec3(5, 0, -10));
+    go->getComponent<Transform>()->setRotation(glm::quat(glm::vec3(-45.f, 0.f, 45.f)));
   }
 }

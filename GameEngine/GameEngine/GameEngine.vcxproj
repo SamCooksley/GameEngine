@@ -52,6 +52,7 @@
     <ClCompile Include="src\graphics\Window.cpp" />
     <ClCompile Include="src\Input.cpp" />
     <ClCompile Include="src\KeyCode.cpp" />
+    <ClCompile Include="src\Light.cpp" />
     <ClCompile Include="src\Main.cpp" />
     <ClCompile Include="src\MeshRenderer.cpp" />
     <ClCompile Include="src\Resources.cpp" />
@@ -89,6 +90,7 @@
     <ClInclude Include="src\graphics\DefaultRenderer.h" />
     <ClInclude Include="src\graphics\DrawType.h" />
     <ClInclude Include="src\graphics\Graphics.h" />
+    <ClInclude Include="src\graphics\Graphics_Light.h" />
     <ClInclude Include="src\graphics\IndexBuffer.h" />
     <ClInclude Include="src\graphics\Material.h" />
     <ClInclude Include="src\graphics\Mesh.h" />
@@ -107,6 +109,7 @@
     <ClInclude Include="src\graphics\Window.h" />
     <ClInclude Include="src\Input.h" />
     <ClInclude Include="src\KeyCode.h" />
+    <ClInclude Include="src\Light.h" />
     <ClInclude Include="src\MeshRenderer.h" />
     <ClInclude Include="src\Resources.h" />
     <ClInclude Include="src\Scene.h" />

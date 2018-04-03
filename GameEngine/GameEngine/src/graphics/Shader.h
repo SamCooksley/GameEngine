@@ -19,6 +19,8 @@ namespace engine
     {
       friend class Mesh;
       friend class Material;
+      friend class DefaultRenderer;
+
     public:
       static const std::string PROJECTION_NAME;
       static const std::string VIEW_NAME;

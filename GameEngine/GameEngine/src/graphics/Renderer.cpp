@@ -24,5 +24,8 @@ namespace engine
       const glm::mat4 & _transform
     )
     { }
+
+    void Renderer::Add(const Light & _light)
+    { }
   }
 }

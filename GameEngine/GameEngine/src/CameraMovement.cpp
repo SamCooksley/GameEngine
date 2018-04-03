@@ -19,12 +19,10 @@ namespace engine
   {
     m_prevMouse = Input::getMousePosition();
 
-    m_moveSpeed = 1.f;
-    m_rotationSpeed = .01f;
+    m_moveSpeed = 0.1f;
+    m_rotationSpeed = .005f;
 
     m_yaw = m_pitch = 0.f;
-
-    Input::setCursorMode(CursorMode::FIXED);
   }
 
   void CameraMovement::OnUpdate()

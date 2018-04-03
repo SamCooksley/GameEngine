@@ -43,8 +43,7 @@ namespace engine
 
       for (size_t i = 0; i < m_textures.size(); ++i)
       {
-        m_shader->m_textures[i].location = m_shader->getUniformLocation(m_shader->m_textures[i].name);
-        m_shader->setUniform(m_shader->m_textures[i].location, (int)m_shader->m_textures[i].textureUnit);
+        m_shader->setUniform(m_shader->m_textures[i].location, static_cast<int>(m_shader->m_textures[i].textureUnit));
         if (m_textures[i])
         {
           m_textures[i]->Bind(i);
@@ -54,6 +53,14 @@ namespace engine
 
     void Material::Unbind() const
     {
+      for (size_t i = 0; i < m_textures.size(); ++i)
+      {
+        if (m_textures[i])
+        {
+          m_textures[i]->Unbind(i);
+        }
+      }
+
       m_shader->Unbind();
     }
 

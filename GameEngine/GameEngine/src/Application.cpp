@@ -37,6 +37,8 @@ namespace engine
     s_context->maxUpdatesPerFrame = 5;
     s_context->totalDeltaTime = 0.f;
     s_context->deltaTime = 0.f;
+
+    Input::Init();
     
 
     GLenum error = glewInit();
@@ -53,7 +55,7 @@ namespace engine
 
     s_context->graphics.vao = std::make_unique<graphics::VertexArray>();
 
-    s_context->graphics.renderer = std::make_unique<graphics::DefaultRenderer>();
+    s_context->graphics.defaultRenderer = std::make_shared<graphics::DefaultRenderer>();
     
     s_context->graphics.errorShader = Resources::Load<graphics::Shader>("resources/shaders/error.shader");
     
@@ -147,18 +149,18 @@ namespace engine
         continue;
       }
 
-      auto cameraData = camera->getCamera();
+      camera->SetupRender();
 
-      s_context->graphics.renderer->Start(cameraData);
+      camera->m_renderer->Start(camera->getCamera());
 
       if (s_context->scene)
       {
-        s_context->scene->Render(*s_context->graphics.renderer);
+        s_context->scene->Render(*camera->m_renderer);
       }
 
-      s_context->graphics.renderer->End();
+      camera->m_renderer->End();
 
-      s_context->graphics.renderer->Render();
+      camera->m_renderer->Render();
     }
 
     s_context->window->Present();

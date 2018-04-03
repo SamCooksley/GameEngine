@@ -9,13 +9,13 @@
 
 namespace engine { namespace graphics {
 
-  Window::Window(const std::string & _title, int _width, int _height)
+  Window::Window(const std::string & _title, uint _width, uint _height)
   {
     m_window = glfwCreateWindow(_width, _height, _title.c_str(), nullptr, nullptr);
 
     if (m_window == nullptr)
     {
-      throw std::runtime_error("Failed to create window.");
+      throw std::runtime_error("Window Error: failed to create window.");
     }
 
     MakeCurrent();
@@ -52,7 +52,7 @@ namespace engine { namespace graphics {
     glfwSwapBuffers(m_window);
   }
 
-  void Window::Resize(int _width, int _height)
+  void Window::Resize(uint _width, uint _height)
   {
     glfwSetWindowSize(m_window, _width, _height);
     m_width = _width;

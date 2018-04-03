@@ -6,6 +6,8 @@
 
 #include "graphics\Graphics.h"
 
+#include "Screen.h"
+
 namespace engine
 {
   Camera::Camera()
@@ -19,6 +21,11 @@ namespace engine
     Component::OnAwake();
 
     setPerspective(60.f, 1.f, .01f, 100.f);
+
+    if (!m_renderer)
+    {
+      m_renderer = Graphics::getDefaultRenderer();
+    }
 
     Graphics::AddCamera(Camera::getShared());
   }
@@ -137,5 +144,15 @@ namespace engine
         break;
       }
     }
+  }
+
+  void Camera::SetupRender()
+  {
+    uint width, height;
+    width = Screen::getWidth();
+    height = Screen::getHeight();
+
+    setAspect(static_cast<float>(width) / static_cast<float>(height));
+    GLCALL(glViewport(0, 0, width, height));
   }
 }

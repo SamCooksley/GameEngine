@@ -170,6 +170,13 @@ namespace engine
     s_buttonsUp.clear();
   }
 
+  void Input::Init()
+  {
+    double x, y;
+    glfwGetCursorPos(Application::s_context->window->m_window, &x, &y);
+    s_mousePosition = glm::vec2(x, y);
+  }
+
   void Input::setCursorMode(CursorMode _mode)
   {
     switch (_mode)

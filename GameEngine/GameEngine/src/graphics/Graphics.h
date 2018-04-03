@@ -21,7 +21,7 @@ namespace engine
 
       std::shared_ptr<Material> defaultMaterial;
 
-      std::unique_ptr<BaseRenderer> renderer;
+      std::shared_ptr<BaseRenderer> defaultRenderer;
 
       std::unique_ptr<VertexArray> vao;
 
@@ -43,6 +43,8 @@ namespace engine
 
   private:
     static std::shared_ptr<graphics::Shader> getErrorShader();
+
+    static std::shared_ptr<graphics::BaseRenderer> getDefaultRenderer();
 
     static void AddCamera(std::shared_ptr<Camera> _camera);
     static void RemoveCamera(std::shared_ptr<Camera> _camera);

@@ -5,6 +5,10 @@
 
 #include "graphics\Graphics_Camera.h"
 
+#include "graphics\BaseRenderer.h"
+
+#include "Scene.h"
+
 namespace engine
 {
   enum class CameraType
@@ -15,6 +19,8 @@ namespace engine
 
   class Camera : public Component
   {
+    friend class Application;
+
   public:
     Camera();
     ~Camera();
@@ -43,6 +49,8 @@ namespace engine
   private:
     void UpdateProjection();
 
+    void SetupRender();
+
     CameraType m_type;
 
     union
@@ -57,6 +65,8 @@ namespace engine
     float m_far;
 
     glm::mat4 m_projection;
+
+    std::shared_ptr<graphics::BaseRenderer> m_renderer;
 
     ENGINE_SETUPSHARED(Camera);
   };

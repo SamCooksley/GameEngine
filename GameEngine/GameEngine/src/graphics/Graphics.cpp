@@ -16,6 +16,11 @@ namespace engine
     return Application::s_context->graphics.errorShader;
   }
 
+  std::shared_ptr<graphics::BaseRenderer> Graphics::getDefaultRenderer()
+  {
+    return Application::s_context->graphics.defaultRenderer;
+  }
+
   void Graphics::AddCamera(std::shared_ptr<Camera> _camera)
   {
     if (!_camera) { return; }

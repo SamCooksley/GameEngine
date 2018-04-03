@@ -59,6 +59,8 @@ namespace engine
 
     static void Reset();
 
+    static void Init();
+
     static KeyList s_keys;
     static KeyList s_keysDown;
     static KeyList s_keysUp;

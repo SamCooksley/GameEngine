@@ -13,7 +13,7 @@ namespace engine
     friend class graphics::Window;
     friend class GameObject;
     friend class Scene;
-
+    friend class Screen;
     friend class Graphics;
 
   public:

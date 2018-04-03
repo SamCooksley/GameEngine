@@ -56,6 +56,7 @@
     <ClCompile Include="src\MeshRenderer.cpp" />
     <ClCompile Include="src\Resources.cpp" />
     <ClCompile Include="src\Scene.cpp" />
+    <ClCompile Include="src\Screen.cpp" />
     <ClCompile Include="src\stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
@@ -109,6 +110,7 @@
     <ClInclude Include="src\MeshRenderer.h" />
     <ClInclude Include="src\Resources.h" />
     <ClInclude Include="src\Scene.h" />
+    <ClInclude Include="src\Screen.h" />
     <ClInclude Include="src\stdafx.h" />
     <ClInclude Include="src\TestScene.h" />
     <ClInclude Include="src\Transform.h" />

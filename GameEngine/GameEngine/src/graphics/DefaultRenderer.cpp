@@ -60,6 +60,11 @@ namespace engine
         mesh->Render(*shader);
         material->Unbind();
       }
+
+      if (m_skybox)
+      {
+        m_skybox->Render(m_camera);
+      }
     }
   }
 }

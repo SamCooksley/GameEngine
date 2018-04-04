@@ -3,6 +3,8 @@
 
 #include "Renderer.h"
 
+#include "Skybox.h"
+
 namespace engine
 {
   namespace graphics
@@ -33,6 +35,8 @@ namespace engine
 
       virtual void Reset();
 
+      virtual void setSkybox(std::shared_ptr<Skybox> _skybox);
+
     protected:
       BaseRenderer(RenderFlags::Type _flags);
 
@@ -40,6 +44,8 @@ namespace engine
       std::vector<Command> m_commands;
       std::vector<Light> m_lights;
       Camera m_camera;
+
+      std::shared_ptr<Skybox> m_skybox;
     };
   }
 }

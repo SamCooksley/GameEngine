@@ -225,12 +225,17 @@ namespace engine
               glm::vec3 v, n; glm::vec2 u;
 
               v = vertexData[index.position - 1];
-              if (index.uv > 0)     { u = uvData[index.uv - 1];         }
-              if (index.normal > 0) { n = normalData[index.normal - 1]; }
-
               m_vertices.push_back(v);
-              m_uvs.push_back(u);
-              m_normals.push_back(n);
+              if (index.uv > 0)  
+              {
+                u = uvData[index.uv - 1];  
+                m_uvs.push_back(u);
+              }
+              if (index.normal > 0) 
+              {
+                n = normalData[index.normal - 1];
+                m_normals.push_back(n);
+              }
             }
             else
             {

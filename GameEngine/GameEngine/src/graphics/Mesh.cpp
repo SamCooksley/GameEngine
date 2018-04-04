@@ -103,7 +103,7 @@ namespace engine
     {
       if (!m_vbo || !m_indices)
       {
-        debug::LogError("Mesh does not exist");
+        debug::LogError("Mesh " + getName() + " does not exist.");
         return;
       }
 

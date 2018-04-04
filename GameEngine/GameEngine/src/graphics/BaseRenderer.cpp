@@ -47,5 +47,10 @@ namespace engine
     {
       m_commands.clear();
     }
+
+    void BaseRenderer::setSkybox(std::shared_ptr<Skybox> _skybox)
+    {
+      m_skybox = std::move(_skybox);
+    }
   }
 }

@@ -10,6 +10,7 @@
 #include "graphics\DefaultRenderer.h"
 
 #include "graphics\Texture2D.h"
+#include "graphics\TextureCube.h"
 
 #include "Resources.h"
 
@@ -67,6 +68,22 @@ namespace engine
 
     texture = Resources::Load<graphics::Texture2D>("resources/textures/normal.png");
     s_context->graphics.defaultMaterial->setTexture("normal", texture);
+    
+    auto skyboxShader = Resources::Load<graphics::Shader>("resources/shaders/skybox.shader");
+    auto skyboxMaterial = graphics::Material::Create(skyboxShader);
+
+    std::array<std::string, 6> skyboxTexturePaths;
+    for (size_t i = 0; i < 6; ++i)
+    {
+      skyboxTexturePaths[i] = "resources/textures/skybox/skybox" + std::to_string(i + 1) + ".jpg";
+    }
+
+    auto skyboxCube = graphics::TextureCube::Load(skyboxTexturePaths);
+    skyboxMaterial->setTexture("cubemap", skyboxCube);
+
+    auto inverseCube = Resources::Load<graphics::Mesh>("resources/models/skybox.obj");
+    auto skybox = std::make_shared<graphics::Skybox>(skyboxMaterial, inverseCube);
+    s_context->graphics.defaultRenderer->setSkybox(skybox);
   }
 
   void Application::Loop()

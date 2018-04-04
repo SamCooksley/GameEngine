@@ -7,10 +7,6 @@ layout (location = 2) in vec3 in_normal;
 layout (location = 3) in vec3 in_tangent;
 layout (location = 4) in vec3 in_bitangent;
 
-uniform mat4 model;
-uniform mat4 view;
-uniform mat4 projection;
-
 out VS_OUT
 {
 	vec3 position_world;
@@ -18,6 +14,10 @@ out VS_OUT
 	mat3 tbn;
 	vec3 normal;
 } vs_out;
+
+uniform mat4 model;
+uniform mat4 view;
+uniform mat4 projection;
 
 void main()
 {

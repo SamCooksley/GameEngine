@@ -3,6 +3,7 @@
 #include "Mesh.h"
 
 #include "utilities\WavefrontParser.h"
+#include "utilities\MeshProcessor.h"
 
 namespace engine
 {
@@ -17,6 +18,7 @@ namespace engine
       try
       {
         file::WavefrontParser parser(_path);
+        utilities::MeshProcessor processor;
         mesh = std::make_shared<enable_mesh>();
         mesh->setName(parser.getName());
 
@@ -33,6 +35,22 @@ namespace engine
         {
           auto normals = parser.getNormals();
           mesh->setNormals(&normals[0], normals.size());
+        }
+
+        if (parser.HasUVs() && parser.HasNormals())
+        {
+          std::vector<glm::vec3> tangents, bitangents;
+          processor.CalculateTangents(
+            parser.getIndices(),
+            parser.getVertices(),
+            parser.getUVs(),
+            parser.getNormals(),
+            &tangents,
+            &bitangents
+          );
+
+          mesh->setAttribute(Shader::ATTR_TANGENT_NAME, &tangents[0], tangents.size());
+          mesh->setAttribute(Shader::ATTR_BITANGENT_NAME, &bitangents[0], bitangents.size());
         }
 
         if (parser.CanUseIndex8())

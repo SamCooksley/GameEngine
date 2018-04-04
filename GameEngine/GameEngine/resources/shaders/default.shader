@@ -4,6 +4,8 @@
 layout (location = 0) in vec4 in_position;
 layout (location = 1) in vec2 in_texCoords;
 layout (location = 2) in vec3 in_normal;
+layout (location = 3) in vec3 in_tangent;
+layout (location = 4) in vec3 in_bitangent;
 
 uniform mat4 model;
 uniform mat4 view;
@@ -13,6 +15,7 @@ out VS_OUT
 {
 	vec3 position_world;
 	vec2 texCoords;
+	mat3 tbn;
 	vec3 normal;
 } vs_out;
 
@@ -24,8 +27,14 @@ void main()
 	vs_out.texCoords = in_texCoords;
 	
 	mat3 m3 = mat3(transpose(inverse(model)));
+
+	vec3 t = normalize(m3 * in_tangent);
+	vec3 b = normalize(m3 * in_bitangent);
+	vec3 n = normalize(m3 * in_normal);
 	
-	vs_out.normal = normalize(m3 * in_normal);
+	vs_out.tbn = mat3(t, b, n);
+
+	vs_out.normal = n;
 }
 
 #shader fragment
@@ -35,14 +44,16 @@ in VS_OUT
 {
 	vec3 position_world;
 	vec2 texCoords;
+	mat3 tbn;
 	vec3 normal;
 } fs_in;
 
 layout (location = 0) out vec4 out_frag;
 
 uniform sampler2D diffuse;
-uniform float specular = 1;
-uniform float shininess = 1;
+uniform sampler2D normal;
+uniform float specular = 0.5;
+uniform float shininess = 2;
 
 uniform vec3 view_position_world;
 
@@ -95,7 +106,10 @@ void main()
 
 	Surface surf;
 	surf.position = fs_in.position_world;
-	surf.normal = fs_in.normal;
+
+	surf.normal = texture(normal, fs_in.texCoords).rgb;
+	surf.normal = normalize(surf.normal * 2.0 - 1.0);
+	surf.normal = normalize(fs_in.tbn * surf.normal);
 
 	surf.colour = texture(diffuse, fs_in.texCoords).rgb;
 	surf.specular = specular;

@@ -39,7 +39,7 @@ namespace engine
     std::shared_ptr<Texture2D> Texture2D::Load(const std::string & _path, bool _mipmaps)
     {
       file::ImageData image;
-      if (!file::LoadImagePowerOf2(_path, &image))
+      if (!file::LoadImagePowerOf2(_path, &image, false))
       {
         throw std::runtime_error("Texture2D Error: failed to load file: " + _path);
       }

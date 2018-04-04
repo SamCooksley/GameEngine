@@ -66,6 +66,7 @@
     <ClCompile Include="src\Transform.cpp" />
     <ClCompile Include="src\utilities\File.cpp" />
     <ClCompile Include="src\utilities\Image.cpp" />
+    <ClCompile Include="src\utilities\MeshProcessor.cpp" />
     <ClCompile Include="src\utilities\ShaderParser.cpp" />
     <ClCompile Include="src\utilities\System.cpp" />
     <ClCompile Include="src\utilities\Timer.cpp" />
@@ -119,6 +120,7 @@
     <ClInclude Include="src\Transform.h" />
     <ClInclude Include="src\utilities\File.h" />
     <ClInclude Include="src\utilities\Image.h" />
+    <ClInclude Include="src\utilities\MeshProcessor.h" />
     <ClInclude Include="src\utilities\ShaderParser.h" />
     <ClInclude Include="src\utilities\System.h" />
     <ClInclude Include="src\utilities\Timer.h" />

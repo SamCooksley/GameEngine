@@ -64,6 +64,9 @@ namespace engine
    
     auto texture = Resources::Load<graphics::Texture2D>("resources/textures/diffuse.png");
     s_context->graphics.defaultMaterial->setTexture("diffuse", texture);
+
+    texture = Resources::Load<graphics::Texture2D>("resources/textures/normal.png");
+    s_context->graphics.defaultMaterial->setTexture("normal", texture);
   }
 
   void Application::Loop()

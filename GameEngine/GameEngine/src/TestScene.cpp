@@ -37,7 +37,7 @@ namespace engine
     go = GameObject::Instantiate();
 
     auto light = go->AddComponent<Light>();
-    light->setColour(glm::vec3(.05f, .1f, .05f));
+    light->setColour(glm::vec3(.1f, .1f, .1f));
     light->setPoint(0, 0);
     //light->setDirectional();
 

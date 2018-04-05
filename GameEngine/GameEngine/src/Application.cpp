@@ -63,11 +63,19 @@ namespace engine
     auto defaultShader = Resources::Load<graphics::Shader>("resources/shaders/default.shader");
     s_context->graphics.defaultMaterial = graphics::Material::Create(defaultShader);
    
-    auto texture = Resources::Load<graphics::Texture2D>("resources/textures/diffuse.png");
+    auto texture = Resources::Load<graphics::Texture2D>("resources/textures/stone_wall/diffuse.jpg");
     s_context->graphics.defaultMaterial->setTexture("diffuse", texture);
 
-    texture = Resources::Load<graphics::Texture2D>("resources/textures/normal.png");
+    texture = Resources::Load<graphics::Texture2D>("resources/textures/stone_wall/normal.jpg");
     s_context->graphics.defaultMaterial->setTexture("normal", texture);
+
+    texture = Resources::Load<graphics::Texture2D>("resources/textures/stone_wall/roughness.jpg");
+    s_context->graphics.defaultMaterial->setTexture("specular", texture);
+
+    texture = Resources::Load<graphics::Texture2D>("resources/textures/stone_wall/displacement.png");
+    s_context->graphics.defaultMaterial->setTexture("displacement", texture);
+
+    s_context->graphics.defaultMaterial->setUniform("displacementScale", 0.025f);
     
     auto skyboxShader = Resources::Load<graphics::Shader>("resources/shaders/skybox.shader");
     auto skyboxMaterial = graphics::Material::Create(skyboxShader);

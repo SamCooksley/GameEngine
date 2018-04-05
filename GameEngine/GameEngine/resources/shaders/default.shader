@@ -12,12 +12,16 @@ out VS_OUT
 	vec3 position_world;
 	vec2 texCoords;
 	mat3 tbn;
-	vec3 normal;
+
+	vec3 position_tan;
+	vec3 view_position_tan;
 } vs_out;
 
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
+
+uniform vec3 view_position_world;
 
 void main()
 {
@@ -34,7 +38,10 @@ void main()
 	
 	vs_out.tbn = mat3(t, b, n);
 
-	vs_out.normal = n;
+	mat3 tbn = transpose(vs_out.tbn);
+
+	vs_out.position_tan      = tbn * vs_out.position_world;
+	vs_out.view_position_tan = tbn * view_position_world;
 }
 
 #shader fragment
@@ -45,148 +52,53 @@ in VS_OUT
 	vec3 position_world;
 	vec2 texCoords;
 	mat3 tbn;
-	vec3 normal;
+
+	vec3 position_tan;
+	vec3 view_position_tan;
 } fs_in;
 
 layout (location = 0) out vec4 out_frag;
 
+#include "lighting.shader"
+#include "parallax.shader"
+
 uniform sampler2D diffuse;
 uniform sampler2D normal;
-uniform float specular = 0.5;
+uniform sampler2D specular;
 uniform float shininess = 2;
 
+uniform sampler2D displacement;
+uniform float displacementScale = 0.1;
+
 uniform vec3 view_position_world;
-
-struct Surface
-{
-	vec3 colour;
-	float specular;
-	float shininess;
-	
-	vec3 normal;
-	vec3 position;
-};
-
-const int MAX_LIGHTS = 10;
-
-const int LIGHT_NONE = -1;
-const int LIGHT_DIRECTIONAL = 0;
-const int LIGHT_POINT = 1;
-const int LIGHT_SPOT = 2;
-
-struct Light
-{
-	int type;
-	
-	float linear;
-	float quadratic;
-	
-	float cutoff;
-	float outerCutoff;
-	
-	vec3 position;
-	vec3 direction;
-	vec3 colour;
-};
 
 uniform Light lights[MAX_LIGHTS];
 uniform vec3 ambient = vec3(0.1);
 
-vec3 CalculateLight(const Light _light, const Surface _surface, const vec3 _viewDir);
-
-vec3 CalculateDirectionalLight(const Light _light, const Surface _surface, const vec3 _viewDir);
-vec3 CalculatePointLight(const Light _light, const Surface _surface, const vec3 _viewDir);
-vec3 CalculateSpotLight(const Light _light, const Surface _surface, const vec3 _viewDir);
-
-float CalculateAttenuation(const Light _light, const vec3 _position);
-
 void main()
 {
-	vec3 viewDir = normalize(view_position_world - fs_in.position_world);
+	vec3 viewDir_world = normalize(view_position_world - fs_in.position_world);
+
+	vec3 viewDir_tan = normalize(fs_in.view_position_tan - fs_in.position_tan);
+	vec2 texCoords = ParallaxMapping(fs_in.texCoords, viewDir_tan, displacementScale, displacement);
 
 	Surface surf;
 	surf.position = fs_in.position_world;
 
-	surf.normal = texture(normal, fs_in.texCoords).rgb;
+	surf.normal = texture(normal, texCoords).rgb;
 	surf.normal = normalize(surf.normal * 2.0 - 1.0);
 	surf.normal = normalize(fs_in.tbn * surf.normal);
 
-	surf.colour = texture(diffuse, fs_in.texCoords).rgb;
-	surf.specular = specular;
+	surf.colour = texture(diffuse, texCoords).rgb;
+	surf.specular = texture(specular, texCoords).r;
 	surf.shininess = shininess;
 
 	vec3 total = ambient * surf.colour;
 
 	for (int i = 0; i < MAX_LIGHTS; ++i)
 	{
-		total += CalculateLight(lights[i], surf, viewDir);
+		total += CalculateLight(lights[i], surf, viewDir_world);
 	}
 
 	out_frag = vec4(total, 1.0);
-}
-
-vec3 CalculateLight(const Light _light, const Surface _surface, const vec3 _viewDir)
-{
-	vec3 light = vec3(0);
-	if (_light.type == LIGHT_DIRECTIONAL)
-    {
-      light = CalculateDirectionalLight(_light, _surface, _viewDir);
-    }
-    else if (_light.type == LIGHT_POINT)
-    {
-      light = CalculatePointLight(_light, _surface, _viewDir);
-    }
-    else if (_light.type == LIGHT_SPOT)
-    {
-      light = CalculateSpotLight(_light, _surface, _viewDir);
-    }
-	return light;
-}
-
-vec3 CalculateDirectionalLight(const Light _light, const Surface _surface, const vec3 _viewDir)
-{
-	vec3 lightDir = normalize(_light.direction.xyz);
-	float diffuseProduct = max(dot(_surface.normal, lightDir), 0.0);
-	vec3 diffuse = diffuseProduct * (_light.colour.rgb * _surface.colour);
-
-	vec3 halfDir = normalize(lightDir + _viewDir);
-	vec3 specular = max(diffuseProduct, 0.0) * pow(max(dot(_surface.normal, halfDir), 0.0), _surface.shininess) * (_light.colour.rgb * _surface.specular);
-
-	return diffuse + specular;
-}
-
-vec3 CalculatePointLight(const Light _light, const Surface _surface, const vec3 _viewDir)
-{
-	vec3 lightDir = normalize(_light.position.xyz - _surface.position);
-
-	float diffuseProduct = max(dot(_surface.normal, lightDir), 0.0);
-	vec3 diffuse = diffuseProduct * (_light.colour.rgb * _surface.colour);
-
-	vec3 halfDir = normalize(lightDir + _viewDir);
-	vec3 specular = max(diffuseProduct, 0.0) * pow(max(dot(_surface.normal, halfDir), 0.0), _surface.shininess) * (_light.colour.rgb * _surface.specular);
-
-	return (diffuse + specular) * CalculateAttenuation(_light, _surface.position);
-}
-
-vec3 CalculateSpotLight(const Light _light, const Surface _surface, const vec3 _viewDir)
-{
-	vec3 lightDir = normalize(_light.position.xyz - _surface.position);
-
-	float diffuseProduct = max(dot(_surface.normal, lightDir), 0.0);
-	vec3 diffuse = diffuseProduct * (_light.colour.rgb * _surface.colour);
-
-	vec3 halfDir = normalize(lightDir + _viewDir);
-	vec3 specular = pow(max(dot(_surface.normal, halfDir), 0.0), _surface.shininess) * (_light.colour.rgb * _surface.specular);
-
-	float theta = dot(lightDir, normalize(_light.direction.xyz));
-	float epsilon = _light.cutoff - _light.outerCutoff;
-	float intensity = clamp((theta - _light.outerCutoff) / epsilon, 0.0, 1.0);
-
-	return (diffuse + specular) * CalculateAttenuation(_light, _surface.position) * intensity;
-}
-
-float CalculateAttenuation(const Light _light, const vec3 _position)
-{
-	float dist = length(_light.position.xyz - _position);
-	return 1.0 / (1.0 + _light.linear * dist + _light.quadratic * dist * dist);
 }

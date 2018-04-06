@@ -17,17 +17,15 @@ out VS_OUT
 	vec3 view_position_tan;
 } vs_out;
 
-uniform mat4 model;
-uniform mat4 view;
-uniform mat4 projection;
+#include "camera.shader"
 
-uniform vec3 view_position_world;
+uniform mat4 model;
 
 void main()
 {
 	vec4 world = model * in_position;
 	vs_out.position_world = world.xyz;
-	gl_Position = projection * view * world;
+	gl_Position = camera.vp * world;
 	vs_out.texCoords = in_texCoords;
 	
 	mat3 m3 = mat3(transpose(inverse(model)));
@@ -41,7 +39,7 @@ void main()
 	mat3 tbn = transpose(vs_out.tbn);
 
 	vs_out.position_tan      = tbn * vs_out.position_world;
-	vs_out.view_position_tan = tbn * view_position_world;
+	vs_out.view_position_tan = tbn * camera.position_world;
 }
 
 #shader fragment
@@ -59,8 +57,10 @@ in VS_OUT
 
 layout (location = 0) out vec4 out_frag;
 
-#include "lighting.shader"
+#include "lights.shader"
 #include "parallax.shader"
+
+#include "camera.shader"
 
 uniform sampler2D diffuse;
 uniform sampler2D normal;
@@ -70,14 +70,9 @@ uniform float shininess = 2;
 uniform sampler2D displacement;
 uniform float displacementScale = 0.1;
 
-uniform vec3 view_position_world;
-
-uniform Light lights[MAX_LIGHTS];
-uniform vec3 ambient = vec3(0.1);
-
 void main()
 {
-	vec3 viewDir_world = normalize(view_position_world - fs_in.position_world);
+	vec3 viewDir_world = normalize(camera.position_world - fs_in.position_world);
 
 	vec3 viewDir_tan = normalize(fs_in.view_position_tan - fs_in.position_tan);
 	vec2 texCoords = ParallaxMapping(fs_in.texCoords, viewDir_tan, displacementScale, displacement);
@@ -86,18 +81,21 @@ void main()
 	surf.position = fs_in.position_world;
 
 	surf.normal = texture(normal, texCoords).rgb;
-	surf.normal = normalize(surf.normal * 2.0 - 1.0);
+	surf.normal.y = 1.0 - surf.normal.y;
+	surf.normal = surf.normal * 2.0 - 1.0;
 	surf.normal = normalize(fs_in.tbn * surf.normal);
+	//out_frag = vec4(surf.normal, 1.0);
+	//return;
 
 	surf.colour = texture(diffuse, texCoords).rgb;
 	surf.specular = texture(specular, texCoords).r;
 	surf.shininess = shininess;
 
-	vec3 total = ambient * surf.colour;
+	vec3 total = lights.ambient * surf.colour;
 
 	for (int i = 0; i < MAX_LIGHTS; ++i)
 	{
-		total += CalculateLight(lights[i], surf, viewDir_world);
+		total += CalculateLight(lights.light[i], surf, viewDir_world);
 	}
 
 	out_frag = vec4(total, 1.0);

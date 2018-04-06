@@ -31,11 +31,13 @@
     <ClCompile Include="src\Engine_Time.cpp" />
     <ClCompile Include="src\GameObject.cpp" />
     <ClCompile Include="src\graphics\BaseRenderer.cpp" />
+    <ClCompile Include="src\graphics\CameraBuffer.cpp" />
     <ClCompile Include="src\graphics\Graphics_Camera.cpp" />
     <ClCompile Include="src\graphics\DefaultRenderer.cpp" />
     <ClCompile Include="src\graphics\DrawType.cpp" />
     <ClCompile Include="src\graphics\Graphics.cpp" />
     <ClCompile Include="src\graphics\IndexBuffer.cpp" />
+    <ClCompile Include="src\graphics\LightBuffer.cpp" />
     <ClCompile Include="src\graphics\Material.cpp" />
     <ClCompile Include="src\graphics\Mesh.cpp" />
     <ClCompile Include="src\graphics\opengl.cpp" />
@@ -48,6 +50,8 @@
     <ClCompile Include="src\graphics\Texture2D.cpp" />
     <ClCompile Include="src\graphics\TextureCube.cpp" />
     <ClCompile Include="src\graphics\TextureTypes.cpp" />
+    <ClCompile Include="src\graphics\UniformBuffer.cpp" />
+    <ClCompile Include="src\graphics\UniformBuffers.cpp" />
     <ClCompile Include="src\graphics\VertexArray.cpp" />
     <ClCompile Include="src\graphics\VertexBuffer.cpp" />
     <ClCompile Include="src\graphics\Window.cpp" />
@@ -81,6 +85,7 @@
     <ClInclude Include="src\core\Context.h" />
     <ClInclude Include="src\core\Core.h" />
     <ClInclude Include="src\core\glfw.h" />
+    <ClInclude Include="src\core\NonCopyable.h" />
     <ClInclude Include="src\core\Object.h" />
     <ClInclude Include="src\core\String.h" />
     <ClInclude Include="src\core\Types.h" />
@@ -88,12 +93,14 @@
     <ClInclude Include="src\Engine_Time.h" />
     <ClInclude Include="src\GameObject.h" />
     <ClInclude Include="src\graphics\BaseRenderer.h" />
+    <ClInclude Include="src\graphics\CameraBuffer.h" />
     <ClInclude Include="src\graphics\Graphics_Camera.h" />
     <ClInclude Include="src\graphics\DefaultRenderer.h" />
     <ClInclude Include="src\graphics\DrawType.h" />
     <ClInclude Include="src\graphics\Graphics.h" />
     <ClInclude Include="src\graphics\Graphics_Light.h" />
     <ClInclude Include="src\graphics\IndexBuffer.h" />
+    <ClInclude Include="src\graphics\LightBuffer.h" />
     <ClInclude Include="src\graphics\Material.h" />
     <ClInclude Include="src\graphics\Mesh.h" />
     <ClInclude Include="src\graphics\opengl.h" />
@@ -107,6 +114,8 @@
     <ClInclude Include="src\graphics\TextureCube.h" />
     <ClInclude Include="src\graphics\TextureTypes.h" />
     <ClInclude Include="src\graphics\TypeData.h" />
+    <ClInclude Include="src\graphics\UniformBuffer.h" />
+    <ClInclude Include="src\graphics\UniformBuffers.h" />
     <ClInclude Include="src\graphics\VertexArray.h" />
     <ClInclude Include="src\graphics\VertexBuffer.h" />
     <ClInclude Include="src\graphics\Window.h" />

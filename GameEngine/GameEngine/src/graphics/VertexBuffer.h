@@ -8,7 +8,7 @@ namespace engine
 {
   namespace graphics
   {
-    class VertexBuffer
+    class VertexBuffer : public NonCopyable
     {
     public:
       VertexBuffer();

@@ -7,7 +7,7 @@ namespace engine
 {
   namespace graphics
   {
-    class VertexArray
+    class VertexArray : public NonCopyable
     {
     public:
       VertexArray();

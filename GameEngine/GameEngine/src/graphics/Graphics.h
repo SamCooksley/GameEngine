@@ -10,6 +10,8 @@
 
 #include "Camera.h"
 
+#include "UniformBuffers.h"
+
 namespace engine
 {
   namespace graphics
@@ -17,6 +19,8 @@ namespace engine
     struct Context
     {
     public:
+      UniformBuffers uniformBuffers;
+
       std::shared_ptr<Shader> errorShader;
 
       std::shared_ptr<Material> defaultMaterial;
@@ -39,6 +43,9 @@ namespace engine
   public:
     Graphics() = delete;
 
+    static bool HasUniformBuffer(const std::string & _name);
+    static graphics::UniformBuffer & getUniformBuffer(const std::string & _name);
+
     static std::shared_ptr<graphics::Material> getDefaultMaterial();
 
   private:
@@ -48,6 +55,8 @@ namespace engine
 
     static void AddCamera(std::shared_ptr<Camera> _camera);
     static void RemoveCamera(std::shared_ptr<Camera> _camera);
+
+    static graphics::Context & getContext();
   };
 }
 

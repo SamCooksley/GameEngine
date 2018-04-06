@@ -8,6 +8,8 @@
 #include "glm\glm.hpp"
 #include "glm\ext.hpp"
 
+#include "NonCopyable.h"
+
 namespace engine
 {
   using int8  = std::int8_t;

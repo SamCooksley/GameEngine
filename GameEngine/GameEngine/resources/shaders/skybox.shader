@@ -8,12 +8,11 @@ out VS_OUT
     vec3 texCoords;
 } vs_out;
 
-uniform mat4 view;
-uniform mat4 projection;
+#include "camera.shader"
 
 void main()
 {
-    gl_Position = (projection * mat4(mat3(view)) * in_position).xyww;
+    gl_Position = (camera.projection * mat4(mat3(camera.view)) * in_position).xyww;
     vs_out.texCoords = in_position.xyz;
 }
 

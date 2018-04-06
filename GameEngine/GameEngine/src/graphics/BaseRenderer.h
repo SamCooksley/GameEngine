@@ -36,6 +36,7 @@ namespace engine
       virtual void Reset();
 
       virtual void setSkybox(std::shared_ptr<Skybox> _skybox);
+      virtual void setAmbient(const glm::vec3 & _ambient);
 
     protected:
       BaseRenderer(RenderFlags::Type _flags);
@@ -43,6 +44,7 @@ namespace engine
     protected:
       std::vector<Command> m_commands;
       std::vector<Light> m_lights;
+      glm::vec3 m_ambient;
       Camera m_camera;
 
       std::shared_ptr<Skybox> m_skybox;

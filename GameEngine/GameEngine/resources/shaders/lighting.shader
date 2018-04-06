@@ -1,7 +1,5 @@
 #include "surface.shader"
 
-const int MAX_LIGHTS = 10;
-
 const int LIGHT_NONE = -1;
 const int LIGHT_DIRECTIONAL = 0;
 const int LIGHT_POINT = 1;

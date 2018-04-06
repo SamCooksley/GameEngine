@@ -23,7 +23,7 @@ namespace engine
       bool normalized;
     };
 
-    class Mesh : public core::Object
+    class Mesh : public core::Object, public NonCopyable
     {
     public:
       static std::shared_ptr<Mesh> Load(const std::string & _path);

@@ -7,7 +7,7 @@ namespace engine
 {
   namespace graphics
   {
-    class IndexBuffer
+    class IndexBuffer : public NonCopyable
     {
     public:
       IndexBuffer(const uint8 * _data, uint _count);

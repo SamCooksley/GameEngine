@@ -37,6 +37,8 @@ namespace engine
 
     void BaseRenderer::Add(const Light & _light)
     {
+      Renderer::Add(_light);
+
       m_lights.push_back(_light);
     }
 
@@ -46,11 +48,18 @@ namespace engine
     void BaseRenderer::Reset()
     {
       m_commands.clear();
+      m_lights.clear();
     }
 
     void BaseRenderer::setSkybox(std::shared_ptr<Skybox> _skybox)
     {
       m_skybox = std::move(_skybox);
+    }
+
+    void BaseRenderer::setAmbient(const glm::vec3 & _ambient)
+    {
+      m_ambient = _ambient;
+      
     }
   }
 }

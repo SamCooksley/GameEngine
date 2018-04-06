@@ -37,11 +37,12 @@ namespace engine
     go = GameObject::Instantiate();
 
     auto light = go->AddComponent<Light>();
-    light->setColour(glm::vec3(.1f, .1f, .1f));
+    light->setColour(glm::vec3(.3f, .5f, .3f) * 1.f);
     light->setPoint(0, 0);
-    //light->setDirectional();
 
-    go->getComponent<Transform>()->setPosition(glm::vec3(5, 3, -10));
-    go->getComponent<Transform>()->setRotation(glm::quat(glm::vec3(-45.f, 0.f, 45.f)));
+    go->getComponent<Transform>()->setPosition(glm::vec3(2.f, 1.5f, -7.f)).setRotation(glm::quat(glm::vec3(-45.f, 0.f, 45.f))).setLocalScale(glm::vec3(0.1f));
+
+    mr = go->AddComponent<MeshRenderer>();
+    mr->setMesh(mesh);
   }
 }

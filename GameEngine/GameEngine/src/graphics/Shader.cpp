@@ -139,6 +139,16 @@ namespace engine
       m_modelLoc = getUniformLocation(MODEL_NAME);
       m_viewLoc = getUniformLocation(VIEW_NAME);
       m_projectionLoc = getUniformLocation(PROJECTION_NAME);
+
+      auto & buffers = Graphics::getContext().uniformBuffers.m_buffers;
+      for (auto & buffer : buffers)
+      {
+        GLuint index = getUniformBlockIndex(buffer.first);
+        if (index != GL_INVALID_INDEX)
+        {
+          setUniformBlockBinding(index, buffer.second->getBind());
+        }
+      }
     }
 
     void Shader::setModel(const glm::mat4 & _model)
@@ -175,6 +185,17 @@ namespace engine
     {
       GLCALL(GLint loc = glGetAttribLocation(m_program, _name.c_str()));
       return loc;
+    }
+
+    GLuint Shader::getUniformBlockIndex(const std::string & _name) const
+    {
+      GLCALL(GLuint index = glGetUniformBlockIndex(m_program, _name.c_str()));
+      return index;
+    }
+
+    void Shader::setUniformBlockBinding(GLuint _index, GLuint _bind)
+    {
+      GLCALL(glUniformBlockBinding(m_program, _index, _bind));
     }
 
     void Shader::setUniform(GLint _location, int _val)

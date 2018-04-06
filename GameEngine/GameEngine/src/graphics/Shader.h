@@ -15,7 +15,7 @@ namespace engine
   {
     class Material;
 
-    class Shader : public core::Object
+    class Shader : public core::Object, public NonCopyable
     {
       friend class Mesh;
       friend class Material;
@@ -55,6 +55,10 @@ namespace engine
 
       GLint getUniformLocation(const std::string & _name) const;
       GLint getAttributeLocation(const std::string & _name) const;
+
+      GLuint getUniformBlockIndex(const std::string & _name) const;
+
+      void setUniformBlockBinding(GLuint _index, GLuint _bind);
 
       void setUniform(GLint _location, int _val);
       void setUniform(GLint _location, float _val);

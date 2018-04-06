@@ -66,14 +66,14 @@ namespace engine
 
         for (size_t j = 0u; j < 3u; j++)
         {
-          const uint16& index = _indices[i + j];
+          const uint32 & index = _indices[i + j];
 
           (*_outTangents)[index] += tangent;
           (*_outBitangents)[index] += bitangent;
         }
       }
-
-      for (unsigned int i = 0; i < _positions.size(); i++)
+      
+      for (size_t i = 0; i < _positions.size(); i++)
       {
         glm::vec3 & t = (*_outTangents)[i];
         glm::vec3 & b = (*_outBitangents)[i];

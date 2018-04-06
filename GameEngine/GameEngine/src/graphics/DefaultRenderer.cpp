@@ -2,6 +2,10 @@
 
 #include "DefaultRenderer.h"
 
+#include "Graphics.h"
+#include "LightBuffer.h"
+#include "CameraBuffer.h"
+
 namespace engine
 {
   namespace graphics
@@ -15,6 +19,23 @@ namespace engine
 
     void DefaultRenderer::Render()
     {
+      if (Graphics::HasUniformBuffer(CameraBuffer::name))
+      {
+        auto & buffer = Graphics::getUniformBuffer(CameraBuffer::name);
+        CameraBuffer::setCamera(buffer, m_camera);
+      }
+
+      if (Graphics::HasUniformBuffer(LightBuffer::name))
+      {
+        auto & buffer = Graphics::getUniformBuffer(LightBuffer::name);
+        for (size_t i = 0; i < m_lights.size(); ++i)
+        {
+          LightBuffer::setLight(buffer, m_lights[i], i);
+        }
+
+        LightBuffer::setAmbient(buffer, m_ambient);
+      }
+
       for (auto & command : m_commands)
       {
         auto mesh = command.mesh.lock();
@@ -31,27 +52,6 @@ namespace engine
         auto shader = material->getShader();
 
         material->Bind();
-
-        for (size_t i = 0; i < MAX_LIGHTS; ++i)
-        {
-          if (i < m_lights.size())
-          {
-            shader->setUniform(shader->getUniformLocation("lights[" + std::to_string(i) + "].type"), static_cast<int>(m_lights[i].type));
-            shader->setUniform(shader->getUniformLocation("lights[" + std::to_string(i) + "].linear"), m_lights[i].linear);
-            shader->setUniform(shader->getUniformLocation("lights[" + std::to_string(i) + "].quadratic"), m_lights[i].quadratic);
-            shader->setUniform(shader->getUniformLocation("lights[" + std::to_string(i) + "].cutoff"), m_lights[i].cutoff);
-            shader->setUniform(shader->getUniformLocation("lights[" + std::to_string(i) + "].outerCutoff"), m_lights[i].outerCutoff);
-            shader->setUniform(shader->getUniformLocation("lights[" + std::to_string(i) + "].position"), m_lights[i].position);
-            shader->setUniform(shader->getUniformLocation("lights[" + std::to_string(i) + "].direction"), m_lights[i].direction);
-            shader->setUniform(shader->getUniformLocation("lights[" + std::to_string(i) + "].colour"), m_lights[i].colour);
-          }
-          else
-          {
-            shader->setUniform(shader->getUniformLocation("lights[" + std::to_string(i) + "].type"), -1);
-          }
-        }
-
-        shader->setUniform(shader->getUniformLocation("view_position_world"), m_camera.position);
 
         shader->setModel(command.transform);
         shader->setView(m_camera.view);

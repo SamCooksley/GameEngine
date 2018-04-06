@@ -6,6 +6,16 @@
 
 namespace engine
 {
+  bool Graphics::HasUniformBuffer(const std::string & _name)
+  {
+    return Application::s_context->graphics.uniformBuffers.Exists(_name);
+  }
+
+  graphics::UniformBuffer & Graphics::getUniformBuffer(const std::string & _name)
+  {
+    return Application::s_context->graphics.uniformBuffers.getBuffer(_name);
+  }
+
   std::shared_ptr<graphics::Material> Graphics::getDefaultMaterial()
   {
     return Application::s_context->graphics.defaultMaterial;
@@ -52,5 +62,10 @@ namespace engine
         ++i;
       }
     }
+  }
+
+  graphics::Context & Graphics::getContext()
+  {
+    return Application::s_context->graphics;
   }
 }

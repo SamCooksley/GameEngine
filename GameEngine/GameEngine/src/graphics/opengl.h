@@ -3,13 +3,14 @@
 
 #include "glew\glew.h"
 
-namespace engine { 
-  namespace graphics {
-    namespace opengl {
-    
+namespace engine 
+{ 
+  namespace graphics 
+  {
+    namespace opengl
+    {
       void ClearError();
       bool LogError(const char * _function, const char * _file, int _line);
-
     }
   } 
 }

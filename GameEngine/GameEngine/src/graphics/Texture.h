@@ -9,7 +9,7 @@ namespace engine
 {
   namespace graphics
   {
-    class Texture : public core::Object, public NonCopyable
+    class Texture : public Object, public NonCopyable
     {
     public:
       virtual ~Texture();

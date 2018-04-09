@@ -8,7 +8,7 @@ namespace engine
 {
   namespace graphics
   {
-    class Material : public core::Object
+    class Material : public Object
     {
       friend class Shader;
     public:

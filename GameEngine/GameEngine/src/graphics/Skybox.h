@@ -10,7 +10,7 @@ namespace engine
 {
   namespace graphics
   {
-    class Skybox : public core::Object
+    class Skybox : public Object
     {
     public:
       Skybox(
@@ -20,6 +20,7 @@ namespace engine
       ~Skybox();
       
       void Render(Camera & _camera);
+      void Render();
 
     private:
       std::shared_ptr<Material> m_material;

@@ -136,7 +136,6 @@
     <ClInclude Include="src\utilities\System.h" />
     <ClInclude Include="src\utilities\Timer.h" />
     <ClInclude Include="src\utilities\WavefrontParser.h" />
-    <ClInclude Include="VertexBuffer.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="src\core\Core.inl" />

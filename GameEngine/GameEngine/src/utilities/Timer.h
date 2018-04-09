@@ -3,24 +3,26 @@
 
 #include <chrono>
 
-namespace engine { namespace utilities {
-
-  class Timer
+namespace engine
+{
+  namespace utilities
   {
-    using Clock = std::chrono::steady_clock;
-  public:
-    Timer();
-    ~Timer();
+    class Timer
+    {
+      using Clock = std::chrono::steady_clock;
+    public:
+      Timer();
+      ~Timer();
 
-    void Reset();
+      void Reset();
 
-    float getSeconds()     const; 
-    float getMiliseconds() const;
+      float getSeconds()     const;
+      float getMiliseconds() const;
 
-  private:
-    std::chrono::time_point<Clock> m_start;
-  };
-
-} }
+    private:
+      std::chrono::time_point<Clock> m_start;
+    };
+  }
+}
 
 #endif //_ENGINE_UTILITIES_TIMER_H_

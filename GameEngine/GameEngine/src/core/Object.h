@@ -7,26 +7,23 @@
 
 namespace engine
 {
-  namespace core
+  class Object : public std::enable_shared_from_this<Object>
   {
-    class Object : public std::enable_shared_from_this<Object>
-    {
-    public:
-      virtual ~Object();
+  public:
+    virtual ~Object();
 
-      const std::string & getName() const;
-      void setName(const std::string & _name);
+    const std::string & getName() const;
+    void setName(const std::string & _name);
 
-    protected:
-      Object();
+  protected:
+    Object();
 
-    private:
-      std::string m_name;
-    };
+  private:
+    std::string m_name;
+  };
 
-    bool operator==(const Object & _lhs, const Object & _rhs);
-    bool operator!=(const Object & _lhs, const Object & _rhs);
-  }
+  bool operator==(const Object & _lhs, const Object & _rhs);
+  bool operator!=(const Object & _lhs, const Object & _rhs);
 }
 
 #define ENGINE_SETUPSHARED(x) \

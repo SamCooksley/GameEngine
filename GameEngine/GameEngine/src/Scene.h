@@ -5,9 +5,9 @@
 
 #include "GameObject.h"
 
-namespace engine {
-
-  class Scene : public core::Object
+namespace engine
+{
+  class Scene : public Object
   {
     friend class Application;
     friend class GameObject;
@@ -31,7 +31,6 @@ namespace engine {
 
     std::vector<std::shared_ptr<GameObject>> m_gameObjects;
   };
-
 }
 
 #include "Scene.inl"

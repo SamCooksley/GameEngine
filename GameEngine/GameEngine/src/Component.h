@@ -9,7 +9,7 @@ namespace engine {
 
   class GameObject;
 
-  class Component : public core::Object
+  class Component : public Object
   {
     friend class GameObject;
   public:

@@ -2,8 +2,8 @@
 
 #include "Object.h"
 
-namespace engine { namespace core {
-
+namespace engine
+{
   Object::Object()
   { }
 
@@ -29,5 +29,4 @@ namespace engine { namespace core {
   {
     return !(_lhs == _rhs);
   }
-
-} }
+}

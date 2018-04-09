@@ -15,7 +15,7 @@ namespace engine
   {
     class Material;
 
-    class Shader : public core::Object, public NonCopyable
+    class Shader : public Object, public NonCopyable
     {
       friend class Mesh;
       friend class Material;

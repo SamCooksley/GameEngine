@@ -9,7 +9,6 @@ namespace engine
 {
   namespace graphics
   {
-
     struct ShaderUniform
     {
       std::string name;
@@ -34,7 +33,6 @@ namespace engine
       bool normalized;
       GLint location;
     };
-
   }
 }
 

@@ -6,9 +6,9 @@
 #include "Component.h"
 #include "Transform.h"
 
-namespace engine {
-
-  class GameObject : public core::Object
+namespace engine 
+{
+  class GameObject : public Object
   {
     friend class Component;
     friend class Scene;

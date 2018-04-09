@@ -1,3 +1,6 @@
-namespace engine { namespace core {
-
-} }
+namespace engine
+{
+  namespace core 
+  {
+  } 
+}

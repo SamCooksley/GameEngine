@@ -18,7 +18,7 @@ namespace engine
     };
 
     GLenum TextureFormatToOpenGL(TextureFormat _format);
-    GLenum TextureFormatBaseToOpenGL(TextureFormat _format);
+    GLenum TextureBaseFormatToOpenGL(TextureFormat _format);
 
     enum class TextureType
     {

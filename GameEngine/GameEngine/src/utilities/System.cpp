@@ -4,11 +4,13 @@
 
 #include <Windows.h>
 
-namespace engine { namespace utilities {
-
-  void Sleep(unsigned long _miliseconds)
+namespace engine
+{
+  namespace utilities
   {
-    ::Sleep(_miliseconds);
+    void Sleep(unsigned long _miliseconds)
+    {
+      ::Sleep(_miliseconds);
+    }
   }
-
-} }
+}

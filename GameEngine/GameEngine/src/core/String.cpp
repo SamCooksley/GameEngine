@@ -16,19 +16,47 @@ namespace engine
 
     bool AreIEqual(const std::string & _lhs, const std::string & _rhs)
     {
-      /*if (_lhs.size() != _rhs.size()) { return false; }
+      return std::equal(std::begin(_lhs), std::end(_lhs), std::begin(_rhs), std::end(_rhs), iequal());
+    }
 
-      size_t size = std::min(_lhs.size(), _rhs.size());
-      for (size_t i = 0; i < size; ++i)
+    void SplitStringWhitespace(const std::string & _input, std::vector<std::string> & _output)
+    {
+      SplitString(_input, " \t\n\f\r\v", _output);
+    }
+
+    void SplitString(const std::string & _input, char _separator, std::vector<std::string> & _output)
+    {
+      SplitString(_input, std::string(&_separator, 1), _output);
+    }
+
+    void SplitString(const std::string & _input, const std::string & _separator, std::vector<std::string> & _output)
+    {
+      size_t last = 0;
+      bool wasSep = true;
+      for (size_t i = 0; i < _input.size(); ++i)
       {
-        if (tolower(_lhs[i]) != tolower(_rhs[i]))
+        bool isSep = false;
+        for (char s : _separator)
         {
-          return false;
+          if (_input[i] == s) { isSep = true; break; }
         }
+
+        if (!wasSep && isSep)
+        {
+          _output.push_back(_input.substr(last, i - last));
+        }
+        else if (wasSep)
+        {
+          last = i;
+        }
+
+        wasSep = isSep;
       }
 
-      return true;*/
-      return std::equal(std::begin(_lhs), std::end(_lhs), std::begin(_rhs), std::end(_rhs), iequal());
+      if (!wasSep)
+      {
+        _output.push_back(_input.substr(last, _input.size() - last));
+      }
     }
   }
 }

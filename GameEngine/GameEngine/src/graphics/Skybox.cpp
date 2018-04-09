@@ -27,6 +27,17 @@ namespace engine
       shader->setProjection(_camera.projection);
 
       GLCALL(glDepthFunc(GL_LEQUAL));
+      m_mesh->Render(*shader);
+      GLCALL(glDepthFunc(GL_LESS));
+
+      m_material->Unbind();
+    }
+
+    void Skybox::Render()
+    {
+      m_material->Bind();
+
+      GLCALL(glDepthFunc(GL_LEQUAL));
       m_mesh->Render(*m_material->getShader());
       GLCALL(glDepthFunc(GL_LESS));
 

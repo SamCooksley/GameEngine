@@ -6,8 +6,8 @@
 
 #include "Component.h"
 
-namespace engine {
-
+namespace engine
+{
   class Transform : public Component
   {
   public:
@@ -77,7 +77,6 @@ namespace engine {
 
     ENGINE_SETUPSHARED(Transform);
   };
-
 }
 
 #endif //_ENGINE_TRANSFORM_H_

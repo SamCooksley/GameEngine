@@ -2,8 +2,8 @@
 
 #include "Transform.h"
 
-namespace engine {
-
+namespace engine 
+{
   glm::mat4 Transform::getTransform(
       const glm::vec3 & _position,
       const glm::quat & _rotation,
@@ -301,5 +301,4 @@ namespace engine {
   {
     return getTransform(m_localPosition, m_localRotation, m_localScale);
   }
-
 }

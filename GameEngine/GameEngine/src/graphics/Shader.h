@@ -92,19 +92,16 @@ namespace engine
       GLuint m_program;
       std::vector<GLuint> m_shaders;
 
-      std::vector<ShaderAttribute> m_attributes;
-      std::map<std::string, size_t> m_nameToAttribute;
+      Dictionary<std::string, ShaderAttribute> m_attributes;
 
-      std::vector<ShaderUniform> m_uniforms;
-      std::map<std::string, size_t> m_nameToUniform;
+      Dictionary<std::string, ShaderUniform> m_uniforms;
       uint m_uniformSize;
 
-      std::vector<ShaderTexture> m_textures;
-      std::map<std::string, size_t> m_nameToTexture;
+      Dictionary<std::string, ShaderTexture> m_textures;
 
       GLint m_modelLoc, m_viewLoc, m_projectionLoc;
 
-      std::set<Material *> m_materials;
+      std::vector<Material *> m_materials;
     };
   }
 }

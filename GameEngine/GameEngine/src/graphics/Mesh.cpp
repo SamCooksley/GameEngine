@@ -271,8 +271,7 @@ namespace engine
         _normalized
       };
 
-      m_attributes.push_back(attr);
-      m_nameToAttribute[_name] = m_attributes.size() - 1;
+      m_attributes.add(_name, attr);
     }
 
     void Mesh::setAttribute(
@@ -292,7 +291,7 @@ namespace engine
 
       if (attr.size == _size && attr.type == _componentType && attr.count == _componentCount)
       {
-        m_attributes[m_nameToAttribute[_name]].normalized = _normalized;
+        m_attributes[m_attributes.find(_name)->second].normalized = _normalized;
 
         memcpy(&m_vboData[attr.offset], _data, _size);
       }
@@ -305,8 +304,8 @@ namespace engine
 
     bool Mesh::getAttribute(const std::string & _name, VertexAttribute * _outAttribute) const
     {
-      auto attribute = m_nameToAttribute.find(_name);
-      if (attribute == m_nameToAttribute.end()) { return false; }
+      auto attribute = m_attributes.find(_name);
+      if (attribute == m_attributes.mend()) { return false; }
       
       if (_outAttribute != nullptr)
       {
@@ -324,21 +323,18 @@ namespace engine
       }
 
       uint start = attribute.offset;
-      uint end = attribute.offset + attribute.size; //-1;
+      uint end = attribute.offset + attribute.size;
 
       m_vboData.erase(std::begin(m_vboData) + start, std::begin(m_vboData) + end);
 
-      size_t index = m_nameToAttribute[_name];
-
-      m_attributes.erase(std::begin(m_attributes) + index);
-      m_nameToAttribute.erase(_name);
+      
+      size_t index = m_attributes.find(_name)->second;
+      m_attributes.remove(_name);
 
       for (size_t i = index; i < m_attributes.size(); ++i)
       {
         VertexAttribute & attr = m_attributes[i];
         attr.offset = start;
-
-        m_nameToAttribute[attr.name] = i;
 
         start += attr.size;
       }
@@ -347,7 +343,6 @@ namespace engine
     void Mesh::ClearAttributes()
     {
       m_attributes.clear();
-      m_nameToAttribute.clear();
       m_vboData.clear();
     }
   }

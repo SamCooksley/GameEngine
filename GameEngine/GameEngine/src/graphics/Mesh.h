@@ -83,8 +83,7 @@ namespace engine
       
       std::vector<glm::vec3> m_vertices;
 
-      std::vector<VertexAttribute> m_attributes;
-      std::map<std::string, size_t> m_nameToAttribute;
+      Dictionary<std::string, VertexAttribute> m_attributes;
 
       std::vector<byte> m_vboData;
 

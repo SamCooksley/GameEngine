@@ -24,6 +24,7 @@
     <ClCompile Include="src\CameraMovement.cpp" />
     <ClCompile Include="src\Component.cpp" />
     <ClCompile Include="src\core\Core.cpp" />
+    <ClCompile Include="src\core\Dictionary.cpp" />
     <ClCompile Include="src\core\glfw.cpp" />
     <ClCompile Include="src\core\Object.cpp" />
     <ClCompile Include="src\core\String.cpp" />
@@ -84,6 +85,7 @@
     <ClInclude Include="src\Component.h" />
     <ClInclude Include="src\core\Context.h" />
     <ClInclude Include="src\core\Core.h" />
+    <ClInclude Include="src\core\Dictionary.h" />
     <ClInclude Include="src\core\glfw.h" />
     <ClInclude Include="src\core\NonCopyable.h" />
     <ClInclude Include="src\core\Object.h" />
@@ -139,6 +141,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="src\core\Core.inl" />
+    <None Include="src\core\Dictionary.inl" />
     <None Include="src\GameObject.inl" />
     <None Include="src\graphics\Material.inl" />
     <None Include="src\graphics\Mesh.inl" />

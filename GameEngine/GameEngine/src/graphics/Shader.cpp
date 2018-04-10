@@ -299,8 +299,7 @@ namespace engine
         m_uniformSize
       };
 
-      m_uniforms.push_back(uniform);
-      m_nameToUniform[_name] = m_uniforms.size() - 1;
+      m_uniforms.add(_name, uniform);
 
       ResizeUniformBuffer(m_uniformSize + _size);
 
@@ -314,9 +313,9 @@ namespace engine
 
     bool Shader::getUniform(const std::string & _name, ShaderUniform * _outUniform) const
     {
-      auto uniform = m_nameToUniform.find(_name);
-      if (uniform == m_nameToUniform.end()) { return false; }
-
+      auto uniform = m_uniforms.find(_name);
+      if (uniform == m_uniforms.mend()) { return false; }
+      
       if (_outUniform != nullptr)
       {
         *_outUniform = m_uniforms[uniform->second];
@@ -343,8 +342,7 @@ namespace engine
         location
       };
 
-      m_textures.push_back(texture);
-      m_nameToTexture[_name] = m_textures.size() - 1;
+      m_textures.add(_name, texture);
 
       UpdateMaterials();
 
@@ -357,8 +355,8 @@ namespace engine
 
     bool Shader::getTexture(const std::string & _name, ShaderTexture * _outTexture) const
     {
-      auto texture = m_nameToTexture.find(_name);
-      if (texture == m_nameToTexture.end()) { return false; }
+      auto texture = m_textures.find(_name);
+      if (texture == m_textures.mend()) { return false; }
 
       if (_outTexture != nullptr)
       {
@@ -383,8 +381,7 @@ namespace engine
         location
       };
 
-      m_attributes.push_back(attr);
-      m_nameToAttribute[_name] = m_attributes.size() - 1;
+      m_attributes.add(_name, attr);
 
       if (_outAttribute != nullptr)
       {
@@ -396,8 +393,8 @@ namespace engine
 
     bool Shader::getAttribute(const std::string & _name, ShaderAttribute * _outAttribute) const
     {
-      auto attribute = m_nameToAttribute.find(_name);
-      if (attribute == m_nameToAttribute.end()) { return false; }
+      auto attribute = m_attributes.find(_name);
+      if (attribute == m_attributes.mend()) { return false; }
 
       if (_outAttribute != nullptr)
       {
@@ -423,12 +420,24 @@ namespace engine
 
     void Shader::AddMaterial(Material * _material)
     {
-      m_materials.insert(_material);
+      for (auto & mat : m_materials)
+      {
+        if (mat == _material) { return; }
+      }
+
+      m_materials.push_back(_material);
     }
 
     void Shader::RemoveMaterial(Material * _material)
     {
-      m_materials.erase(_material);
+      for (size_t i = 0; i < m_materials.size();)
+      {
+        if (m_materials[i] == _material)
+        {
+          m_materials.erase(m_materials.begin() + i);
+        }
+        else { ++i; }
+      }
     }
   }
 }

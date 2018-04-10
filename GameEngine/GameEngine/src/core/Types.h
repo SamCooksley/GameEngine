@@ -10,6 +10,8 @@
 
 #include "NonCopyable.h"
 
+#include "Dictionary.h"
+
 namespace engine
 {
   using int8  = std::int8_t;

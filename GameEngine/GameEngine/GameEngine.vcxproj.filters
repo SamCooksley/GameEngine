@@ -201,6 +201,9 @@
     <ClCompile Include="src\graphics\LightBuffer.cpp">
       <Filter>Source Files\graphics</Filter>
     </ClCompile>
+    <ClCompile Include="src\core\Dictionary.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\stdafx.h">
@@ -377,6 +380,9 @@
     <ClInclude Include="src\graphics\LightBuffer.h">
       <Filter>Header Files\graphics</Filter>
     </ClInclude>
+    <ClInclude Include="src\core\Dictionary.h">
+      <Filter>Header Files\core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\GameObject.inl">
@@ -399,6 +405,9 @@
     </None>
     <None Include="src\Resources.inl">
       <Filter>Header Files</Filter>
+    </None>
+    <None Include="src\core\Dictionary.inl">
+      <Filter>Header Files\core</Filter>
     </None>
   </ItemGroup>
 </Project>

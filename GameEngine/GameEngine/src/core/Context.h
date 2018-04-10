@@ -30,7 +30,7 @@ namespace engine
 
       std::vector<std::string> args;
 
-      std::map<std::string, std::shared_ptr<core::Object>> resources;
+      std::map<std::string, std::shared_ptr<Object>> resources;
 
       std::unique_ptr<glfw> glfwContext;
 

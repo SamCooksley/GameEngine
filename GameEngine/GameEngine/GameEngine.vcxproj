@@ -59,6 +59,7 @@
     <ClCompile Include="src\Input.cpp" />
     <ClCompile Include="src\KeyCode.cpp" />
     <ClCompile Include="src\Light.cpp" />
+    <ClCompile Include="src\LoadObjects.cpp" />
     <ClCompile Include="src\Main.cpp" />
     <ClCompile Include="src\MeshRenderer.cpp" />
     <ClCompile Include="src\Resources.cpp" />
@@ -124,6 +125,7 @@
     <ClInclude Include="src\Input.h" />
     <ClInclude Include="src\KeyCode.h" />
     <ClInclude Include="src\Light.h" />
+    <ClInclude Include="src\LoadObjects.h" />
     <ClInclude Include="src\MeshRenderer.h" />
     <ClInclude Include="src\Resources.h" />
     <ClInclude Include="src\Scene.h" />

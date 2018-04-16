@@ -65,6 +65,8 @@ layout (location = 0) out vec4 out_frag;
 uniform sampler2D diffuse;
 uniform sampler2D normal;
 uniform sampler2D specular;
+uniform sampler2D opacity;
+
 uniform float shininess = 2;
 
 uniform sampler2D displacement;
@@ -75,17 +77,22 @@ void main()
 	vec3 viewDir_world = normalize(camera.position_world - fs_in.position_world);
 
 	vec3 viewDir_tan = normalize(fs_in.view_position_tan - fs_in.position_tan);
+
 	vec2 texCoords = ParallaxMapping(fs_in.texCoords, viewDir_tan, displacementScale, displacement);
+
+	if (texture(opacity, texCoords).r < 0.1)
+	{
+		discard;
+	}
 
 	Surface surf;
 	surf.position = fs_in.position_world;
 
 	surf.normal = texture(normal, texCoords).rgb;
-	surf.normal.y = 1.0 - surf.normal.y;
+	//some textures need this???
+	//surf.normal.y = 1.0 - surf.normal.y;
 	surf.normal = surf.normal * 2.0 - 1.0;
 	surf.normal = normalize(fs_in.tbn * surf.normal);
-	//out_frag = vec4(surf.normal, 1.0);
-	//return;
 
 	surf.colour = texture(diffuse, texCoords).rgb;
 	surf.specular = texture(specular, texCoords).r;

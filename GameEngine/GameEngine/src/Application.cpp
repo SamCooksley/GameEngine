@@ -69,22 +69,25 @@ namespace engine
     auto defaultShader = Resources::Load<graphics::Shader>("resources/shaders/default.shader");
     s_context->graphics.defaultMaterial = graphics::Material::Create(defaultShader);
    
-    auto texture = Resources::Load<graphics::Texture2D>("resources/textures/stone_wall/diffuse.jpg");
+    auto texture = Resources::Load<graphics::Texture2D>("resources/textures/bricks/diffuse.png");
     //texture = Resources::Load<graphics::Texture2D>("resources/textures/bricks/diffuse.png");
     s_context->graphics.defaultMaterial->setTexture("diffuse", texture);
 
-    texture = Resources::Load<graphics::Texture2D>("resources/textures/stone_wall/normal.jpg");
+    texture = Resources::Load<graphics::Texture2D>("resources/textures/bricks/normal.png");
     //texture = Resources::Load<graphics::Texture2D>("resources/textures/flat.png");
     //texture = Resources::Load<graphics::Texture2D>("resources/textures/bricks/normal.png");
     s_context->graphics.defaultMaterial->setTexture("normal", texture);
 
-    texture = Resources::Load<graphics::Texture2D>("resources/textures/stone_wall/roughness.jpg");
-    //texture = Resources::Load<graphics::Texture2D>("resources/textures/bricks/specular.png");
+    //texture = Resources::Load<graphics::Texture2D>("resources/textures/bricks/roughness.jpg");
+    texture = Resources::Load<graphics::Texture2D>("resources/textures/bricks/specular.png");
     s_context->graphics.defaultMaterial->setTexture("specular", texture);
 
-    texture = Resources::Load<graphics::Texture2D>("resources/textures/stone_wall/displacement.png");
+    texture = Resources::Load<graphics::Texture2D>("resources/textures/bricks/displacement.png");
     //texture = Resources::Load<graphics::Texture2D>("resources/textures/bricks/displacement.png");
     s_context->graphics.defaultMaterial->setTexture("displacement", texture);
+
+    texture = graphics::Texture2D::Create(64, 64, glm::vec4(1.f));
+    s_context->graphics.defaultMaterial->setTexture("opacity", texture);
 
     s_context->graphics.defaultMaterial->setUniform("displacementScale", 0.025f);
 

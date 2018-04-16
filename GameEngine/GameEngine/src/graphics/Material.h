@@ -3,6 +3,8 @@
 
 #include "Shader.h"
 #include "Texture.h"
+#include "Texture2D.h"
+#include "TextureCube.h"
 
 namespace engine
 {

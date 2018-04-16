@@ -58,21 +58,35 @@ namespace engine
       uint width = NextPowerOfTwo(w);
       uint height = NextPowerOfTwo(h);
 
-      float scaleWidth = w / float(width);
-      float scaleHeight = h / float(height);
-
-      _outData->width = width;
-      _outData->height = height;
-      _outData->pixels.resize(width * height * 4);
-
-      for (uint y = 0; y < height; ++y)
+      if (width == w && height == h)
       {
-        for (uint x = 0; x < width; ++x)
-        {
-          uint index = x * 4 + y * width * 4;
-          uint other = int(x * scaleWidth) * 4 + int(y * scaleHeight) * w * 4;
+        _outData->width = w;
+        _outData->height = h;
 
-          memcpy(&_outData->pixels[index], &pixels[other], 4);
+        uint size = w * h * 4;
+
+        _outData->pixels.resize(size);
+        memcpy(&_outData->pixels[0], pixels, size);
+      }
+      else
+      {
+
+        float scaleWidth = w / float(width);
+        float scaleHeight = h / float(height);
+
+        _outData->width = width;
+        _outData->height = height;
+        _outData->pixels.resize(width * height * 4);
+
+        for (uint y = 0; y < height; ++y)
+        {
+          for (uint x = 0; x < width; ++x)
+          {
+            uint index = x * 4 + y * width * 4;
+            uint other = int(x * scaleWidth) * 4 + int(y * scaleHeight) * w * 4;
+
+            memcpy(&_outData->pixels[index], &pixels[other], 4);
+          }
         }
       }
 

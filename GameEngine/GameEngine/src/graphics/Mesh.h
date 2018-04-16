@@ -26,6 +26,7 @@ namespace engine
     class Mesh : public Object, public NonCopyable
     {
     public:
+      static std::shared_ptr<Mesh> Create();
       static std::shared_ptr<Mesh> Load(const std::string & _path);
 
       ~Mesh();

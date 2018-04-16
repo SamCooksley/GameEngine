@@ -9,17 +9,21 @@ namespace engine
 {
   namespace graphics
   {
-    std::shared_ptr<Mesh> Mesh::Load(const std::string & _path)
+    std::shared_ptr<Mesh> Mesh::Create()
     {
       class enable_mesh : public Mesh { };
+      return std::make_shared<enable_mesh>();
+    }
 
+    std::shared_ptr<Mesh> Mesh::Load(const std::string & _path)
+    {
       std::shared_ptr<Mesh> mesh;
 
       try
       {
         file::WavefrontParser parser(_path);
         utilities::MeshProcessor processor;
-        mesh = std::make_shared<enable_mesh>();
+        mesh = Create();
         mesh->setName(parser.getName());
 
         auto vertices = parser.getVertices();

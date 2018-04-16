@@ -32,7 +32,7 @@ namespace engine
 
       std::shared_ptr<graphics::Texture2D> texture;
 
-      if (aimat->Get(AI_MATKEY_TEXTURE_DIFFUSE(0), path) == AI_SUCCESS)
+      if (aimat->GetTexture(aiTextureType_DIFFUSE, 0, &path) == AI_SUCCESS)
       {
         texture = Resources::Load<graphics::Texture2D>(_directory + path.C_Str());
       }
@@ -48,7 +48,7 @@ namespace engine
 
       texture.reset();
 
-      if (aimat->Get(AI_MATKEY_TEXTURE_SPECULAR(0), path) == AI_SUCCESS)
+      if (aimat->GetTexture(aiTextureType_SPECULAR, 0, &path) == AI_SUCCESS)
       {
         texture = Resources::Load<graphics::Texture2D>(_directory + path.C_Str());
       }
@@ -97,7 +97,7 @@ namespace engine
 
       texture.reset();
 
-      if (aimat->Get(AI_MATKEY_TEXTURE_HEIGHT(0), path) == AI_SUCCESS)
+      if (aimat->GetTexture(aiTextureType_HEIGHT, 0, &path) == AI_SUCCESS)
       {
         texture = Resources::Load<graphics::Texture2D>(_directory + path.C_Str());
       }

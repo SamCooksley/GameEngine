@@ -52,6 +52,19 @@ namespace engine
       void DetachAndDeleteShaders();
 
       void SetupSystemUniforms();
+      void SetupAttributes();
+      void SetupUniformBuffers();
+      void SetupUniforms();
+
+      bool SetSystemUniform(const std::string & _name, GLint _location);
+
+      void RetreiveUniformData(std::vector<byte> & _outData);
+
+      template <typename T>
+      void RetreiveUniformValue(const ShaderUniform & _uniform, std::vector<byte> & _dest) const;
+
+      template <typename T>
+      T RetreiveUniformValue(const ShaderUniform & _uniform) const;
 
       GLint getUniformLocation(const std::string & _name) const;
       GLint getAttributeLocation(const std::string & _name) const;
@@ -70,24 +83,9 @@ namespace engine
 
       void setUniform(GLint _location, GLenum _type, const void * _data);
 
-      bool AddUniform(const std::string & _name, GLenum _type, uint _size, ShaderUniform * _outUniform);
-      template <typename T>
-      bool AddUniform(const std::string & _name, ShaderUniform * _outUniform);
-      bool getUniform(const std::string & _name, ShaderUniform * _outUniform) const;
-
-      bool AddTexture(const std::string & _name, ShaderTexture * _outTexture);
-      bool getTexture(const std::string & _name, ShaderTexture * _outTexture) const;
-
-      bool AddAttribute(const std::string & _name, GLenum _type, uint _count, bool _normalize, ShaderAttribute * _outAttribute);
-      template <typename T>
-      bool AddAttribute(const std::string & _name, bool _normalized, ShaderAttribute * _outAttribute);
       bool getAttribute(const std::string & _name, ShaderAttribute * _outAttribute) const;
-
-      void ResizeUniformBuffer(size_t _size);
-      void UpdateMaterials();
-
-      void AddMaterial(Material * _material);
-      void RemoveMaterial(Material * _material);
+      bool getUniform(const std::string & _name, ShaderUniform * _outUniform) const;
+      bool getSampler(const std::string & _name, ShaderSampler * _outSampler) const;
 
       GLuint m_program;
       std::vector<GLuint> m_shaders;
@@ -96,12 +94,9 @@ namespace engine
 
       Dictionary<std::string, ShaderUniform> m_uniforms;
       uint m_uniformSize;
-
-      Dictionary<std::string, ShaderTexture> m_textures;
+      Dictionary<std::string, ShaderSampler> m_samplers;
 
       GLint m_modelLoc, m_viewLoc, m_projectionLoc;
-
-      std::vector<Material *> m_materials;
     };
   }
 }

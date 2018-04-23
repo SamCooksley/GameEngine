@@ -1,7 +1,7 @@
 #shader vertex
 #version 430 core
 
-layout (location = 0) in vec4 in_position;
+layout (location = 0) in vec3 in_position;
 layout (location = 1) in vec2 in_texCoords;
 layout (location = 2) in vec3 in_normal;
 layout (location = 3) in vec3 in_tangent;
@@ -23,7 +23,7 @@ uniform mat4 model;
 
 void main()
 {
-	vec4 world = model * in_position;
+	vec4 world = model * vec4(in_position, 1.0);
 	vs_out.position_world = world.xyz;
 	gl_Position = camera.vp * world;
 	vs_out.texCoords = in_texCoords;
@@ -89,8 +89,6 @@ void main()
 	surf.position = fs_in.position_world;
 
 	surf.normal = texture(normal, texCoords).rgb;
-	//some textures need this???
-	//surf.normal.y = 1.0 - surf.normal.y;
 	surf.normal = surf.normal * 2.0 - 1.0;
 	surf.normal = normalize(fs_in.tbn * surf.normal);
 

@@ -19,6 +19,7 @@ namespace engine
       uint offset;
       uint size;
       GLenum type;
+      GLenum component;
       uint count;
       bool normalized;
     };
@@ -61,7 +62,7 @@ namespace engine
         const std::string & _name, 
         const void * _data, uint _size, 
         uint _count,
-        GLenum _componentType, uint _componentCount, 
+        GLenum _type, 
         bool _normalized = false
       );
 
@@ -69,7 +70,7 @@ namespace engine
         const std::string & _name,
         const void * _data, uint _size, 
         uint _count, 
-        GLenum _componentType, uint _componentCount, 
+        GLenum _type, 
         bool _normalized = false
       );
 

@@ -122,25 +122,28 @@ namespace engine
         ShaderAttribute & attr = attrs[i];
         attr.location = -1;
 
-        if (!_shader.AddAttribute(
-            vertAttr.name, 
-            vertAttr.type, 
-            vertAttr.count,
-            vertAttr.normalized, 
-            &attr
-          ))
+        if (!_shader.getAttribute(vertAttr.name, &attr))
         {
           continue;
         }
 
         if (attr.location < 0) { continue; }
 
+        if (attr.type != vertAttr.type)
+        {
+          debug::LogError(
+            "Mesh Error: " + attr.name + " not of type " + std::to_string(vertAttr.type)
+            + ". Expected " + std::to_string(attr.type)
+          );
+          continue;
+        }
+
         GLCALL(glEnableVertexAttribArray(attr.location));
         GLCALL(glVertexAttribPointer(
           attr.location, 
-          attr.count, 
-          attr.type, 
-          attr.normalized, 
+          vertAttr.count,
+          vertAttr.component,
+          vertAttr.normalized,
           0, 
           reinterpret_cast<const void *>(vertAttr.offset)
         ));
@@ -234,7 +237,7 @@ namespace engine
       const std::string & _name, 
       const void * _data, uint _size, 
       uint _count, 
-      GLenum _componentType, uint _componentCount,
+      GLenum _type,
       bool _normalized
     )
     {
@@ -257,7 +260,7 @@ namespace engine
       if (getAttribute(_name))
       {
         debug::LogWarning("Mesh: attribute " + _name + " already exists in mesh " + getName() + ", setting attribute data.");
-        setAttribute(_name, _data, _size, _count, _componentType, _componentCount, _normalized);
+        setAttribute(_name, _data, _size, _count, _type, _normalized);
         return;
       }
 
@@ -266,14 +269,14 @@ namespace engine
 
       memcpy(&m_vboData[start], _data, _size);
 
-      VertexAttribute attr = {
-        _name, 
-        start,
-        _size,
-        _componentType,
-        _componentCount,
-        _normalized
-      };
+      VertexAttribute attr;
+      attr.name = _name;
+      attr.offset = start;
+      attr.size = _size;
+      attr.type = _type;
+      attr.component = GetComponentType(_type);
+      attr.count = GetComponentCount(_type);
+      attr.normalized = _normalized;
 
       m_attributes.add(_name, attr);
     }
@@ -282,28 +285,19 @@ namespace engine
       const std::string & _name, 
       const void * _data, uint _size, 
       uint _count,
-      GLenum _componentType, uint _componentCount, 
+      GLenum _type, 
       bool _normalized
     )
     {
       VertexAttribute attr;
       if (!getAttribute(_name, &attr))
       {
-        AddAttribute(_name, _data, _size, _count, _componentType, _componentCount, _normalized);
+        AddAttribute(_name, _data, _size, _count, _type, _normalized);
         return;
       }
 
-      if (attr.size == _size && attr.type == _componentType && attr.count == _componentCount)
-      {
-        m_attributes[m_attributes.find(_name)->second].normalized = _normalized;
-
-        memcpy(&m_vboData[attr.offset], _data, _size);
-      }
-      else
-      {
-        RemoveAttribute(_name);
-        AddAttribute(_name, _data, _size, _count, _componentType, _componentCount, _normalized);
-      }
+      RemoveAttribute(_name);
+      AddAttribute(_name, _data, _size, _count, _type, _normalized);
     }
 
     bool Mesh::getAttribute(const std::string & _name, VertexAttribute * _outAttribute) const

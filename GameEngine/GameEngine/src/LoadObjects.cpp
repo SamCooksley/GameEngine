@@ -21,6 +21,7 @@ namespace engine
       std::shared_ptr<graphics::Material> mat = graphics::Material::Create(_defaultMaterial);
     
       aiString name;
+      
       if (aimat->Get(AI_MATKEY_NAME, name) == AI_SUCCESS)
       {
         mat->setName(name.C_Str());

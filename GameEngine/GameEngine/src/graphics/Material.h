@@ -10,6 +10,14 @@ namespace engine
 {
   namespace graphics
   {
+    struct TextureUnit
+    {
+      GLenum type;
+      int count;
+      int unit;
+      std::shared_ptr<Texture> texture;
+    };
+
     class Material : public Object
     {
       friend class Shader;
@@ -28,29 +36,35 @@ namespace engine
       template <typename T>
       bool getUniform(const std::string & _name, T * _outValue) const;
 
-      void setTexture(const std::string & _name, std::shared_ptr<Texture> _texture);
-      bool getTexture(const std::string & _name, std::shared_ptr<Texture> * _outTexture) const;
+      void setTexture(const std::string & _name, std::shared_ptr<Texture2D> _texture);
+      void setTexture(const std::string & _name, std::shared_ptr<TextureCube> _textureCube);
 
+      void setTextureUnit(const std::string & _name, int _unit);
+      int getTextureUnit(const std::string & _name) const;
+
+      bool getTexture(const std::string & _name, std::shared_ptr<Texture2D> * _outTexture) const;
+      bool getTexture(const std::string & _name, std::shared_ptr<TextureCube> * _outTextureCube) const;
+      
       std::shared_ptr<Shader> getShader();
 
     protected:
+      static std::shared_ptr<Material> CreateInternal(std::shared_ptr<Shader> _shader);
       Material();
 
     private:
       void setUniform(const std::string & _name, const void * _data, uint _size, GLenum _type);
       bool getUniform(const std::string & _name, void * _outValue, uint _size, GLenum _type) const;
 
-      void setShader(std::shared_ptr<Shader> _shader);
-      void RemoveFromShader();
+      void setTexture(const std::string & _name, GLenum _type, std::shared_ptr<Texture> _texture);
 
-      void UpdateSizes();
-      void Reset();
+      bool getTextureInfo(int _unit, TextureUnit * _outTexture) const;
+
+      int FindFreeTextureUnit() const;
 
       std::shared_ptr<Shader> m_shader;
 
       std::vector<byte> m_uniformData;
-
-      std::vector<std::shared_ptr<Texture>> m_textures;
+      Dictionary<int, TextureUnit> m_textures;
     };
   }
 }

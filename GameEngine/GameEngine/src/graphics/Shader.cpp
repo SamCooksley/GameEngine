@@ -43,7 +43,10 @@ namespace engine
         }
         shader->LinkProgram();
         shader->DetachAndDeleteShaders();
-        shader->SetupSystemUniforms();
+
+        shader->SetupUniformBuffers();
+        shader->SetupAttributes();
+        shader->SetupUniforms();
       }
       catch (std::exception & _e)
       {
@@ -54,7 +57,9 @@ namespace engine
       return shader;
     }
 
-    Shader::Shader()
+    Shader::Shader() :
+      m_uniformSize(0u),
+      m_modelLoc(-1), m_viewLoc(-1), m_projectionLoc(-1)
     {
       GLCALL(m_program = glCreateProgram());
     }
@@ -139,7 +144,10 @@ namespace engine
       m_modelLoc = getUniformLocation(MODEL_NAME);
       m_viewLoc = getUniformLocation(VIEW_NAME);
       m_projectionLoc = getUniformLocation(PROJECTION_NAME);
+    }
 
+    void Shader::SetupUniformBuffers()
+    {
       auto & buffers = Graphics::getContext().uniformBuffers.m_buffers;
       for (auto & buffer : buffers)
       {
@@ -148,6 +156,185 @@ namespace engine
         {
           setUniformBlockBinding(index, buffer.second->getBind());
         }
+      }
+    }
+
+    void Shader::SetupAttributes()
+    {
+      GLint scount;
+      GLCALL(glGetProgramiv(m_program, GL_ACTIVE_ATTRIBUTES, &scount));
+
+      if (scount < 0) { return; }
+      GLuint count = scount;
+
+      GLint maxLength;
+      GLCALL(glGetProgramiv(m_program, GL_ACTIVE_ATTRIBUTE_MAX_LENGTH, &maxLength));
+
+      std::vector<GLchar> nameBuffer(maxLength);
+
+      for (GLuint i = 0; i < count; ++i)
+      {
+        GLenum type;
+        GLsizei length;
+        GLint size;
+        GLCALL(glGetActiveAttrib(m_program, i, maxLength, &length, &size, &type, &nameBuffer[0]));
+
+        std::string name(nameBuffer.begin(), nameBuffer.begin() + length);
+
+        GLint loc = getAttributeLocation(name);
+        
+        if (loc < 0) { continue; }
+        
+        ShaderAttribute attribute;
+        attribute.name = name;
+        attribute.type = type;
+        attribute.location = loc;
+
+        m_attributes.add(name, attribute);
+      }
+    }
+
+    void Shader::SetupUniforms()
+    {
+      GLint scount;
+      GLCALL(glGetProgramiv(m_program, GL_ACTIVE_UNIFORMS, &scount));
+
+      if (scount < 0) { return; }
+      GLuint count = scount;
+
+      GLint maxLength;
+      GLCALL(glGetProgramiv(m_program, GL_ACTIVE_UNIFORM_MAX_LENGTH, &maxLength));
+     
+      std::vector<GLchar> nameBuffer(maxLength);
+
+      for (GLuint i = 0; i < count; ++i)
+      {
+        GLenum type;
+        GLsizei length;
+        GLint size;
+
+        GLCALL(glGetActiveUniform(m_program, i, maxLength, &length, &size, &type, &nameBuffer[0]));
+
+        std::string name(nameBuffer.begin(), nameBuffer.begin() + length);
+
+        if (!IsSupportedUniformType(type))
+        {
+          debug::LogError("Shader " + getName() + " uniform " + name + " invalid type: " + std::to_string(type));
+          continue;
+        }
+
+        GLint loc = getUniformLocation(name);
+        //remove invalid uniforms (uniform buffer objects).
+        if (loc < 0) { continue; }  
+
+        if (SetSystemUniform(name, loc))
+        {
+          continue;
+        }
+
+        bool isSampler = IsSamplerUniformType(type);
+
+        ShaderUniform uniform;
+        uniform.name = name;
+        uniform.type = isSampler ? GL_INT : type;
+        uniform.size = GetTypeSize(uniform.type);
+        uniform.location = loc;
+
+        uniform.offset = m_uniformSize;
+        m_uniformSize += uniform.size;
+
+        m_uniforms.add(name, uniform);
+
+        if (isSampler)
+        {
+          ShaderSampler sampler;
+          sampler.name = name;
+          sampler.type = type;
+          
+          m_samplers.add(name, sampler);
+        }
+      }
+    }
+
+    bool Shader::SetSystemUniform(const std::string & _name, GLint _location)
+    {
+      if (_name == PROJECTION_NAME)
+      {
+        m_projectionLoc = _location;
+        return true;
+      }
+
+      if (_name == VIEW_NAME)
+      {
+        m_viewLoc = _location;
+        return true;
+      }
+
+      if (_name == MODEL_NAME)
+      {
+        m_modelLoc = _location;
+        return true;
+      }
+
+      return false;
+    }
+
+    void Shader::RetreiveUniformData(std::vector<byte> & _outData)
+    {
+      _outData.resize(m_uniformSize);
+
+      std::vector<byte> data;
+      for (auto & uniform : m_uniforms)
+      {
+        switch (uniform.type)
+        {
+          case GL_INT:
+          {
+            RetreiveUniformValue<int>(uniform, data);
+            break;
+          }
+          case GL_FLOAT:
+          {
+            RetreiveUniformValue<float>(uniform, data);
+            break;
+          }
+          case GL_FLOAT_VEC2:
+          {
+            RetreiveUniformValue<glm::vec2>(uniform, data);
+            break;
+          }
+          case GL_FLOAT_VEC3:
+          {
+            RetreiveUniformValue<glm::vec3>(uniform, data);
+            break;
+          }
+          case GL_FLOAT_VEC4:
+          {
+            RetreiveUniformValue<glm::vec4>(uniform, data);
+            break;
+          }
+          case GL_FLOAT_MAT3:
+          {
+            RetreiveUniformValue<glm::mat3>(uniform, data);
+            break;
+          }
+          case GL_FLOAT_MAT4:
+          {
+            RetreiveUniformValue<glm::mat4>(uniform, data);
+            break;
+          }
+          default:
+          {
+            debug::LogWarning("Invalid uniform type. " + std::to_string(uniform.type));
+            break;
+          }
+        }
+
+        if (data.empty()) { continue; }
+
+        assert(uniform.offset + data.size() <= _outData.size());
+
+        memcpy(&_outData[uniform.offset], &data[0], data.size());
       }
     }
 
@@ -280,32 +467,14 @@ namespace engine
       }
     }
 
-    bool Shader::AddUniform(const std::string & _name, GLenum _type, uint _size, ShaderUniform * _outUniform)
+    bool Shader::getAttribute(const std::string & _name, ShaderAttribute * _outAttribute) const
     {
-      if (getUniform(_name, _outUniform)) { return true; }
+      auto attribute = m_attributes.find(_name);
+      if (attribute == m_attributes.mend()) { return false; }
 
-      int location = getUniformLocation(_name);
-      if (location < 0)
+      if (_outAttribute != nullptr)
       {
-        debug::LogError("Shader Error: " + getName() + " does not contain uniform: " + _name);
-        return false;
-      }
-
-      ShaderUniform uniform = {
-        _name,
-        _type, 
-        location,
-        _size,
-        m_uniformSize
-      };
-
-      m_uniforms.add(_name, uniform);
-
-      ResizeUniformBuffer(m_uniformSize + _size);
-
-      if (_outUniform != nullptr)
-      {
-        *_outUniform = uniform;
+        *_outAttribute = m_attributes[attribute->second];
       }
 
       return true;
@@ -324,120 +493,17 @@ namespace engine
       return true;
     }
 
-    bool Shader::AddTexture(const std::string & _name, ShaderTexture * _outTexture)
+    bool Shader::getSampler(const std::string & _name, ShaderSampler * _outSampler) const
     {
-      if (getTexture(_name, _outTexture)) { return true; }
+      auto sampler = m_samplers.find(_name);
+      if (sampler == m_samplers.mend()) { return false; }
 
-      GLint location = getUniformLocation(_name);
-
-      if (location < 0)
+      if (_outSampler != nullptr)
       {
-        debug::LogError("Shader Error: " + getName() + " does not contain texture uniform: " + _name);
-        return false;
-      }
-
-      ShaderTexture texture = {
-        _name,
-        m_textures.size(),
-        location
-      };
-
-      m_textures.add(_name, texture);
-
-      UpdateMaterials();
-
-      if (_outTexture != nullptr)
-      {
-        *_outTexture = texture;
-      }
-      return true;
-    }
-
-    bool Shader::getTexture(const std::string & _name, ShaderTexture * _outTexture) const
-    {
-      auto texture = m_textures.find(_name);
-      if (texture == m_textures.mend()) { return false; }
-
-      if (_outTexture != nullptr)
-      {
-        *_outTexture = m_textures[texture->second];
+        *_outSampler = m_samplers[sampler->second];
       }
 
       return true;
-    }
-
-    bool Shader::AddAttribute(const std::string & _name, GLenum _type, uint _count, bool _normalized, ShaderAttribute * _outAttribute)
-    {
-      if (getAttribute(_name, _outAttribute)) { return true; }
-
-      GLint location = getAttributeLocation(_name);
-      if (location < 0) { return false; }
-
-      ShaderAttribute attr = {
-        _name,
-        _type,
-        _count,
-        _normalized,
-        location
-      };
-
-      m_attributes.add(_name, attr);
-
-      if (_outAttribute != nullptr)
-      {
-        *_outAttribute = attr;
-      }
-
-      return true;
-    }
-
-    bool Shader::getAttribute(const std::string & _name, ShaderAttribute * _outAttribute) const
-    {
-      auto attribute = m_attributes.find(_name);
-      if (attribute == m_attributes.mend()) { return false; }
-
-      if (_outAttribute != nullptr)
-      {
-        *_outAttribute = m_attributes[attribute->second];
-      }
-
-      return true;
-    }
-
-    void Shader::ResizeUniformBuffer(size_t _size)
-    {
-      m_uniformSize = _size;
-      UpdateMaterials();
-    }
-
-    void Shader::UpdateMaterials()
-    {
-      for (auto & mat : m_materials)
-      {
-        mat->UpdateSizes();
-      }
-    }
-
-    void Shader::AddMaterial(Material * _material)
-    {
-      for (auto & mat : m_materials)
-      {
-        if (mat == _material) { return; }
-      }
-
-      m_materials.push_back(_material);
-    }
-
-    void Shader::RemoveMaterial(Material * _material)
-    {
-      for (size_t i = 0; i < m_materials.size();)
-      {
-        if (m_materials[i] == _material)
-        {
-          m_materials.erase(m_materials.begin() + i);
-        }
-        else { ++i; }
-      }
     }
   }
 }

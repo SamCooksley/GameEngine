@@ -68,6 +68,10 @@ namespace engine
       static constexpr GLenum component = GL_FLOAT;
       static constexpr uint count = 16;
     };
+
+    GLenum GetComponentType(GLenum _type);
+    uint GetComponentCount(GLenum _type);
+    uint GetTypeSize(GLenum _type);
   }
 }
 

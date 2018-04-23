@@ -11,8 +11,7 @@ namespace engine
 
     void SplitStringWhitespace(const std::string & _input, std::vector<std::string> & _output);
     void SplitString(const std::string & _input, char _separator, std::vector<std::string> & _output);
-    void SplitString(const std::string & _input, const std::string & _separators, std::vector<std::string> & _output);
-      
+    void SplitString(const std::string & _input, const std::string & _separators, std::vector<std::string> & _output);  
   }
 }
 

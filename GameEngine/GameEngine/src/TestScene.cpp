@@ -48,7 +48,7 @@ namespace engine
     mr = go->AddComponent<MeshRenderer>();
     mr->setMesh(mesh);
 
-    auto sponza = Load("resources/sponza/sponza.obj");
-    sponza->getComponent<Transform>()->setLocalScale(glm::vec3(.01f));
+    //auto sponza = Load("resources/sponza/sponza.obj");
+    //sponza->getComponent<Transform>()->setLocalScale(glm::vec3(.01f));
   }
 }

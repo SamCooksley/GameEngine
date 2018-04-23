@@ -37,6 +37,9 @@ namespace engine
 
     void add(const key & _key, const value & _value);
     void remove(const key & _key);
+    void remove(typename map_iterator & _iterator);
+
+    void removeAt(size_t _i);
 
     void clear();
 

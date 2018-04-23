@@ -9,7 +9,7 @@ namespace engine
       bool _normalized
     )
     {
-      setAttribute(_name, _data, _count * sizeof(T), _count, TypeData<T>::component, TypeData<T>::count, _normalized);
+      setAttribute(_name, _data, _count * sizeof(T), _count, TypeData<T>::type, _normalized);
     }
   }
 }

@@ -90,20 +90,53 @@ namespace engine
   void Dictionary<key, value>::remove(const key & _key)
   {
     auto iter = m_keyToIndex.find(_key);
-    if (iter == m_keyToIndex.end())
+    remove(iter);
+  }
+
+  template <typename key, typename value>
+  void Dictionary<key, value>::remove(typename map_iterator & _iterator)
+  {
+    if (_iterator == m_keyToIndex.begin() ||
+        _iterator == m_keyToIndex.end())
     {
       return;
     }
 
-    size_t index = iter->second;
-    auto next = std::next(iter);
-    m_list.erase(m_list.begin() + iter->second);
-    m_keyToIndex.erase(iter);
+    size_t index = _iterator->second;
+    m_list.erase(m_list.begin() + _iterator->second);
+    m_keyToIndex.erase(_iterator);
 
-    for (auto i = next; i != m_keyToIndex.end(); ++i)
+    for (auto & i : m_keyToIndex)
     {
-      i->second = index;
-      ++index;
+      if (i.second > index)
+      {
+        --i.second;
+      }
+    }
+  }
+
+  template <typename key, typename value>
+  void Dictionary<key, value>::removeAt(size_t _i)
+  {
+    m_list.erase(m_list.begin() + _i);
+    
+    size_t index = 0;
+    for (auto i = m_keyToIndex.begin(); i != m_keyToIndex.end();)
+    {
+      if (i.second == _i)
+      {
+        auto prev = i;
+        ++i;
+        m_keyToIndex.erase(prev);
+        continue;
+      }
+
+      if (i.second > _i)
+      {
+        --i.second;
+      }
+
+      ++i;
     }
   }
 

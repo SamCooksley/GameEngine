@@ -79,182 +79,45 @@ namespace engine
       m_shader->Unbind();
     }
 
-    void Material::setUniform(const std::string & _name, const void * _data, uint _size, GLenum _type)
-    {
-      ShaderUniform uniform;
-      if (!m_shader->getUniform(_name, &uniform))
-      {
-        throw std::invalid_argument("Uniform does not exist.");
-      }
-
-      if (uniform.type != _type)
-      {
-        throw std::invalid_argument("Uniform not of type.");
-      }
-
-      assert(uniform.offset + _size <= m_uniformData.size());
-
-      memcpy(&m_uniformData[uniform.offset], _data, _size);
-    }
-
-    bool Material::getUniform(const std::string & _name, void * _outValue, uint _size, GLenum _type) const
-    {
-      ShaderUniform uniform;
-      if (!m_shader->getUniform(_name, &uniform))
-      {
-        return false;
-      }
-
-      if (_type != uniform.type)
-      {
-        return false;
-      }
-
-      assert(uniform.offset + _size <= m_uniformData.size());
-
-      if (_outValue != nullptr)
-      {
-        memcpy(_outValue, &m_uniformData[uniform.offset], _size);
-      }
-
-      return true;
-    }
-
-    void Material::setTexture(const std::string & _name, std::shared_ptr<Texture2D> _texture)
+    Material::Error Material::setTexture(const std::string & _name, std::shared_ptr<Texture2D> _texture, bool _new)
     {
       ShaderSampler sampler;
       if (!m_shader->getSampler(_name, &sampler))
       {
-        throw std::invalid_argument("Sampler does not exist.");
+        return Error::INVALID_UNIFORM;
       }
 
-      if (sampler.type != GL_SAMPLER_2D)
-      {
-        throw std::invalid_argument("Uniform not of type.");
-      }
-
-      setTexture(_name, GL_SAMPLER_2D, _texture);
+      return setTexture(sampler, GL_SAMPLER_2D, _texture, _new);
     }
 
-    void Material::setTexture(const std::string & _name, std::shared_ptr<TextureCube> _textureCube)
+    Material::Error Material::setTexture(const std::string & _name, std::shared_ptr<TextureCube> _textureCube, bool _new)
     {
       ShaderSampler sampler;
       if (!m_shader->getSampler(_name, &sampler))
       {
-        throw std::invalid_argument("Sampler does not exist.");
+        return Error::INVALID_UNIFORM;
       }
-
-      if (sampler.type != GL_SAMPLER_CUBE)
-      {
-        throw std::invalid_argument("Uniform not of type.");
-      }
-
-      setTexture(_name, GL_SAMPLER_CUBE, _textureCube);
+      return setTexture(sampler, GL_SAMPLER_CUBE, _textureCube, _new);
     }
 
-    void Material::setTextureUnit(const std::string & _name, int _unit)
+    Material::Error Material::setTexture(const ShaderSampler & _sampler, GLenum _type, std::shared_ptr<Texture> _texture, bool _new)
     {
-      auto textureIter = m_textures.find(_unit);
-      if (textureIter == m_textures.mend())
+      if (_sampler.type != _type)
       {
-        throw std::invalid_argument("Texture unit not in use.");
-      }
-
-      TextureUnit & texture = m_textures[textureIter->second];
-
-      ShaderSampler sampler;
-      if (!m_shader->getSampler(_name, &sampler))
-      {
-        throw std::invalid_argument("Sampler does not exist.");
-      }
-
-      if (texture.type != sampler.type)
-      {
-        throw std::invalid_argument("Texture not of same type as sampler.");
-      }
-
-      int oldUnit = getTextureUnit(_name);
-      auto oldTexture = m_textures.find(oldUnit);
-      if (oldTexture != m_textures.mend())
-      {
-        if (--m_textures[oldTexture->second].count <= 0)
-        {
-          m_textures.remove(oldTexture);
-        }        
-      }
-
-      setUniform<int>(_name, _unit);
-      ++texture.count;
-    }
-
-    int Material::getTextureUnit(const std::string & _name) const
-    {
-      ShaderSampler sampler;
-      if (!m_shader->getSampler(_name, &sampler))
-      {
-        throw std::invalid_argument("Sampler does not exist.");
+        return Error::INVALID_TYPE;
       }
 
       int unit;
-      getUniform<int>(_name, &unit);
-      return unit;
-    }
-
-    bool Material::getTexture(const std::string & _name, std::shared_ptr<Texture2D> * _outTexture) const
-    {
-      ShaderSampler sampler;
-      if (!m_shader->getSampler(_name, &sampler))
+      Error error = getTextureUnit(_sampler, &unit);
+      if (error != Error::OK)
       {
-        return false;
+        return error;
       }
 
-      if (sampler.type != GL_SAMPLER_2D)
+      if (unit < 0 || _new)
       {
-        return false;
+        unit = FindFreeTextureUnit();
       }
-
-      int unit = getTextureUnit(_name);
-
-      auto texture = m_textures.find(unit);
-      assert(texture != m_textures.mend());
-
-      if (_outTexture != nullptr)
-      {
-        *_outTexture = std::dynamic_pointer_cast<Texture2D>(m_textures[texture->second].texture);
-      }
-
-      return true;
-    }
-
-    bool Material::getTexture(const std::string & _name, std::shared_ptr<TextureCube> * _outTextureCube) const
-    {
-      ShaderSampler sampler;
-      if (!m_shader->getSampler(_name, &sampler))
-      {
-        return false;
-      }
-
-      if (sampler.type != GL_SAMPLER_CUBE)
-      {
-        return false;
-      }
-
-      int unit = getTextureUnit(_name);
-
-      auto texture = m_textures.find(unit);
-      assert(texture != m_textures.mend());
-
-      if (_outTextureCube != nullptr)
-      {
-        *_outTextureCube = std::static_pointer_cast<TextureCube>(m_textures[texture->second].texture);
-      }
-
-      return true;
-    }
-
-    void Material::setTexture(const std::string & _name, GLenum _type, std::shared_ptr<Texture> _texture)
-    {
-      int unit = getTextureUnit(_name);
 
       auto texture = m_textures.find(unit);
       if (texture != m_textures.mend())
@@ -267,37 +130,185 @@ namespace engine
       {
         TextureUnit texture;
         texture.type = _type;
-        texture.count = 1;
-        texture.unit = FindFreeTextureUnit();
+        texture.count = 0;
+        texture.unit = unit;
         texture.texture = std::move(_texture);
 
         m_textures.add(texture.unit, texture);
 
-        setTextureUnit(_name, texture.unit);
+        error = setTextureUnit(_sampler, texture.unit);
+        if (error != Error::OK)
+        {
+          return error;
+        }
       }
+
+      return Error::OK;
     }
 
-    bool Material::getTextureInfo(int _unit, TextureUnit * _outTexture) const
+    Material::Error Material::getTexture(const std::string & _name, std::shared_ptr<Texture2D> * _outTexture) const
     {
-      auto unit = m_textures.find(_unit);
-      if (unit == m_textures.mend()) { return false; }
+      ShaderSampler sampler;
+      if (!m_shader->getSampler(_name, &sampler))
+      {
+        return Error::INVALID_UNIFORM;
+      }
+
+      if (sampler.type != GL_SAMPLER_2D)
+      {
+        return Error::INVALID_TYPE;
+      }
+
+      int unit;
+      Error error = getTextureUnit(_name, &unit);
+      if (error != Error::OK)
+      {
+        return error;
+      }
+
+      if (unit < 0)
+      {
+        if (_outTexture != nullptr)
+        {
+          *_outTexture = nullptr;
+        }
+        return Error::OK;
+      }
+
+      auto texture = m_textures.find(unit);
+      assert(texture != m_textures.mend());
 
       if (_outTexture != nullptr)
       {
-        *_outTexture = m_textures[unit->second];
+        *_outTexture = std::dynamic_pointer_cast<Texture2D>(m_textures[texture->second].texture);
       }
 
-      return true;
+      return Error::OK;
+    }
+
+    Material::Error Material::getTexture(const std::string & _name, std::shared_ptr<TextureCube> * _outTextureCube) const
+    {
+      ShaderSampler sampler;
+      if (!m_shader->getSampler(_name, &sampler))
+      {
+        return Error::INVALID_UNIFORM;
+      }
+
+      if (sampler.type != GL_SAMPLER_CUBE)
+      {
+        return Error::INVALID_TYPE;
+      }
+
+      int unit;
+      Error error = getTextureUnit(_name, &unit);
+      if (error != Error::OK)
+      {
+        return error;
+      }
+
+      if (unit < 0)
+      {
+        if (_outTextureCube != nullptr)
+        {
+          *_outTextureCube = nullptr;
+        }
+        return Error::OK;
+      }
+
+      auto texture = m_textures.find(unit);
+      assert(texture != m_textures.mend());
+
+      if (_outTextureCube != nullptr)
+      {
+        *_outTextureCube = std::static_pointer_cast<TextureCube>(m_textures[texture->second].texture);
+      }
+
+      return Error::OK;
+    }
+
+    Material::Error Material::setTextureUnit(const std::string & _name, int _unit)
+    {
+      ShaderSampler sampler;
+      if (!m_shader->getSampler(_name, &sampler))
+      {
+        return Error::INVALID_UNIFORM;
+      }
+
+      return setTextureUnit(sampler, _unit);
+    }
+
+    Material::Error Material::setTextureUnit(const ShaderSampler & _sampler, int _unit)
+    {
+      auto textureIter = m_textures.find(_unit);
+      if (textureIter == m_textures.mend())
+      {
+        return Error::INVALID_TEXTURE_UNIT;
+      }
+
+      TextureUnit & texture = m_textures[textureIter->second];
+
+      if (texture.type != _sampler.type)
+      {
+        return Error::INVALID_TYPE;
+      }
+
+      int oldUnit;
+      Error error = getTextureUnit(_sampler, &oldUnit);
+      if (error != Error::OK)
+      {
+        return error;
+      }
+
+      if (oldUnit == _unit)
+      {
+        return Error::OK;
+      }
+
+      //remove the reference from the old unit.
+      auto oldTexture = m_textures.find(oldUnit);
+      if (oldTexture != m_textures.mend())
+      {
+        if (--m_textures[oldTexture->second].count <= 0)
+        {
+          //if there are no more references, delete the unit.
+          m_textures.remove(oldTexture);
+        }
+      }
+
+      error = setUniform<int>(m_shader->m_uniforms[_sampler.uniformIndex], _unit);
+      if (error != Error::OK)
+      {
+        return error;
+      }
+      ++texture.count;
+
+      return Error::OK;
+    }
+
+    Material::Error Material::getTextureUnit(const std::string & _name, int * _unit) const
+    {
+      ShaderSampler sampler;
+      if (!m_shader->getSampler(_name, &sampler))
+      {
+        return Error::INVALID_UNIFORM;
+      }
+
+      return getTextureUnit(sampler, _unit);
+    }
+
+    Material::Error Material::getTextureUnit(const ShaderSampler & _sampler, int * _unit) const
+    {
+      return getUniform<int>(m_shader->m_uniforms[_sampler.uniformIndex], _unit);
     }
 
     int Material::FindFreeTextureUnit() const
     {
-      int result = 0;
-      while (m_textures.find(result) != m_textures.mend())
+      int unit = 0;
+      while (m_textures.exists(unit))
       {
-        ++result;
+        ++unit;
       }
-      return result;
+      return unit;
     }
 
     std::shared_ptr<Shader> Material::getShader()

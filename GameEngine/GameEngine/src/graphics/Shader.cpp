@@ -250,6 +250,8 @@ namespace engine
           ShaderSampler sampler;
           sampler.name = name;
           sampler.type = type;
+          //should be okay as elements in the uniform list do not get removed. 
+          sampler.uniformIndex = m_uniforms.size() - 1u;
           
           m_samplers.add(name, sampler);
         }

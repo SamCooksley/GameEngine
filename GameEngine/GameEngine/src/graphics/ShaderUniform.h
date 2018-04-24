@@ -32,6 +32,7 @@ namespace engine
     {
       std::string name;
       GLenum type;
+      uint uniformIndex;
     };
 
     bool IsSupportedUniformType(GLenum _type);

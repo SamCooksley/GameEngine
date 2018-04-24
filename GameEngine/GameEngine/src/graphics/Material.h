@@ -22,6 +22,8 @@ namespace engine
     {
       friend class Shader;
     public:
+      enum class Error { OK, INVALID_UNIFORM, INVALID_TYPE, INVALID_TEXTURE_UNIT };
+
       static std::shared_ptr<Material> Create(std::shared_ptr<Shader> _shader);
       static std::shared_ptr<Material> Create(std::shared_ptr<Material> _material);
 
@@ -31,19 +33,19 @@ namespace engine
       void Unbind() const;
 
       template <typename T>
-      void setUniform(const std::string & _name, const T & _value);
+      Error setUniform(const std::string & _name, const T & _value);
 
       template <typename T>
-      bool getUniform(const std::string & _name, T * _outValue) const;
+      Error getUniform(const std::string & _name, T * _outValue) const;
 
-      void setTexture(const std::string & _name, std::shared_ptr<Texture2D> _texture);
-      void setTexture(const std::string & _name, std::shared_ptr<TextureCube> _textureCube);
+      Error setTexture(const std::string & _name, std::shared_ptr<Texture2D> _texture, bool _new = true);
+      Error setTexture(const std::string & _name, std::shared_ptr<TextureCube> _textureCube, bool _new = true);
 
-      void setTextureUnit(const std::string & _name, int _unit);
-      int getTextureUnit(const std::string & _name) const;
+      Error setTextureUnit(const std::string & _name, int _unit);
+      Error getTextureUnit(const std::string & _name, int * _unit) const;
 
-      bool getTexture(const std::string & _name, std::shared_ptr<Texture2D> * _outTexture) const;
-      bool getTexture(const std::string & _name, std::shared_ptr<TextureCube> * _outTextureCube) const;
+      Error getTexture(const std::string & _name, std::shared_ptr<Texture2D> * _outTexture) const;
+      Error getTexture(const std::string & _name, std::shared_ptr<TextureCube> * _outTextureCube) const;
       
       std::shared_ptr<Shader> getShader();
 
@@ -52,12 +54,15 @@ namespace engine
       Material();
 
     private:
-      void setUniform(const std::string & _name, const void * _data, uint _size, GLenum _type);
-      bool getUniform(const std::string & _name, void * _outValue, uint _size, GLenum _type) const;
+      template <typename T>
+      Error setUniform(const ShaderUniform & _uniform, const T & _value);
+      template <typename T>
+      Error getUniform(const ShaderUniform & _uniform, T * _outValue) const;
 
-      void setTexture(const std::string & _name, GLenum _type, std::shared_ptr<Texture> _texture);
+      Error setTexture(const ShaderSampler & _sampler, GLenum _type, std::shared_ptr<Texture> _texture, bool _new = true);
 
-      bool getTextureInfo(int _unit, TextureUnit * _outTexture) const;
+      Error setTextureUnit(const ShaderSampler & _sampler, int _unit);
+      Error getTextureUnit(const ShaderSampler & _sampler, int * _unit) const;
 
       int FindFreeTextureUnit() const;
 

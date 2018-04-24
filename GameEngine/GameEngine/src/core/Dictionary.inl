@@ -71,15 +71,15 @@ namespace engine
   template <typename key, typename value>
   bool Dictionary<key, value>::exists(const key & _key) const
   {
-    return Find(_key) != m_keyToIndex.end();
+    return find(_key) != m_keyToIndex.end();
   }
 
   template <typename key, typename value>
   void Dictionary<key, value>::add(const key & _key, const value & _value)
   {
-    if (m_keyToIndex.find(_key) != m_keyToIndex.end())
+    if (exists(_key))
     {
-      throw std::invalid_argument("key already inserted into dictionary");
+      throw std::invalid_argument("key already inserted");
     }
 
     m_list.push_back(_value);

@@ -70,6 +70,7 @@ namespace engine
     s_context->graphics.defaultMaterial = graphics::Material::Create(defaultShader);
    
     auto texture = Resources::Load<graphics::Texture2D>("resources/textures/bricks/diffuse.png");
+    auto diffuse = texture;
     //texture = Resources::Load<graphics::Texture2D>("resources/textures/bricks/diffuse.png");
     s_context->graphics.defaultMaterial->setTexture("diffuse", texture);
 

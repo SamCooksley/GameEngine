@@ -6,19 +6,26 @@ namespace engine
 {
   namespace graphics
   {
-    GLenum DrawType::ToOpenGL(DrawType::Type _type)
+    GLenum DrawTypeToOpenGL(DrawType _type)
+    {
+      return (GLenum)_type;
+    }
+
+    DrawType OpenGLToDrawType(GLenum _type)
     {
       switch (_type)
       {
-        case DrawType::Points:         { return GL_POINTS;         }
-        case DrawType::Lines:          { return GL_LINES;          }
-        case DrawType::Line_strip:     { return GL_LINE_STRIP;     }
-        case DrawType::Line_loop:      { return GL_LINE_LOOP;      }
-        case DrawType::Triangles:      { return GL_TRIANGLES;      }
-        case DrawType::Triangle_strip: { return GL_TRIANGLE_STRIP; }
-        case DrawType::Triangle_fan:   { return GL_TRIANGLE_FAN;   }
-        default: { return 0; }
+        case GL_POINTS:         { return DrawType::POINTS;         }
+        case GL_LINES:          { return DrawType::LINES;          }
+        case GL_LINE_STRIP:     { return DrawType::LINE_STRIP;     }
+        case GL_LINE_LOOP:      { return DrawType::LINE_LOOP;      }
+        case GL_TRIANGLES:      { return DrawType::TRIANGLES;      }
+        case GL_TRIANGLE_STRIP: { return DrawType::TRIANGLE_STRIP; }
+        case GL_TRIANGLE_FAN:   { return DrawType::TRIANGLE_FAN;   }
+        default: { assert(false); }
       }
+
+      return DrawType::POINTS;
     }
   }
 }

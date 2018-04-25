@@ -87,7 +87,7 @@ namespace engine
         return Error::INVALID_UNIFORM;
       }
 
-      return setTexture(sampler, GL_SAMPLER_2D, _texture, _new);
+      return setTexture(sampler, SamplerType::SAMPLER_2D, _texture, _new);
     }
 
     Material::Error Material::setTexture(const std::string & _name, std::shared_ptr<TextureCube> _textureCube, bool _new)
@@ -97,10 +97,10 @@ namespace engine
       {
         return Error::INVALID_UNIFORM;
       }
-      return setTexture(sampler, GL_SAMPLER_CUBE, _textureCube, _new);
+      return setTexture(sampler, SamplerType::SAMPLER_CUBE, _textureCube, _new);
     }
 
-    Material::Error Material::setTexture(const ShaderSampler & _sampler, GLenum _type, std::shared_ptr<Texture> _texture, bool _new)
+    Material::Error Material::setTexture(const ShaderSampler & _sampler, SamplerType _type, std::shared_ptr<Texture> _texture, bool _new)
     {
       if (_sampler.type != _type)
       {
@@ -114,13 +114,8 @@ namespace engine
         return error;
       }
 
-      if (unit < 0 || _new)
-      {
-        unit = FindFreeTextureUnit();
-      }
-
       auto texture = m_textures.find(unit);
-      if (texture != m_textures.mend())
+      if (!_new && texture != m_textures.mend())
       {
         assert(m_textures[texture->second].type == _type);
 
@@ -131,7 +126,7 @@ namespace engine
         TextureUnit texture;
         texture.type = _type;
         texture.count = 0;
-        texture.unit = unit;
+        texture.unit = FindFreeTextureUnit();
         texture.texture = std::move(_texture);
 
         m_textures.add(texture.unit, texture);
@@ -154,7 +149,7 @@ namespace engine
         return Error::INVALID_UNIFORM;
       }
 
-      if (sampler.type != GL_SAMPLER_2D)
+      if (sampler.type != SamplerType::SAMPLER_2D)
       {
         return Error::INVALID_TYPE;
       }
@@ -194,7 +189,7 @@ namespace engine
         return Error::INVALID_UNIFORM;
       }
 
-      if (sampler.type != GL_SAMPLER_CUBE)
+      if (sampler.type != SamplerType::SAMPLER_CUBE)
       {
         return Error::INVALID_TYPE;
       }

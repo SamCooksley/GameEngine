@@ -52,6 +52,7 @@
     <ClCompile Include="src\graphics\TextureCube.cpp" />
     <ClCompile Include="src\graphics\TextureTypes.cpp" />
     <ClCompile Include="src\graphics\TypeData.cpp" />
+    <ClCompile Include="src\graphics\Types.cpp" />
     <ClCompile Include="src\graphics\UniformBuffer.cpp" />
     <ClCompile Include="src\graphics\UniformBuffers.cpp" />
     <ClCompile Include="src\graphics\VertexArray.cpp" />
@@ -118,6 +119,7 @@
     <ClInclude Include="src\graphics\TextureCube.h" />
     <ClInclude Include="src\graphics\TextureTypes.h" />
     <ClInclude Include="src\graphics\TypeData.h" />
+    <ClInclude Include="src\graphics\Types.h" />
     <ClInclude Include="src\graphics\UniformBuffer.h" />
     <ClInclude Include="src\graphics\UniformBuffers.h" />
     <ClInclude Include="src\graphics\VertexArray.h" />

@@ -12,7 +12,7 @@ namespace engine
   {
     struct TextureUnit
     {
-      GLenum type;
+      SamplerType type;
       int count;
       int unit;
       std::shared_ptr<Texture> texture;
@@ -59,7 +59,7 @@ namespace engine
       template <typename T>
       Error getUniform(const ShaderUniform & _uniform, T * _outValue) const;
 
-      Error setTexture(const ShaderSampler & _sampler, GLenum _type, std::shared_ptr<Texture> _texture, bool _new = true);
+      Error setTexture(const ShaderSampler & _sampler, SamplerType _type, std::shared_ptr<Texture> _texture, bool _new = true);
 
       Error setTextureUnit(const ShaderSampler & _sampler, int _unit);
       Error getTextureUnit(const ShaderSampler & _sampler, int * _unit) const;

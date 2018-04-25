@@ -19,7 +19,7 @@ namespace engine
     template<>
     inline int Shader::RetreiveUniformValue<int>(const ShaderUniform & _uniform) const
     {
-      if (_uniform.type != GL_INT)
+      if (_uniform.type != Type::INT)
       {
         throw std::invalid_argument(
           "Shader Error: " + getName() + " uniform " + 
@@ -35,7 +35,7 @@ namespace engine
     template<>
     inline float Shader::RetreiveUniformValue<float>(const ShaderUniform & _uniform) const
     {
-      if (_uniform.type != GL_FLOAT)
+      if (_uniform.type != Type::FLOAT)
       {
         throw std::invalid_argument(
           "Shader Error: " + getName() + " uniform " +
@@ -51,7 +51,7 @@ namespace engine
     template<>
     inline glm::vec2 Shader::RetreiveUniformValue<glm::vec2>(const ShaderUniform & _uniform) const
     {
-      if (_uniform.type != GL_FLOAT_VEC2)
+      if (_uniform.type != Type::VEC2)
       {
         throw std::invalid_argument(
           "Shader Error: " + getName() + " uniform " +
@@ -67,7 +67,7 @@ namespace engine
     template<>
     inline glm::vec3 Shader::RetreiveUniformValue<glm::vec3>(const ShaderUniform & _uniform) const
     {
-      if (_uniform.type != GL_FLOAT_VEC3)
+      if (_uniform.type != Type::VEC3)
       {
         throw std::invalid_argument(
           "Shader Error: " + getName() + " uniform " +
@@ -83,7 +83,7 @@ namespace engine
     template<>
     inline glm::vec4 Shader::RetreiveUniformValue<glm::vec4>(const ShaderUniform & _uniform) const
     {
-      if (_uniform.type != GL_FLOAT_VEC4)
+      if (_uniform.type != Type::VEC4)
       {
         throw std::invalid_argument(
           "Shader Error: " + getName() + " uniform " +
@@ -99,7 +99,7 @@ namespace engine
     template<>
     inline glm::mat3 Shader::RetreiveUniformValue<glm::mat3>(const ShaderUniform & _uniform) const
     {
-      if (_uniform.type != GL_FLOAT_MAT3)
+      if (_uniform.type != Type::MAT3)
       {
         throw std::invalid_argument(
           "Shader Error: " + getName() + " uniform " +
@@ -115,7 +115,7 @@ namespace engine
     template<>
     inline glm::mat4 Shader::RetreiveUniformValue<glm::mat4>(const ShaderUniform & _uniform) const
     {
-      if (_uniform.type != GL_FLOAT_MAT4)
+      if (_uniform.type != Type::MAT4)
       {
         throw std::invalid_argument(
           "Shader Error: " + getName() + " uniform " +

@@ -8,24 +8,19 @@ namespace engine
 {
   namespace graphics
   {
-    struct DrawType
+    enum class DrawType : GLenum
     {
-    public:
-      DrawType() = delete;
-
-      using Type = uint8;
-
-      static constexpr Type Points = 0;
-      static constexpr Type Lines = 1;
-      static constexpr Type Line_strip = 2;
-      static constexpr Type Line_loop = 3;
-      static constexpr Type Triangles = 4;
-      static constexpr Type Triangle_strip = 5;
-      static constexpr Type Triangle_fan = 6;
-
-      static GLenum ToOpenGL(DrawType::Type _type);
+      POINTS = GL_POINTS,
+      LINES = GL_LINES,
+      LINE_STRIP = GL_LINE_STRIP,
+      LINE_LOOP = GL_LINE_LOOP,
+      TRIANGLES = GL_TRIANGLES,
+      TRIANGLE_STRIP = GL_TRIANGLE_STRIP,
+      TRIANGLE_FAN = GL_TRIANGLE_FAN
     };
 
+    GLenum DrawTypeToOpenGL(DrawType _type);
+    DrawType OpenGLToDrawType(GLenum _type);
   }
 }
 

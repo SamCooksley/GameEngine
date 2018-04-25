@@ -91,7 +91,7 @@ namespace engine
     }
 
     Mesh::Mesh() :
-      m_draw(DrawType::Triangles)
+      m_draw(DrawType::TRIANGLES)
     { }
 
     Mesh::~Mesh()
@@ -132,8 +132,8 @@ namespace engine
         if (attr.type != vertAttr.type)
         {
           debug::LogError(
-            "Mesh Error: " + attr.name + " not of type " + std::to_string(vertAttr.type)
-            + ". Expected " + std::to_string(attr.type)
+            "Mesh Error: " + attr.name + " not of type " + std::to_string(TypeToOpenGL(vertAttr.type))
+            + ". Expected " + std::to_string(TypeToOpenGL(attr.type))
           );
           continue;
         }
@@ -142,7 +142,7 @@ namespace engine
         GLCALL(glVertexAttribPointer(
           attr.location, 
           vertAttr.count,
-          vertAttr.component,
+          ComponentTypeToOpenGL(vertAttr.component),
           vertAttr.normalized,
           0, 
           reinterpret_cast<const void *>(vertAttr.offset)
@@ -237,7 +237,7 @@ namespace engine
       const std::string & _name, 
       const void * _data, uint _size, 
       uint _count, 
-      GLenum _type,
+      Type _type,
       bool _normalized
     )
     {
@@ -285,7 +285,7 @@ namespace engine
       const std::string & _name, 
       const void * _data, uint _size, 
       uint _count,
-      GLenum _type, 
+      Type _type,
       bool _normalized
     )
     {

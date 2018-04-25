@@ -18,8 +18,8 @@ namespace engine
       std::string name;
       uint offset;
       uint size;
-      GLenum type;
-      GLenum component;
+      Type type;
+      ComponentType component;
       uint count;
       bool normalized;
     };
@@ -62,7 +62,7 @@ namespace engine
         const std::string & _name, 
         const void * _data, uint _size, 
         uint _count,
-        GLenum _type, 
+        Type _type, 
         bool _normalized = false
       );
 
@@ -70,7 +70,7 @@ namespace engine
         const std::string & _name,
         const void * _data, uint _size, 
         uint _count, 
-        GLenum _type, 
+        Type _type,
         bool _normalized = false
       );
 
@@ -81,7 +81,7 @@ namespace engine
       std::unique_ptr<IndexBuffer> m_indices;
       std::unique_ptr<VertexBuffer> m_vbo;
 
-      DrawType::Type m_draw;
+      DrawType m_draw;
       
       std::vector<glm::vec3> m_vertices;
 

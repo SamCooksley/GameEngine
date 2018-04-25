@@ -187,7 +187,7 @@ namespace engine
         
         ShaderAttribute attribute;
         attribute.name = name;
-        attribute.type = type;
+        attribute.type = OpenGLToType(type);
         attribute.location = loc;
 
         m_attributes.add(name, attribute);
@@ -236,7 +236,7 @@ namespace engine
 
         ShaderUniform uniform;
         uniform.name = name;
-        uniform.type = isSampler ? GL_INT : type;
+        uniform.type = isSampler ? Type::INT : OpenGLToType(type);
         uniform.size = GetTypeSize(uniform.type);
         uniform.location = loc;
 
@@ -249,7 +249,7 @@ namespace engine
         {
           ShaderSampler sampler;
           sampler.name = name;
-          sampler.type = type;
+          sampler.type = OpenGLToSamplerType(type);
           //should be okay as elements in the uniform list do not get removed. 
           sampler.uniformIndex = m_uniforms.size() - 1u;
           
@@ -290,44 +290,44 @@ namespace engine
       {
         switch (uniform.type)
         {
-          case GL_INT:
+          case Type::INT:
           {
             RetreiveUniformValue<int>(uniform, data);
             break;
           }
-          case GL_FLOAT:
+          case Type::FLOAT:
           {
             RetreiveUniformValue<float>(uniform, data);
             break;
           }
-          case GL_FLOAT_VEC2:
+          case Type::VEC2:
           {
             RetreiveUniformValue<glm::vec2>(uniform, data);
             break;
           }
-          case GL_FLOAT_VEC3:
+          case Type::VEC3:
           {
             RetreiveUniformValue<glm::vec3>(uniform, data);
             break;
           }
-          case GL_FLOAT_VEC4:
+          case Type::VEC4:
           {
             RetreiveUniformValue<glm::vec4>(uniform, data);
             break;
           }
-          case GL_FLOAT_MAT3:
+          case Type::MAT3:
           {
             RetreiveUniformValue<glm::mat3>(uniform, data);
             break;
           }
-          case GL_FLOAT_MAT4:
+          case Type::MAT4:
           {
             RetreiveUniformValue<glm::mat4>(uniform, data);
             break;
           }
           default:
           {
-            debug::LogWarning("Invalid uniform type. " + std::to_string(uniform.type));
+            debug::LogWarning("Invalid uniform type. " + std::to_string(TypeToOpenGL(uniform.type)));
             break;
           }
         }
@@ -422,48 +422,51 @@ namespace engine
       GLCALL(glUniformMatrix4fv(_location, 1, GL_FALSE, glm::value_ptr(_mat)));
     }
 
-    void Shader::setUniform(GLint _location, GLenum _type, const void * _data)
+    void Shader::setUniform(GLint _location, Type _type, const void * _data)
     {
       switch (_type)
       {
-        case GL_INT:
+        case Type::INT:
         {
           setUniform(_location, *reinterpret_cast<const int*>(_data));
           break;
         }
-        case GL_FLOAT:
+        case Type::FLOAT:
         {
           setUniform(_location, *reinterpret_cast<const float*>(_data));
           break;
         }
-        case GL_FLOAT_VEC2:
+        case Type::VEC2:
         {
           setUniform(_location, *reinterpret_cast<const glm::vec2*>(_data));
           break;
         }
-        case GL_FLOAT_VEC3:
+        case Type::VEC3:
         {
           setUniform(_location, *reinterpret_cast<const glm::vec3*>(_data));
           break;
         }
-        case GL_FLOAT_VEC4:
+        case Type::VEC4:
         {
           setUniform(_location, *reinterpret_cast<const glm::vec4*>(_data));
           break;
         }
-        case GL_FLOAT_MAT3:
+        case Type::MAT3:
         {
           setUniform(_location, *reinterpret_cast<const glm::mat3*>(_data));
           break;
         }
-        case GL_FLOAT_MAT4:
+        case Type::MAT4:
         {
           setUniform(_location, *reinterpret_cast<const glm::mat4*>(_data));
           break;
         }
         default:
         {
-          debug::LogError("Shader Error: invalid uniform type: " + std::to_string(_type) + " in shader " + getName());
+          debug::LogError(
+            "Shader Error: invalid uniform type: " + std::to_string(TypeToOpenGL(_type))
+            + " in shader " + getName()
+          );
           break;
         }
       }

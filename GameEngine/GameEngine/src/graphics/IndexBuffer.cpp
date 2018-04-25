@@ -64,9 +64,9 @@ namespace engine
       GLCALL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
     }
 
-    void IndexBuffer::Draw(DrawType::Type _draw) const
+    void IndexBuffer::Draw(DrawType _draw) const
     {
-      GLCALL(glDrawElements(DrawType::ToOpenGL(_draw), m_count, m_type, reinterpret_cast<const void *>(0)));
+      GLCALL(glDrawElements(DrawTypeToOpenGL(_draw), m_count, m_type, reinterpret_cast<const void *>(0)));
     }
   }
 }

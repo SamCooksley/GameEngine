@@ -20,7 +20,7 @@ namespace engine
       void Bind() const;
       void Unbind() const;
 
-      void Draw(DrawType::Type _draw) const;
+      void Draw(DrawType _draw) const;
 
     private:
       GLuint m_vbo;

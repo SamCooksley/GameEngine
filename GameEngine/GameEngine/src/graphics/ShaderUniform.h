@@ -12,17 +12,26 @@ namespace engine
 {
   namespace graphics
   {
+    enum class SamplerType
+    {
+      SAMPLER_2D = GL_SAMPLER_2D,
+      SAMPLER_CUBE = GL_SAMPLER_CUBE
+    };
+
+    GLenum SamplerTypeToOpenGL(SamplerType _sampler);
+    SamplerType OpenGLToSamplerType(GLenum _sampler);
+
     struct ShaderAttribute
     {
       std::string name;
-      GLenum type;
+      Type type;
       GLint location;
     };
 
     struct ShaderUniform
     {
       std::string name;
-      GLenum type;
+      Type type;
       uint size;
       GLint location;
       int offset;
@@ -31,7 +40,7 @@ namespace engine
     struct ShaderSampler
     {
       std::string name;
-      GLenum type;
+      SamplerType type;
       uint uniformIndex;
     };
 

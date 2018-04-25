@@ -10,7 +10,7 @@ namespace engine
   {
   public:
     using list = std::vector<value>;
-    using map = std::map<key, size_t>;
+    using map = std::unordered_map<key, size_t>;
     using iterator = typename list::iterator;
     using const_iterator = typename list::const_iterator;
     using map_iterator = typename map::const_iterator;

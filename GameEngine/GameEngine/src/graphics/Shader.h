@@ -81,7 +81,7 @@ namespace engine
       void setUniform(GLint _location, const glm::mat3& _mat);
       void setUniform(GLint _location, const glm::mat4& _mat);
 
-      void setUniform(GLint _location, GLenum _type, const void * _data);
+      void setUniform(GLint _location, Type _type, const void * _data);
 
       bool getAttribute(const std::string & _name, ShaderAttribute * _outAttribute) const;
       bool getUniform(const std::string & _name, ShaderUniform * _outUniform) const;

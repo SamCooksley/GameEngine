@@ -8,6 +8,7 @@ namespace engine
 {
   namespace graphics
   {
+    //enum class 
     struct ShaderType
     {
     public:

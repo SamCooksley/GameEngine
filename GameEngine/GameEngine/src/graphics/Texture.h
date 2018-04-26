@@ -11,6 +11,8 @@ namespace engine
   {
     class Texture : public Object, public NonCopyable
     {
+      friend class FrameBuffer;
+
     public:
       virtual ~Texture();
 

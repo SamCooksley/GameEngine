@@ -33,6 +33,7 @@
     <ClCompile Include="src\GameObject.cpp" />
     <ClCompile Include="src\graphics\BaseRenderer.cpp" />
     <ClCompile Include="src\graphics\CameraBuffer.cpp" />
+    <ClCompile Include="src\graphics\FrameBuffer.cpp" />
     <ClCompile Include="src\graphics\Graphics_Camera.cpp" />
     <ClCompile Include="src\graphics\DefaultRenderer.cpp" />
     <ClCompile Include="src\graphics\DrawType.cpp" />
@@ -42,6 +43,7 @@
     <ClCompile Include="src\graphics\Material.cpp" />
     <ClCompile Include="src\graphics\Mesh.cpp" />
     <ClCompile Include="src\graphics\opengl.cpp" />
+    <ClCompile Include="src\graphics\RenderBuffer.cpp" />
     <ClCompile Include="src\graphics\Renderer.cpp" />
     <ClCompile Include="src\graphics\Shader.cpp" />
     <ClCompile Include="src\graphics\ShaderType.cpp" />
@@ -99,6 +101,7 @@
     <ClInclude Include="src\GameObject.h" />
     <ClInclude Include="src\graphics\BaseRenderer.h" />
     <ClInclude Include="src\graphics\CameraBuffer.h" />
+    <ClInclude Include="src\graphics\FrameBuffer.h" />
     <ClInclude Include="src\graphics\Graphics_Camera.h" />
     <ClInclude Include="src\graphics\DefaultRenderer.h" />
     <ClInclude Include="src\graphics\DrawType.h" />
@@ -109,6 +112,7 @@
     <ClInclude Include="src\graphics\Material.h" />
     <ClInclude Include="src\graphics\Mesh.h" />
     <ClInclude Include="src\graphics\opengl.h" />
+    <ClInclude Include="src\graphics\RenderBuffer.h" />
     <ClInclude Include="src\graphics\Renderer.h" />
     <ClInclude Include="src\graphics\Shader.h" />
     <ClInclude Include="src\graphics\ShaderType.h" />

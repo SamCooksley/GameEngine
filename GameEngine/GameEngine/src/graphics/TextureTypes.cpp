@@ -6,6 +6,23 @@ namespace engine
 {
   namespace graphics
   {
+    GLenum SamplerTypeToOpenGL(SamplerType _sampler)
+    {
+      return (GLenum)_sampler;
+    }
+
+    SamplerType OpenGLToSamplerType(GLenum _sampler)
+    {
+      switch (_sampler)
+      {
+      case GL_SAMPLER_2D:   { return SamplerType::SAMPLER_2D;   }
+      case GL_SAMPLER_CUBE: { return SamplerType::SAMPLER_CUBE; }
+      default: { assert(false); }
+      }
+
+      return SamplerType::SAMPLER_2D;
+    }
+
     GLenum TextureBaseFormatToOpenGL(TextureBaseFormat _format)
     {
       return (GLenum)_format;
@@ -45,7 +62,7 @@ namespace engine
       return TextureFormat::RGBA8;
     }
 
-    TextureBaseFormat TextureBaseFormatToOpenGL(TextureFormat _format)
+    TextureBaseFormat TextureFormatBase(TextureFormat _format)
     {
       switch (_format)
       {

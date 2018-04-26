@@ -47,6 +47,28 @@ namespace engine
       return cube;
     }
 
+    std::shared_ptr<TextureCube> TextureCube::Create(uint _width, uint _height, TextureFormat _format, TextureType _type)
+    {
+      auto cube = Create();
+      cube->setFilter(TextureFilter::LINEAR);
+
+      for (size_t i = 0; i < 6; ++i)
+      {
+        GLCALL(
+          glTexImage2D(
+            GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0,
+            TextureFormatToOpenGL(_format),
+            _width, _height, 0,
+            TextureBaseFormatToOpenGL(TextureFormatBase(_format)),
+            TextureTypeToOpenGL(_type),
+            nullptr
+          )
+        );
+      }
+
+      return cube;
+    }
+
     std::shared_ptr<TextureCube> TextureCube::Create(uint _width, uint _height, const glm::vec4 & _colour)
     {
       std::vector<float> pixels(_width * _height * 4);

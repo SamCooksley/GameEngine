@@ -7,6 +7,15 @@ namespace engine
 {
   namespace graphics
   {
+    enum class SamplerType
+    {
+      SAMPLER_2D = GL_SAMPLER_2D,
+      SAMPLER_CUBE = GL_SAMPLER_CUBE
+    };
+
+    GLenum SamplerTypeToOpenGL(SamplerType _sampler);
+    SamplerType OpenGLToSamplerType(GLenum _sampler);
+
     enum class TextureBaseFormat : GLenum
     {
       RGBA = GL_RGBA,
@@ -30,7 +39,7 @@ namespace engine
     GLenum TextureFormatToOpenGL(TextureFormat _format);
     TextureFormat OpenGLToTextureFormat(GLenum _format);
 
-    TextureBaseFormat TextureBaseFormatToOpenGL(TextureFormat _format);
+    TextureBaseFormat TextureFormatBase(TextureFormat _format);
 
     enum class TextureType : GLenum
     {

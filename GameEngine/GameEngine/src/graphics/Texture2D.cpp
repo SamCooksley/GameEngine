@@ -15,6 +15,29 @@ namespace engine
       return std::make_shared<enable_texture>();
     }
 
+    std::shared_ptr<Texture2D> Texture2D::Create(uint _width, uint _height, TextureFormat _format, TextureType _type)
+    {
+      auto texture = Create();
+      texture->m_width = _width;
+      texture->m_height = _height;
+
+      GLCALL(
+        glTexImage2D(
+          GL_TEXTURE_2D, 0,
+          TextureFormatToOpenGL(_format),
+          _width, _height, 0,
+          TextureBaseFormatToOpenGL(TextureFormatBase(_format)),
+          TextureTypeToOpenGL(_type),
+          nullptr
+        )
+      );
+
+      texture->setWrap(TextureWrap::CLAMP_TO_EDGE);
+      texture->setFilter(TextureFilter::LINEAR);
+
+      return texture;
+    }
+
     std::shared_ptr<Texture2D> Texture2D::Create(uint _width, uint _height, const glm::vec4 & _colour)
     {
       std::vector<float> pixels(_width * _height * 4u);

@@ -10,6 +10,7 @@ namespace engine
     class Texture2D : public Texture
     {
     public:
+      static std::shared_ptr<Texture2D> Create(uint _width, uint _height, TextureFormat _format, TextureType _type);
       static std::shared_ptr<Texture2D> Create(uint _width, uint _height, const glm::vec4 & _colour);
 
       static std::shared_ptr<Texture2D> Load(const std::string & _path, bool _mipmaps = true);

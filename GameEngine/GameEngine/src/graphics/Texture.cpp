@@ -6,8 +6,8 @@ namespace engine
 {
   namespace graphics
   {
-    Texture::Texture() : 
-      m_id(0)
+    Texture::Texture(TextureType _type) : 
+      type(_type), m_id(0)
     { }
 
     Texture::~Texture()

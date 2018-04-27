@@ -32,9 +32,9 @@ namespace engine
 
       void Clear();
 
-      std::shared_ptr<Texture2D> AddTexture(FrameBufferAttachment _attachment, TextureFormat _format, TextureType _type);
+      std::shared_ptr<Texture2D> AddTexture(FrameBufferAttachment _attachment, TextureFormat _format, TextureDataType _type);
       
-      std::shared_ptr<TextureCube> AddCubeMap(FrameBufferAttachment _attachment, TextureFormat _format, TextureType _type);
+      std::shared_ptr<TextureCube> AddCubeMap(FrameBufferAttachment _attachment, TextureFormat _format, TextureDataType _type);
 
       bool AddRenderBuffer(FrameBufferAttachment _attachment, TextureFormat _format);
 
@@ -46,12 +46,6 @@ namespace engine
 
       bool Check() const;
 
-      struct TextureContainer
-      {
-        SamplerType type;
-        std::shared_ptr<Texture> texture;
-      };
-
       GLuint m_fbo;
 
       glm::vec4 m_clearColour;
@@ -61,7 +55,7 @@ namespace engine
 
       uint m_colourAttachmentCount;
 
-      std::vector<TextureContainer> m_textures;
+      std::vector<std::shared_ptr<Texture>> m_textures;
       std::vector<std::unique_ptr<RenderBuffer>> m_renderBuffers;
     };
   }

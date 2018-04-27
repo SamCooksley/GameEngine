@@ -31,12 +31,9 @@ namespace engine
     struct ShaderSampler
     {
       std::string name;
-      SamplerType type;
+      TextureType type;
       uint uniformIndex;
     };
-
-    bool IsSupportedUniformType(GLenum _type);
-    bool IsSamplerUniformType(GLenum _type);
   }
 }
 

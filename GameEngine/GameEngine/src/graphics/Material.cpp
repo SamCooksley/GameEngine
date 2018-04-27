@@ -87,7 +87,7 @@ namespace engine
         return Error::INVALID_UNIFORM;
       }
 
-      return setTexture(sampler, SamplerType::SAMPLER_2D, _texture, _new);
+      return setTexture(sampler, TextureType::TEXTURE_2D, _texture, _new);
     }
 
     Material::Error Material::setTexture(const std::string & _name, std::shared_ptr<TextureCube> _textureCube, bool _new)
@@ -97,10 +97,11 @@ namespace engine
       {
         return Error::INVALID_UNIFORM;
       }
-      return setTexture(sampler, SamplerType::SAMPLER_CUBE, _textureCube, _new);
+
+      return setTexture(sampler, TextureType::TEXTURE_CUBE, _textureCube, _new);
     }
 
-    Material::Error Material::setTexture(const ShaderSampler & _sampler, SamplerType _type, std::shared_ptr<Texture> _texture, bool _new)
+    Material::Error Material::setTexture(const ShaderSampler & _sampler, TextureType _type, std::shared_ptr<Texture> _texture, bool _new)
     {
       if (_sampler.type != _type)
       {
@@ -117,14 +118,13 @@ namespace engine
       auto texture = m_textures.find(unit);
       if (!_new && texture != m_textures.mend())
       {
-        assert(m_textures[texture->second].type == _type);
+        assert(m_textures[texture->second].texture->type == _type);
 
         m_textures[texture->second].texture = std::move(_texture);
       }
       else
       {
         TextureUnit texture;
-        texture.type = _type;
         texture.count = 0;
         texture.unit = FindFreeTextureUnit();
         texture.texture = std::move(_texture);
@@ -149,7 +149,7 @@ namespace engine
         return Error::INVALID_UNIFORM;
       }
 
-      if (sampler.type != SamplerType::SAMPLER_2D)
+      if (sampler.type != TextureType::TEXTURE_2D)
       {
         return Error::INVALID_TYPE;
       }
@@ -189,7 +189,7 @@ namespace engine
         return Error::INVALID_UNIFORM;
       }
 
-      if (sampler.type != SamplerType::SAMPLER_CUBE)
+      if (sampler.type != TextureType::TEXTURE_CUBE)
       {
         return Error::INVALID_TYPE;
       }
@@ -242,7 +242,7 @@ namespace engine
 
       TextureUnit & texture = m_textures[textureIter->second];
 
-      if (texture.type != _sampler.type)
+      if (texture.texture->type != _sampler.type)
       {
         return Error::INVALID_TYPE;
       }

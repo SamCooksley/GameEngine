@@ -12,6 +12,32 @@ namespace engine
 {
   namespace graphics 
   {
+    static bool IsSupportedSamplerUniformType(GLenum _type)
+    {
+      try
+      {
+        OpenGLToTextureTypeSampler(_type);
+        return true;
+      }
+      catch (std::invalid_argument & _e)
+      {
+        return false;
+      }
+    }
+
+    static bool IsSupportedUniformType(GLenum _type)
+    {
+      try
+      {
+        OpenGLToType(_type);
+        return true;
+      }
+      catch (std::invalid_argument & _e)
+      { }
+
+      return IsSupportedSamplerUniformType(_type);
+    }
+
     const std::string Shader::PROJECTION_NAME = "projection";
     const std::string Shader::VIEW_NAME       = "view";
     const std::string Shader::MODEL_NAME      = "model";
@@ -232,7 +258,7 @@ namespace engine
           continue;
         }
 
-        bool isSampler = IsSamplerUniformType(type);
+        bool isSampler = IsSupportedSamplerUniformType(type);
 
         ShaderUniform uniform;
         uniform.name = name;
@@ -249,7 +275,7 @@ namespace engine
         {
           ShaderSampler sampler;
           sampler.name = name;
-          sampler.type = OpenGLToSamplerType(type);
+          sampler.type = OpenGLToTextureTypeSampler(type);
           //should be okay as elements in the uniform list do not get removed. 
           sampler.uniformIndex = m_uniforms.size() - 1u;
           

@@ -47,23 +47,21 @@ namespace engine
       return cube;
     }
 
-    std::shared_ptr<TextureCube> TextureCube::Create(uint _width, uint _height, TextureFormat _format, TextureType _type)
+    std::shared_ptr<TextureCube> TextureCube::Create(uint _width, uint _height, TextureFormat _format, TextureDataType _type)
     {
       auto cube = Create();
       cube->setFilter(TextureFilter::LINEAR);
 
-      for (size_t i = 0; i < 6; ++i)
+      for (size_t i = 0u; i < 6u; ++i)
       {
-        GLCALL(
-          glTexImage2D(
+        GLCALL(glTexImage2D(
             GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0,
             TextureFormatToOpenGL(_format),
             _width, _height, 0,
             TextureBaseFormatToOpenGL(TextureFormatBase(_format)),
-            TextureTypeToOpenGL(_type),
+            TextureDataTypeToOpenGL(_type),
             nullptr
-          )
-        );
+        ));
       }
 
       return cube;
@@ -95,7 +93,7 @@ namespace engine
       return cube;
     }
 
-    TextureCube::TextureCube()
+    TextureCube::TextureCube() : Texture(TextureType::TEXTURE_CUBE)
     {
       GLCALL(glGenTextures(1, &m_id));
       GLCALL(glBindTexture(GL_TEXTURE_CUBE_MAP, m_id));

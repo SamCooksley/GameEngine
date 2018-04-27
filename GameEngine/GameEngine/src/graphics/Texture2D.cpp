@@ -15,7 +15,7 @@ namespace engine
       return std::make_shared<enable_texture>();
     }
 
-    std::shared_ptr<Texture2D> Texture2D::Create(uint _width, uint _height, TextureFormat _format, TextureType _type)
+    std::shared_ptr<Texture2D> Texture2D::Create(uint _width, uint _height, TextureFormat _format, TextureDataType _type)
     {
       auto texture = Create();
       texture->m_width = _width;
@@ -27,7 +27,7 @@ namespace engine
           TextureFormatToOpenGL(_format),
           _width, _height, 0,
           TextureBaseFormatToOpenGL(TextureFormatBase(_format)),
-          TextureTypeToOpenGL(_type),
+          TextureDataTypeToOpenGL(_type),
           nullptr
         )
       );
@@ -92,7 +92,7 @@ namespace engine
       return texture;
     }
 
-    Texture2D::Texture2D()
+    Texture2D::Texture2D() : Texture(TextureType::TEXTURE_2D)
     {
       GLCALL(glGenTextures(1, &m_id));
       GLCALL(glBindTexture(GL_TEXTURE_2D, m_id));

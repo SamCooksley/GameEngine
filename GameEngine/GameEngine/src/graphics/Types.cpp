@@ -22,10 +22,11 @@ namespace engine
         case GL_FLOAT_VEC4: { return Type::VEC4;  }
         case GL_FLOAT_MAT3: { return Type::MAT3;  }
         case GL_FLOAT_MAT4: { return Type::MAT4;  }
-        default: { assert(false); }
+        default: 
+        {
+          throw std::invalid_argument("Invalid data type");
+        }
       }
-
-      return Type::INT;
     }
 
     GLenum ComponentTypeToOpenGL(ComponentType _type)
@@ -39,7 +40,10 @@ namespace engine
       {
         case GL_INT:   { return ComponentType::INT;   }
         case GL_FLOAT: { return ComponentType::FLOAT; }
-        default: { assert(false); }
+        default: 
+        {
+          throw std::invalid_argument("Invalid component type");
+        }
       }
 
       return ComponentType::INT;

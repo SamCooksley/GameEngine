@@ -6,21 +6,49 @@ namespace engine
 {
   namespace graphics
   {
-    GLenum SamplerTypeToOpenGL(SamplerType _sampler)
+    GLenum TextureTypeToOpenGL(TextureType _type)
     {
-      return (GLenum)_sampler;
+      return (GLenum)_type;
     }
 
-    SamplerType OpenGLToSamplerType(GLenum _sampler)
+    TextureType OpenGLToTextureType(GLenum _type)
     {
-      switch (_sampler)
+      switch (_type)
       {
-      case GL_SAMPLER_2D:   { return SamplerType::SAMPLER_2D;   }
-      case GL_SAMPLER_CUBE: { return SamplerType::SAMPLER_CUBE; }
-      default: { assert(false); }
+        case GL_TEXTURE_2D:       { return TextureType::TEXTURE_2D;   }
+        case GL_TEXTURE_CUBE_MAP: { return TextureType::TEXTURE_CUBE; }
+        default: 
+        {
+          throw std::invalid_argument("Invalid texture type");
+        }
       }
+    }
 
-      return SamplerType::SAMPLER_2D;
+    GLenum TextureTypeToOpenGLSampler(TextureType _type)
+    {
+      //map specific values as the enum values are opengl textures, not samplers.
+      switch (_type)
+      {
+        case TextureType::TEXTURE_2D:   { return GL_SAMPLER_2D;   }
+        case TextureType::TEXTURE_CUBE: { return GL_SAMPLER_CUBE; }
+        default: 
+        { 
+          throw std::invalid_argument("Invalid texture type");
+        }
+      }
+    }
+
+    TextureType OpenGLToTextureTypeSampler(GLenum _type)
+    {
+      switch (_type)
+      {
+        case GL_SAMPLER_2D:   { return TextureType::TEXTURE_2D;   }
+        case GL_SAMPLER_CUBE: { return TextureType::TEXTURE_CUBE; }
+        default:
+        { 
+          throw std::invalid_argument("Invalid sampler type");
+        }
+      }
     }
 
     GLenum TextureBaseFormatToOpenGL(TextureBaseFormat _format)
@@ -35,10 +63,11 @@ namespace engine
         case GL_RGBA:            { return TextureBaseFormat::RGBA;            }
         case GL_DEPTH_COMPONENT: { return TextureBaseFormat::DEPTH_COMPONENT; }
         case GL_DEPTH_STENCIL:   { return TextureBaseFormat::DEPTH_STENCIL;   }
-        default: { assert(false); }
+        default: 
+        { 
+          throw std::invalid_argument("Invalid base texture format");
+        }
       }
-
-      return TextureBaseFormat::RGBA;
     }
 
     GLenum TextureFormatToOpenGL(TextureFormat _format)
@@ -56,10 +85,11 @@ namespace engine
         case GL_DEPTH_COMPONENT24:  { return TextureFormat::DEPTH_COMPONENT24;  }
         case GL_DEPTH_COMPONENT32F: { return TextureFormat::DEPTH_COMPONENT32F; }
         case GL_DEPTH24_STENCIL8:   { return TextureFormat::DEPTH24_STENCIL8;   }
-        default: { assert(false); }
+        default: 
+        {
+          throw std::invalid_argument("Invalid texture format");
+        }
       }
-
-      return TextureFormat::RGBA8;
     }
 
     TextureBaseFormat TextureFormatBase(TextureFormat _format)
@@ -72,27 +102,29 @@ namespace engine
         case TextureFormat::DEPTH_COMPONENT24:  { return TextureBaseFormat::DEPTH_COMPONENT; }
         case TextureFormat::DEPTH_COMPONENT32F: { return TextureBaseFormat::DEPTH_COMPONENT; }
         case TextureFormat::DEPTH24_STENCIL8:   { return TextureBaseFormat::DEPTH_STENCIL;   }
-        default: { assert(false); }
+        default: 
+        {
+          throw std::invalid_argument("Invalid texture format");
+        }
       }
-
-      return TextureBaseFormat::RGBA;
     }
 
-    GLenum TextureTypeToOpenGL(TextureType _type)
+    GLenum TextureDataTypeToOpenGL(TextureDataType _type)
     {
       return (GLenum)_type;
     }
 
-    TextureType OpenGLToTextureType(GLenum _type)
+    TextureDataType OpenGLToTextureDataType(GLenum _type)
     {
       switch (_type)
       {
-        case GL_UNSIGNED_BYTE: { return TextureType::UNSIGNED_BYTE; }
-        case GL_FLOAT:         { return TextureType::FLOAT;         }
-        default: { assert(false); }
+        case GL_UNSIGNED_BYTE: { return TextureDataType::UNSIGNED_BYTE; }
+        case GL_FLOAT:         { return TextureDataType::FLOAT;         }
+        default: 
+        {
+          throw std::invalid_argument("Invalid texture data type");
+        }
       }
-
-      return TextureType::UNSIGNED_BYTE;
     }
 
     GLenum TextureWrapToOpenGL(TextureWrap _wrap)
@@ -108,10 +140,11 @@ namespace engine
         case GL_MIRRORED_REPEAT: { return TextureWrap::MIRROR_REPEAT;   }
         case GL_CLAMP_TO_EDGE:   { return TextureWrap::CLAMP_TO_EDGE;   }
         case GL_CLAMP_TO_BORDER: { return TextureWrap::CLAMP_TO_BORDER; }
-        default: { assert(false); }
+        default: 
+        { 
+          throw std::invalid_argument("Invalid texture wrap");
+        }
       }
-
-      return TextureWrap::REPEAT;
     }
 
     GLenum TextureFilterToOpenGL(TextureFilter _filter)
@@ -125,10 +158,11 @@ namespace engine
       {
         case GL_LINEAR: { return TextureFilter::LINEAR; }
         case GL_NEAREST: { return TextureFilter::NEAREST; }
-        default: { assert(false); }
+        default: 
+        { 
+          throw std::invalid_argument("Invalid texture filter.");
+        }
       }
-
-      return TextureFilter::LINEAR;
     }
   }
 }

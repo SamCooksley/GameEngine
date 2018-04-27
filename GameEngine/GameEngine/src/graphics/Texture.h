@@ -14,13 +14,15 @@ namespace engine
       friend class FrameBuffer;
 
     public:
+      const TextureType type;
+
       virtual ~Texture();
 
       virtual void Bind(GLenum _unit) const = 0;
       virtual void Unbind(GLenum _unit) const = 0;
 
     protected:
-      Texture();
+      Texture(TextureType _type);
 
       GLuint m_id;
     };

@@ -7,14 +7,17 @@ namespace engine
 {
   namespace graphics
   {
-    enum class SamplerType
+    enum class TextureType : GLenum
     {
-      SAMPLER_2D = GL_SAMPLER_2D,
-      SAMPLER_CUBE = GL_SAMPLER_CUBE
+      TEXTURE_2D = GL_TEXTURE_2D,
+      TEXTURE_CUBE = GL_TEXTURE_CUBE_MAP
     };
 
-    GLenum SamplerTypeToOpenGL(SamplerType _sampler);
-    SamplerType OpenGLToSamplerType(GLenum _sampler);
+    GLenum TextureTypeToOpenGL(TextureType _type);
+    TextureType OpenGLToTextureType(GLenum _type); 
+
+    GLenum TextureTypeToOpenGLSampler(TextureType _type);
+    TextureType OpenGLToTextureTypeSampler(GLenum _type);
 
     enum class TextureBaseFormat : GLenum
     {
@@ -41,14 +44,14 @@ namespace engine
 
     TextureBaseFormat TextureFormatBase(TextureFormat _format);
 
-    enum class TextureType : GLenum
+    enum class TextureDataType : GLenum
     {
       UNSIGNED_BYTE = GL_UNSIGNED_BYTE,
       FLOAT = GL_FLOAT
     };
 
-    GLenum TextureTypeToOpenGL(TextureType _type);
-    TextureType OpenGLToTextureType(GLenum _type);
+    GLenum TextureDataTypeToOpenGL(TextureDataType _type);
+    TextureDataType OpenGLToTextureDataType(GLenum _type);
 
     enum class TextureWrap : GLenum
     {

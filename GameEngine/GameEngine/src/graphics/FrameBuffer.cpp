@@ -65,7 +65,7 @@ namespace engine
       GLCALL(glClear(m_clearFlags));
     }
 
-    std::shared_ptr<Texture2D> FrameBuffer::AddTexture(FrameBufferAttachment _attachment, TextureFormat _format, TextureType _type)
+    std::shared_ptr<Texture2D> FrameBuffer::AddTexture(FrameBufferAttachment _attachment, TextureFormat _format, TextureDataType _type)
     {
       auto texture = Texture2D::Create(m_width, m_height, _format, _type);
       texture->setFilter(TextureFilter::LINEAR);
@@ -86,16 +86,12 @@ namespace engine
         return nullptr;
       }
 
-      TextureContainer tex;
-      tex.type = SamplerType::SAMPLER_2D;
-      tex.texture = texture;
-
-      m_textures.push_back(tex);
+      m_textures.push_back(texture);
 
       return std::move(texture);
     }
 
-    std::shared_ptr<TextureCube> FrameBuffer::AddCubeMap(FrameBufferAttachment _attachment, TextureFormat _format, TextureType _type)
+    std::shared_ptr<TextureCube> FrameBuffer::AddCubeMap(FrameBufferAttachment _attachment, TextureFormat _format, TextureDataType _type)
     {
       auto cube = TextureCube::Create(m_width, m_height, _format, _type);
       cube->setFilter(TextureFilter::LINEAR);
@@ -114,11 +110,7 @@ namespace engine
         return nullptr;
       }
 
-      TextureContainer tex;
-      tex.type = SamplerType::SAMPLER_2D;
-      tex.texture = cube;
-
-      m_textures.push_back(tex);
+      m_textures.push_back(cube);
 
       return std::move(cube);
     }

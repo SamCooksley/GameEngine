@@ -22,10 +22,11 @@ namespace engine
         case GL_TRIANGLES:      { return DrawType::TRIANGLES;      }
         case GL_TRIANGLE_STRIP: { return DrawType::TRIANGLE_STRIP; }
         case GL_TRIANGLE_FAN:   { return DrawType::TRIANGLE_FAN;   }
-        default: { assert(false); }
+        default: 
+        {
+          throw std::invalid_argument("Invalid draw type.");
+        }
       }
-
-      return DrawType::POINTS;
     }
   }
 }

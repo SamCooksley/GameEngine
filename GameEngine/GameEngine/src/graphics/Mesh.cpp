@@ -27,18 +27,18 @@ namespace engine
         mesh->setName(parser.getName());
 
         auto vertices = parser.getVertices();
-        mesh->setVertices(&vertices[0], vertices.size());
+        mesh->AddVertices(&vertices[0], vertices.size());
         
         if (parser.HasUVs())
         {
           auto uvs = parser.getUVs();
-          mesh->setUVs(&uvs[0], uvs.size());
+          mesh->AddUVs(&uvs[0], uvs.size());
         }
 
         if (parser.HasNormals())
         {
           auto normals = parser.getNormals();
-          mesh->setNormals(&normals[0], normals.size());
+          mesh->AddNormals(&normals[0], normals.size());
         }
 
         if (parser.HasUVs() && parser.HasNormals())
@@ -53,8 +53,8 @@ namespace engine
             &bitangents
           );
 
-          mesh->setAttribute(Shader::ATTR_TANGENT_NAME, &tangents[0], tangents.size());
-          mesh->setAttribute(Shader::ATTR_BITANGENT_NAME, &bitangents[0], bitangents.size());
+          mesh->AddAttribute(Shader::ATTR_TANGENT_NAME, &tangents[0], tangents.size());
+          mesh->AddAttribute(Shader::ATTR_BITANGENT_NAME, &bitangents[0], bitangents.size());
         }
 
         if (parser.CanUseIndex8())
@@ -91,7 +91,7 @@ namespace engine
     }
 
     Mesh::Mesh() :
-      m_draw(DrawType::TRIANGLES)
+      m_draw(DrawType::TRIANGLES), m_interleaved(true)
     { }
 
     Mesh::~Mesh()
@@ -99,123 +99,127 @@ namespace engine
 
     void Mesh::Render() const
     {
-      //get currently active shader.
-      //Render(Graphics::getActiveShader());
-    }
-
-    void Mesh::Render(Shader & _shader) const
-    {
-      if (!m_vbo || !m_indices)
+      if (!m_vao || !m_indices)
       {
         debug::LogError("Mesh " + getName() + " does not exist.");
         return;
       }
 
-      m_vbo->Bind();
-
-      size_t attrCount = m_attributes.size();
-      std::vector<ShaderAttribute> attrs(attrCount);
-
-      for (size_t i = 0; i < attrCount; ++i)
-      {
-        const VertexAttribute & vertAttr = m_attributes[i];
-        ShaderAttribute & attr = attrs[i];
-        attr.location = -1;
-
-        if (!_shader.getAttribute(vertAttr.name, &attr))
-        {
-          continue;
-        }
-
-        if (attr.location < 0) { continue; }
-
-        if (attr.type != vertAttr.type)
-        {
-          debug::LogError(
-            "Mesh Error: " + attr.name + " not of type " + std::to_string(TypeToOpenGL(vertAttr.type))
-            + ". Expected " + std::to_string(TypeToOpenGL(attr.type))
-          );
-          continue;
-        }
-
-        GLCALL(glEnableVertexAttribArray(attr.location));
-        GLCALL(glVertexAttribPointer(
-          attr.location, 
-          vertAttr.count,
-          ComponentTypeToOpenGL(vertAttr.component),
-          vertAttr.normalized,
-          0, 
-          reinterpret_cast<const void *>(vertAttr.offset)
-        ));
-      }
-
+      m_vao->Bind();
 
       m_indices->Bind();
       m_indices->Draw(m_draw);
       m_indices->Unbind();
 
-      for (auto & attr : attrs)
-      {
-        if (attr.location >= 0)
-        {
-          GLCALL(glDisableVertexAttribArray(attr.location));
-        }
-      }
-
-      m_vbo->Unbind();
+      m_vao->Unbind();
     }
 
     void Mesh::setIndices(const uint8 * _indices, uint _count)
     {
       m_indexData.resize(sizeof(uint8) * _count);
       memcpy(&m_indexData[0], _indices, sizeof(uint8) * _count);
-      m_indexType = GL_UNSIGNED_BYTE;
+      m_indexType = IndexType::UNSIGNED_BYTE;
     }
 
     void Mesh::setIndices(const uint16 * _indices, uint _count)
     {
       m_indexData.resize(sizeof(uint16) * _count);
       memcpy(&m_indexData[0], _indices, sizeof(uint16) * _count);
-      m_indexType = GL_UNSIGNED_SHORT;
+      m_indexType = IndexType::UNSIGNED_SHORT;
     }
 
     void Mesh::setIndices(const uint32 * _indices, uint _count)
     {
       m_indexData.resize(sizeof(uint32) * _count);
       memcpy(&m_indexData[0], _indices, sizeof(uint32) * _count);
-      m_indexType = GL_UNSIGNED_INT;
+      m_indexType = IndexType::UNSIGNED_INT;
     }
 
-    void Mesh::setVertices(const glm::vec3 * _vertices, uint _count)
+    void Mesh::AddVertices(const glm::vec3 * _vertices, uint _count)
     {
-      ClearAttributes();
       m_vertices.resize(_count);
       memcpy(&m_vertices[0], _vertices, sizeof(glm::vec3) * _count);
-      setAttribute<glm::vec3>(Shader::ATTR_POSITION_NAME, _vertices, _count);
+      AddAttribute<glm::vec3>(Shader::ATTR_POSITION_NAME, _vertices, _count);
     }
 
-    void Mesh::setUVs(const glm::vec2 * _uvs, uint _count)
+    void Mesh::AddUVs(const glm::vec2 * _uvs, uint _count)
     {
-      setAttribute<glm::vec2>(Shader::ATTR_UV_NAME, _uvs, _count);
+      AddAttribute<glm::vec2>(Shader::ATTR_UV_NAME, _uvs, _count);
     }
 
-    void Mesh::setNormals(const glm::vec3 * _normals, uint _count)
+    void Mesh::AddNormals(const glm::vec3 * _normals, uint _count)
     {
-      setAttribute<glm::vec3>(Shader::ATTR_NORMAL_NAME, _normals, _count);
+      AddAttribute<glm::vec3>(Shader::ATTR_NORMAL_NAME, _normals, _count);
     }
 
     void Mesh::Apply()
     {
       try
       {
-        if (m_vboData.empty())
+        if (m_data.empty())
         {
-          throw std::range_error("Mesh Error: no vertex buffer data given in mesh " + getName());
+          throw std::range_error("No vertex attribute data");
         }
 
-        m_vbo.reset(new VertexBuffer());
-        m_vbo->setData(&m_vboData[0], m_vboData.size());
-        m_vbo->Unbind();
+        std::vector<byte> vboData;
+        BufferLayout layout;
+
+        if (m_interleaved)
+        {
+          for (size_t i = 0; i < m_attributes.size(); ++i)
+          {
+            const auto & attr = m_attributes[i];
+            layout.Add(attr.name, attr.component, attr.componentCount, attr.typeSize, attr.normalized);
+          }
+
+          vboData.resize(m_elementCount * layout.getSize());
+
+          for (size_t i = 0; i < m_attributes.size(); ++i)
+          {
+            const auto & attr = m_attributes[i];
+            const auto & data = m_data[i];
+            
+            const uint & offset = layout.at(i).offset;
+
+            for (size_t j = 0; j < m_elementCount; ++j)
+            {
+              uint stride = layout.getSize() * j;
+
+              size_t index = j * attr.typeSize;
+              memcpy(&vboData[stride + offset], &data[index], attr.typeSize);
+            }
+          }
+        }
+        else
+        {
+          for (size_t i = 0; i < m_attributes.size(); ++i)
+          {
+            const auto & attr = m_attributes[i];
+            layout.Add(attr.name, attr.component, attr.componentCount, attr.size, attr.normalized);
+          }
+
+          vboData.resize(layout.getSize());
+
+          for (size_t i = 0; i < m_attributes.size(); ++i)
+          {
+            const auto & attr = m_attributes[i];
+            const auto & data = m_data[i];
+
+            uint offset = layout.at(i).offset;
+
+            memcpy(&vboData[offset], &data[0], data.size());
+          }
+        }
+
+        m_vao = std::make_unique<VertexArray>();
+
+        auto vbo = std::make_unique<VertexBuffer>();
+        vbo->setData(&vboData[0], vboData.size());
+        vbo->setLayout(layout);
+
+        m_vao->AddBuffer(std::move(vbo), m_interleaved);
+
+        m_vao->Unbind();
 
         if (m_indexData.empty())
         {
@@ -228,7 +232,7 @@ namespace engine
       {
         debug::LogError(std::string(_e.what()));
 
-        m_vbo.release();
+        m_vao.release();
         m_indices.release();
       }
     }
@@ -238,110 +242,44 @@ namespace engine
       const void * _data, uint _size, 
       uint _count, 
       Type _type,
+      ComponentType _component, uint _componentCount,
       bool _normalized
     )
     {
-      if (m_vertices.empty())
+      if (m_elementCount == 0)
       {
-        throw std::range_error(
-          "Mesh Error: attempted to set attribute " + _name + " before vertex data in mesh " +
-          getName() + ". Vertex attribute must be set first"
-        );
+        m_elementCount = _count;
       }
-
-      if (_count != m_vertices.size())
+      else if (_count != m_elementCount)
       {
-        throw std::range_error(
-          "Mesh Error: attribute " + _name + " contains different number of elements to vertices in mesh " + 
-          getName() + ". expected: " + std::to_string(m_vertices.size()) + ", actual: " + std::to_string(_count)
-        );
+        throw std::range_error("Invalid amount of elements");
       }
-
-      if (getAttribute(_name))
-      {
-        debug::LogWarning("Mesh: attribute " + _name + " already exists in mesh " + getName() + ", setting attribute data.");
-        setAttribute(_name, _data, _size, _count, _type, _normalized);
-        return;
-      }
-
-      uint start = m_vboData.size();
-      m_vboData.resize(start + _size);
-
-      memcpy(&m_vboData[start], _data, _size);
 
       VertexAttribute attr;
       attr.name = _name;
-      attr.offset = start;
       attr.size = _size;
       attr.type = _type;
-      attr.component = GetComponentType(_type);
-      attr.count = GetComponentCount(_type);
+      attr.typeSize = _size / _count;
+      attr.component = _component;
+      attr.componentCount = _componentCount;
       attr.normalized = _normalized;
 
-      m_attributes.add(_name, attr);
-    }
+      m_attributes.push_back(attr);
 
-    void Mesh::setAttribute(
-      const std::string & _name, 
-      const void * _data, uint _size, 
-      uint _count,
-      Type _type,
-      bool _normalized
-    )
-    {
-      VertexAttribute attr;
-      if (!getAttribute(_name, &attr))
-      {
-        AddAttribute(_name, _data, _size, _count, _type, _normalized);
-        return;
-      }
-
-      RemoveAttribute(_name);
-      AddAttribute(_name, _data, _size, _count, _type, _normalized);
-    }
-
-    bool Mesh::getAttribute(const std::string & _name, VertexAttribute * _outAttribute) const
-    {
-      auto attribute = m_attributes.find(_name);
-      if (attribute == m_attributes.mend()) { return false; }
-      
-      if (_outAttribute != nullptr)
-      {
-        *_outAttribute = m_attributes[attribute->second];
-      }
-      return true;
-    }
-
-    void Mesh::RemoveAttribute(const std::string & _name)
-    {
-      VertexAttribute attribute;
-      if (!getAttribute(_name, &attribute))
-      {
-        return;
-      }
-
-      uint start = attribute.offset;
-      uint end = attribute.offset + attribute.size;
-
-      m_vboData.erase(std::begin(m_vboData) + start, std::begin(m_vboData) + end);
-
-      
-      size_t index = m_attributes.find(_name)->second;
-      m_attributes.remove(_name);
-
-      for (size_t i = index; i < m_attributes.size(); ++i)
-      {
-        VertexAttribute & attr = m_attributes[i];
-        attr.offset = start;
-
-        start += attr.size;
-      }
+      std::vector<byte> data(_size);
+      memcpy(&data[0], _data, _size);
+      m_data.push_back(std::move(data));
     }
 
     void Mesh::ClearAttributes()
     {
       m_attributes.clear();
-      m_vboData.clear();
+      m_data.clear();
+    }
+
+    void Mesh::setDraw(DrawType _draw)
+    {
+      m_draw = _draw;
     }
   }
 }

@@ -37,6 +37,12 @@
     <Filter Include="Header Files\utilities">
       <UniqueIdentifier>{aaa52a35-2f5f-4384-a31b-643c67fa0a35}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\graphics\mesh">
+      <UniqueIdentifier>{40c990c2-7b27-498f-91c2-852e71c845df}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\graphics\mesh">
+      <UniqueIdentifier>{103e8fbd-e674-42a7-bf04-80f02e2c2aa8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Main.cpp">
@@ -118,9 +124,6 @@
       <Filter>Source Files\graphics</Filter>
     </ClCompile>
     <ClCompile Include="src\graphics\IndexBuffer.cpp">
-      <Filter>Source Files\graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="src\graphics\DrawType.cpp">
       <Filter>Source Files\graphics</Filter>
     </ClCompile>
     <ClCompile Include="src\graphics\Renderer.cpp">
@@ -219,6 +222,18 @@
     <ClCompile Include="src\graphics\RenderBuffer.cpp">
       <Filter>Source Files\graphics</Filter>
     </ClCompile>
+    <ClCompile Include="src\graphics\mesh\mesh_skybox.cpp">
+      <Filter>Source Files\graphics\mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="src\graphics\mesh\mesh_primitive.cpp">
+      <Filter>Source Files\graphics\mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="src\graphics\mesh\mesh_quad.cpp">
+      <Filter>Source Files\graphics\mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="src\graphics\BufferLayout.cpp">
+      <Filter>Source Files\graphics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\stdafx.h">
@@ -303,9 +318,6 @@
       <Filter>Header Files\graphics</Filter>
     </ClInclude>
     <ClInclude Include="src\graphics\IndexBuffer.h">
-      <Filter>Header Files\graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="src\graphics\DrawType.h">
       <Filter>Header Files\graphics</Filter>
     </ClInclude>
     <ClInclude Include="src\graphics\TypeData.h">
@@ -410,6 +422,18 @@
     <ClInclude Include="src\graphics\RenderBuffer.h">
       <Filter>Header Files\graphics</Filter>
     </ClInclude>
+    <ClInclude Include="src\graphics\mesh\mesh_skybox.h">
+      <Filter>Header Files\graphics\mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="src\graphics\mesh\mesh_primitive.h">
+      <Filter>Header Files\graphics\mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="src\graphics\mesh\mesh_quad.h">
+      <Filter>Header Files\graphics\mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="src\graphics\BufferLayout.h">
+      <Filter>Header Files\graphics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\GameObject.inl">
@@ -435,6 +459,9 @@
     </None>
     <None Include="src\core\Dictionary.inl">
       <Filter>Header Files\core</Filter>
+    </None>
+    <None Include="src\graphics\BufferLayout.inl">
+      <Filter>Header Files\graphics</Filter>
     </None>
   </ItemGroup>
 </Project>

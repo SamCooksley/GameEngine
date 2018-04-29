@@ -201,22 +201,22 @@ namespace engine
       std::shared_ptr<graphics::Mesh> mesh = graphics::Mesh::Create();
       mesh->setName(aimesh->mName.C_Str());
 
-      mesh->setVertices(&positions[0], positions.size());
+      mesh->AddVertices(&positions[0], positions.size());
 
       if (!uvs.empty())
       {
-        mesh->setUVs(&uvs[0], uvs.size());
+        mesh->AddUVs(&uvs[0], uvs.size());
       }
 
       if (!normals.empty())
       {
-        mesh->setNormals(&normals[0], normals.size());
+        mesh->AddNormals(&normals[0], normals.size());
       }
 
       if (!tangents.empty() && !bitangents.empty())
       {
-        mesh->setAttribute(graphics::Shader::ATTR_TANGENT_NAME, &tangents[0], tangents.size());
-        mesh->setAttribute(graphics::Shader::ATTR_BITANGENT_NAME, &bitangents[0], tangents.size());
+        mesh->AddAttribute(graphics::Shader::ATTR_TANGENT_NAME, &tangents[0], tangents.size());
+        mesh->AddAttribute(graphics::Shader::ATTR_BITANGENT_NAME, &bitangents[0], tangents.size());
       }
 
       mesh->setIndices(&indices[0], indices.size());

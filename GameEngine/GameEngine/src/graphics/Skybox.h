@@ -6,6 +6,8 @@
 
 #include "Graphics_Camera.h"
 
+#include "mesh\mesh_skybox.h"
+
 namespace engine
 {
   namespace graphics
@@ -15,7 +17,7 @@ namespace engine
     public:
       Skybox(
         std::shared_ptr<Material> _material,
-        std::shared_ptr<Mesh> _mesh
+        std::shared_ptr<Mesh> _mesh = mesh::Skybox().getMesh()
       );
       ~Skybox();
       

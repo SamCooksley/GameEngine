@@ -309,6 +309,11 @@ namespace engine
 
     void Shader::RetreiveUniformData(std::vector<byte> & _outData)
     {
+      if (m_uniformSize == 0)
+      {
+        _outData.clear();
+        return;
+      }
       _outData.resize(m_uniformSize);
 
       std::vector<byte> data;

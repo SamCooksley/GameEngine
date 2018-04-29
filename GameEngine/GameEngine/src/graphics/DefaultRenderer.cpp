@@ -6,13 +6,21 @@
 #include "LightBuffer.h"
 #include "CameraBuffer.h"
 
+#include "Resources.h"
+
 namespace engine
 {
   namespace graphics
   {
     DefaultRenderer::DefaultRenderer() :
       BaseRenderer(RenderFlags::None)
-    { }
+    { 
+      auto shader = Resources::Load<Shader>("resources/shaders/gBuffer.shader");
+      m_differedMat = Material::Create(shader);
+
+      //TODO: temp
+      //CreateGBuffer(1920, 1080);
+    }
 
     DefaultRenderer::~DefaultRenderer()
     { }
@@ -36,6 +44,9 @@ namespace engine
         LightBuffer::setAmbient(buffer, m_ambient);
       }
 
+      //m_gBuffer->Bind();
+      //m_gBuffer->Clear();
+
       for (auto & command : m_commands)
       {
         auto mesh = command.mesh.lock();
@@ -57,13 +68,37 @@ namespace engine
         shader->setView(m_camera.view);
         shader->setProjection(m_camera.projection);
 
-        mesh->Render(*shader);
+        mesh->Render();
         material->Unbind();
       }
+
+     // m_gBuffer->Unbind();
+
+
 
       if (m_skybox)
       {
         m_skybox->Render(m_camera);
+      }
+    }
+
+
+    void DefaultRenderer::CreateGBuffer(uint _width, uint _height)
+    {
+      m_gBuffer = std::make_unique<FrameBuffer>(_width, _height);
+
+      auto position = m_gBuffer->AddTexture(FrameBufferAttachment::COLOUR, TextureFormat::RGBA16F, TextureDataType::FLOAT);
+      auto normal = m_gBuffer->AddTexture(FrameBufferAttachment::COLOUR, TextureFormat::RGBA16F, TextureDataType::FLOAT);
+      auto colour = m_gBuffer->AddTexture(FrameBufferAttachment::COLOUR, TextureFormat::RGBA16F, TextureDataType::FLOAT);
+      auto specular = m_gBuffer->AddTexture(FrameBufferAttachment::COLOUR, TextureFormat::RGBA16F, TextureDataType::FLOAT);
+      m_gBuffer->AddRenderBuffer(FrameBufferAttachment::DEPTH_STENCIL, TextureFormat::DEPTH24_STENCIL8);
+
+      if (m_differedMat)
+      {
+        m_differedMat->setTexture("position", position);
+        m_differedMat->setTexture("normal", normal);
+        m_differedMat->setTexture("colour", colour);
+        m_differedMat->setTexture("specular", specular);
       }
     }
   }

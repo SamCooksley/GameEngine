@@ -27,7 +27,7 @@ namespace engine
       shader->setProjection(_camera.projection);
 
       GLCALL(glDepthFunc(GL_LEQUAL));
-      m_mesh->Render(*shader);
+      m_mesh->Render();
       GLCALL(glDepthFunc(GL_LESS));
 
       m_material->Unbind();
@@ -38,7 +38,7 @@ namespace engine
       m_material->Bind();
 
       GLCALL(glDepthFunc(GL_LEQUAL));
-      m_mesh->Render(*m_material->getShader());
+      m_mesh->Render();
       GLCALL(glDepthFunc(GL_LESS));
 
       m_material->Unbind();

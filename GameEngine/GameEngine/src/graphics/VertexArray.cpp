@@ -6,7 +6,8 @@ namespace engine
 {
   namespace graphics
   {
-    VertexArray::VertexArray()
+    VertexArray::VertexArray() :
+      m_locationCount(0)
     { 
       GLCALL(glGenVertexArrays(1, &m_vao));
       Bind();
@@ -27,10 +28,15 @@ namespace engine
       GLCALL(glBindVertexArray(0));
     }
 
-    void VertexArray::AddBuffer(const std::shared_ptr<VertexBuffer> _buffer)
+    void VertexArray::AddBuffer(std::unique_ptr<VertexBuffer> _buffer, bool _interleaved)
     {
+      assert(_buffer);
+
       _buffer->Bind();
-      m_buffer.push_back(_buffer);
+      _buffer->SetupLayout(m_locationCount, _interleaved);
+      m_locationCount += _buffer->m_layout.getElementCount();
+
+      m_buffer.push_back(std::move(_buffer));
     }
   }
 }

@@ -1,6 +1,8 @@
 #ifndef _ENGINE_GRAPHICS_TYPES_H_
 #define _ENGINE_GRAPHICS_TYPES_H_
 
+#include "core\Types.h"
+
 #include "opengl.h"
 
 namespace engine

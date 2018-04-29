@@ -1,8 +1,8 @@
 #ifndef _ENGINE_GRAPHICS_VERTEXBUFFER_H_
 #define _ENGINE_GRAPHICS_VERTEXBUFFER_H_
 
-#include "core\Types.h"
 #include "opengl.h"
+#include "BufferLayout.h"
 
 namespace engine
 {
@@ -10,6 +10,7 @@ namespace engine
   {
     class VertexBuffer : public NonCopyable
     {
+      friend class VertexArray;
     public:
       VertexBuffer();
       ~VertexBuffer();
@@ -19,9 +20,15 @@ namespace engine
       void Bind() const;
       void Unbind() const;
 
+      void setLayout(const BufferLayout & _layout);
+
     private:
+      void SetupLayout(uint _offset, bool _interleaved) const;
+
       GLuint m_vbo;
       uint m_size;
+
+      BufferLayout m_layout;
     };
   }
 }

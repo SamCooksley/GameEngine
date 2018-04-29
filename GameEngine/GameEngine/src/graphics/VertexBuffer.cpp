@@ -2,6 +2,8 @@
 
 #include "VertexBuffer.h"
 
+#include "debug\Debug.h"
+
 namespace engine
 {
   namespace graphics
@@ -32,6 +34,31 @@ namespace engine
     void VertexBuffer::Unbind() const
     {
       GLCALL(glBindBuffer(GL_ARRAY_BUFFER, 0));
+    }
+
+    void VertexBuffer::setLayout(const BufferLayout & _layout)
+    {
+      m_layout = _layout;
+    }
+
+    void VertexBuffer::SetupLayout(uint _offset, bool _interleaved) const
+    {
+      for (size_t i = 0; i < m_layout.getElementCount(); ++i)
+      {
+        auto & element = m_layout.at(i);
+
+        GLuint loc = i + _offset;
+
+        GLCALL(glEnableVertexAttribArray(loc));
+        GLCALL(glVertexAttribPointer(
+          loc, 
+          element.count,
+          ComponentTypeToOpenGL(element.type), 
+          element.normalized, 
+          _interleaved? m_layout.getSize() : 0, 
+          reinterpret_cast<const void *>(element.offset)
+        ));
+      }
     }
   }
 }

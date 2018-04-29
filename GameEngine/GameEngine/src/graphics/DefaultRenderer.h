@@ -3,6 +3,8 @@
 
 #include "BaseRenderer.h"
 
+#include "FrameBuffer.h"
+
 namespace engine
 {
   namespace graphics
@@ -14,6 +16,13 @@ namespace engine
       ~DefaultRenderer();
 
       void Render() override;
+
+    private:
+      void CreateGBuffer(uint _width, uint _height);
+
+      std::unique_ptr<FrameBuffer> m_gBuffer;
+
+      std::shared_ptr<Material> m_differedMat;
     };
   }
 }

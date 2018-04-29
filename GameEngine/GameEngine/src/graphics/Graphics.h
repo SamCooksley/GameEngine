@@ -29,6 +29,8 @@ namespace engine
 
       std::unique_ptr<VertexArray> vao;
 
+      std::shared_ptr<Mesh> screenQuad;
+
       std::vector<std::weak_ptr<::engine::Camera>> cameras;
     };
   }

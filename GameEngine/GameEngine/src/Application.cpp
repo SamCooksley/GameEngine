@@ -35,7 +35,7 @@ namespace engine
     s_context->glfwContext.reset(new core::glfw());
 
     s_context->window.reset(new graphics::Window("Engine", 640, 480));
-    s_context->window->setVsync(true);
+    //s_context->window->setVsync(true);
 
     s_context->targetFrameTime = 1.f / 60.f;
     s_context->maxUpdatesPerFrame = 5;
@@ -60,11 +60,12 @@ namespace engine
     s_context->graphics.uniformBuffers.Add(graphics::LightBuffer::Create());
 
     s_context->graphics.vao = std::make_unique<graphics::VertexArray>();
+    s_context->graphics.errorShader = Resources::Load<graphics::Shader>("resources/shaders/error.shader");
+
 
     s_context->graphics.defaultRenderer = std::make_shared<graphics::DefaultRenderer>();
     s_context->graphics.defaultRenderer->setAmbient(glm::vec3(0.1f));
 
-    s_context->graphics.errorShader = Resources::Load<graphics::Shader>("resources/shaders/error.shader");
     
     auto defaultShader = Resources::Load<graphics::Shader>("resources/shaders/default.shader");
     s_context->graphics.defaultMaterial = graphics::Material::Create(defaultShader);
@@ -106,8 +107,8 @@ namespace engine
     auto skyboxCube = graphics::TextureCube::Load(skyboxTexturePaths);
     skyboxMaterial->setTexture("cubemap", skyboxCube);
 
-    auto inverseCube = Resources::Load<graphics::Mesh>("resources/models/skybox.obj");
-    auto skybox = std::make_shared<graphics::Skybox>(skyboxMaterial, inverseCube);
+    //auto inverseCube = Resources::Load<graphics::Mesh>("resources/models/skybox.obj");
+    auto skybox = std::make_shared<graphics::Skybox>(skyboxMaterial);
     s_context->graphics.defaultRenderer->setSkybox(skybox);
   }
 

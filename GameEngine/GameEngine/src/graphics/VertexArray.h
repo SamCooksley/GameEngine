@@ -16,12 +16,13 @@ namespace engine
       void Bind() const;
       void Unbind() const;
 
-      void AddBuffer(const std::shared_ptr<VertexBuffer> _buffer);
+      void AddBuffer(std::unique_ptr<VertexBuffer> _buffer, bool _interleaved);
 
     private:
       GLuint m_vao;
 
-      std::vector<std::shared_ptr<VertexBuffer>> m_buffer;
+      std::vector<std::unique_ptr<VertexBuffer>> m_buffer;
+      uint m_locationCount;
     };
   }
 }

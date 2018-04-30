@@ -8,7 +8,7 @@ namespace engine
   {
     GLenum TextureTypeToOpenGL(TextureType _type)
     {
-      return (GLenum)_type;
+      return static_cast<GLenum>(_type);
     }
 
     TextureType OpenGLToTextureType(GLenum _type)
@@ -53,7 +53,7 @@ namespace engine
 
     GLenum TextureBaseFormatToOpenGL(TextureBaseFormat _format)
     {
-      return (GLenum)_format;
+      return static_cast<GLenum>(_format);
     }
 
     TextureBaseFormat OpenGLToTextureBaseFormat(GLenum _format)
@@ -72,7 +72,7 @@ namespace engine
 
     GLenum TextureFormatToOpenGL(TextureFormat _format)
     {
-      return (GLenum)_format;
+      return static_cast<GLenum>(_format);
     }
 
     TextureFormat OpenGLToTextureFormat(GLenum _format)
@@ -111,7 +111,7 @@ namespace engine
 
     GLenum TextureDataTypeToOpenGL(TextureDataType _type)
     {
-      return (GLenum)_type;
+      return static_cast<GLenum>(_type);
     }
 
     TextureDataType OpenGLToTextureDataType(GLenum _type)
@@ -129,7 +129,7 @@ namespace engine
 
     GLenum TextureWrapToOpenGL(TextureWrap _wrap)
     {
-      return (GLenum)_wrap;
+      return static_cast<GLenum>(_wrap);
     }
 
     TextureWrap OpenGLToTextureWrap(GLenum _wrap)
@@ -149,7 +149,7 @@ namespace engine
 
     GLenum TextureFilterToOpenGL(TextureFilter _filter)
     {
-      return (GLenum)_filter;
+      return static_cast<GLenum>(_filter);
     }
 
     TextureFilter OpenGLToTextureFilter(GLenum _filter)

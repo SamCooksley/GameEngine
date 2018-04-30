@@ -8,7 +8,7 @@ namespace engine
   {
     GLenum TypeToOpenGL(Type _type)
     {
-      return (GLenum)_type;
+      return static_cast<GLenum>(_type);
     }
 
     Type OpenGLToType(GLenum _type)
@@ -31,7 +31,7 @@ namespace engine
 
     GLenum ComponentTypeToOpenGL(ComponentType _type)
     {
-      return (GLenum)_type;
+      return static_cast<GLenum>(_type);
     }
 
     ComponentType OpenGLToComponentType(GLenum _type)

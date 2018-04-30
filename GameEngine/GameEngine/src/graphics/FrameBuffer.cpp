@@ -8,7 +8,7 @@ namespace engine
   {
     GLenum FrameBufferAttachmentToOpenGL(FrameBufferAttachment _attachment, uint _colourOffset)
     {
-      GLenum att = (GLenum)_attachment;
+      GLenum att = static_cast<GLenum>(_attachment);
       if (_attachment == FrameBufferAttachment::COLOUR)
       {
         att += _colourOffset;

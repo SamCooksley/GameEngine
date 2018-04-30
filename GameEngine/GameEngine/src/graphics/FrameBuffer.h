@@ -10,7 +10,7 @@ namespace engine
 {
   namespace graphics
   {
-    enum class FrameBufferAttachment
+    enum class FrameBufferAttachment : GLenum
     {
       COLOUR = GL_COLOR_ATTACHMENT0,
       DEPTH = GL_DEPTH_ATTACHMENT,

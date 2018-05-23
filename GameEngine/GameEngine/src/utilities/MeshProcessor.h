@@ -3,6 +3,8 @@
 
 #include "core/Types.h"
 
+#include "graphics\Indices.h"
+
 namespace engine
 {
   namespace utilities
@@ -10,11 +12,19 @@ namespace engine
     class MeshProcessor
     {
     public:
+      enum class Error { OK, MATCHING_UVS };
+
       MeshProcessor();
       ~MeshProcessor();
 
-      void CalculateTangents(
-        const std::vector<uint32> & _indices,
+      Error CalculateNormals(
+        const graphics::Indices & _indices,
+        const std::vector<glm::vec3> & _positions,
+        std::vector<glm::vec3> * _outNormals
+      ) const;
+
+      Error CalculateTangents(
+        const graphics::Indices & _indices,
         const std::vector<glm::vec3> & _positions,
         const std::vector<glm::vec2> & _uvs,
         const std::vector<glm::vec3> & _normals,

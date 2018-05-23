@@ -43,81 +43,17 @@ namespace engine
     WavefrontParser::~WavefrontParser()
     { }
 
-    bool WavefrontParser::CanUseIndex8() const
+    graphics::MeshData WavefrontParser::getMesh() const
     {
-      return m_maxIndex < std::numeric_limits<uint8>().max();
-    }
+      graphics::MeshData mesh;
 
-    bool WavefrontParser::CanUseIndex16() const
-    {
-      return m_maxIndex < std::numeric_limits<uint16>().max();
-    }
+      mesh.indices.setIndices(m_indices);
 
-    void WavefrontParser::getIndices(std::vector<uint8> & _out) const
-    {
-      if (!CanUseIndex8())
-      {
-        throw std::overflow_error(
-          "WavefrontParser Error: " + m_name + " indices cannot be converted to uint8"
-        );
-      }
-
-      _out.resize(m_indices.size());
-      for (size_t i = 0; i < m_indices.size(); ++i)
-      {
-        _out[i] = m_indices[i];
-      }
-    }
-
-    void WavefrontParser::getIndices(std::vector<uint16> & _out) const
-    {
-      if (!CanUseIndex16())
-      {
-        throw std::overflow_error(
-          "WavefrontParser Error: " + m_name + " indices cannot be converted to uint16"
-        );
-      }
-
-      _out.resize(m_indices.size());
-      for (size_t i = 0; i < m_indices.size(); ++i)
-      {
-        _out[i] = m_indices[i];
-      }
-    }
-
-    void WavefrontParser::getIndices(std::vector<uint32> & _out) const
-    {
-      _out = m_indices;
-    }
-
-    const std::vector<uint32> & WavefrontParser::getIndices() const
-    {
-      return m_indices;
-    }
-
-    bool WavefrontParser::HasUVs() const
-    {
-      return !m_uvs.empty();
-    }
-
-    bool WavefrontParser::HasNormals() const
-    {
-      return !m_normals.empty();
-    }
-
-    const std::vector<glm::vec3> & WavefrontParser::getVertices() const
-    {
-      return m_vertices;
-    }
-
-    const std::vector<glm::vec2> & WavefrontParser::getUVs() const
-    {
-      return m_uvs;
-    }
-
-    const std::vector<glm::vec3> & WavefrontParser::getNormals() const
-    {
-      return m_normals;
+      mesh.positions = m_vertices;
+      mesh.uvs = m_uvs;
+      mesh.normals = m_normals;
+      
+      return std::move(mesh);
     }
 
     const std::string & WavefrontParser::getName() const

@@ -2,8 +2,8 @@ vec2 ParallaxMapping(const vec2 _texCoords, const vec3 _viewDir, const float _sc
 { 
     const float minLayers = 8.0;
 	const float maxLayers = 32.0;
-	float layerCount = mix(maxLayers, minLayers, abs(dot(vec3(0.0, 0.0, 1.0), _viewDir)));  
-    layerCount = 256.0;
+	float t = clamp(abs(dot(vec3(0.0, 0.0, 1.0), _viewDir)), 0.0, 1.0);
+	float layerCount = mix(maxLayers, minLayers, t);  
     
     float layerDepth = 1.0 / layerCount;
     float currentDepth = 0.0;
@@ -12,14 +12,14 @@ vec2 ParallaxMapping(const vec2 _texCoords, const vec3 _viewDir, const float _sc
     vec2 deltaTexCoords = P / layerCount;
 
     vec2  texCoords = _texCoords;
-	float currentMapDepth = 1 - texture(_parallax, texCoords).r;
+	float currentMapDepth = texture(_parallax, texCoords).r;
 	float prevMapDepth = currentMapDepth;
   
-	while(currentDepth > currentMapDepth)
+	while(currentDepth < currentMapDepth)
 	{
 	    texCoords -= deltaTexCoords;
 		prevMapDepth = currentMapDepth;
-	    currentMapDepth = 1 - texture(_parallax, texCoords).r;  
+	    currentMapDepth = texture(_parallax, texCoords).r;  
 	    currentDepth += layerDepth;  
 	}
 
@@ -29,7 +29,8 @@ vec2 ParallaxMapping(const vec2 _texCoords, const vec3 _viewDir, const float _sc
 	float beforeDepth = prevMapDepth - currentDepth + layerDepth;
 
 	float weight = afterDepth / (afterDepth - beforeDepth);
-	texCoords = mix(texCoords, prevTexCoords, weight);
-	
+	//texCoords = mix(texCoords, prevTexCoords, weight);
+	texCoords = prevTexCoords * weight + texCoords * (1.0 - weight);
+
 	return texCoords;  
-} 
+}  

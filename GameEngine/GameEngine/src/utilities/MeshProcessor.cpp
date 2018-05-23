@@ -14,8 +14,43 @@ namespace engine
     MeshProcessor::~MeshProcessor()
     { }
 
-    void MeshProcessor::CalculateTangents(
-      const std::vector<uint32> & _indices,
+    MeshProcessor::Error MeshProcessor::CalculateNormals(
+      const graphics::Indices & _indices,
+      const std::vector<glm::vec3> & _positions,
+      std::vector<glm::vec3> * _outNormals
+    ) const
+    {
+      _outNormals->resize(_positions.size());
+
+      std::array<glm::vec3, 3> pos;
+      for (size_t i = 0; i < _indices.size(); i += 3)
+      {
+        for (size_t j = 0u; j < 3u; ++j)
+        {
+          pos[j] = _positions[_indices[i + j]];
+        }
+
+        glm::vec3 normal = glm::normalize(glm::cross(pos[1] - pos[0], pos[2] - pos[0]));
+
+        for (size_t j = 0u; j < 3u; ++j)
+        {
+          (*_outNormals)[_indices[i + j]] += normal;
+        }
+      }
+
+      for (auto & normal : *_outNormals)
+      {
+        if (glm::length2(normal) > 0.f)
+        {
+          normal = glm::normalize(normal);
+        }
+      }
+
+      return Error::OK;
+    }
+
+    MeshProcessor::Error MeshProcessor::CalculateTangents(
+      const graphics::Indices & _indices,
       const std::vector<glm::vec3> & _positions,
       const std::vector<glm::vec2> & _uvs,
       const std::vector<glm::vec3> & _normals,
@@ -32,48 +67,59 @@ namespace engine
       _outTangents->resize(_positions.size());
       _outBitangents->resize(_positions.size());
 
-      for (size_t i = 0; i < _indices.size(); i += 3)
+      Error error = Error::OK;
+
+      for (size_t i = 0u; i < _indices.size(); i += 3u)
       {
-        auto & index1 = _indices.at(i + 0);
-        auto & index2 = _indices.at(i + 1);
-        auto & index3 = _indices.at(i + 2);
+        std::array<glm::vec3, 3u> pos;
+        std::array<glm::vec2, 3u> uv;
 
-        const glm::vec3 & pos1 = _positions.at(index1);
-        const glm::vec3 & pos2 = _positions.at(index2);
-        const glm::vec3 & pos3 = _positions.at(index3);
+        for (size_t j = 0u; j < 3u; ++j)
+        {
+          auto index = _indices[i + j];
+          pos[j] = _positions[index];
+          uv[j] = _uvs[index];
+        }
 
-        const glm::vec2 & uv1 = _uvs.at(index1);
-        const glm::vec2 & uv2 = _uvs.at(index2);
-        const glm::vec2 & uv3 = _uvs.at(index3);
+        std::array<glm::vec3, 2> edge = {
+          pos[1] - pos[0],
+          pos[2] - pos[0]
+        };
 
-        glm::vec3 edge1 = pos2 - pos1;
-        glm::vec3 edge2 = pos3 - pos1;
+        std::array<glm::vec2, 2> deltaUV = {
+          uv[1] - uv[0],
+          uv[2] - uv[0]
+        };
 
-        glm::vec2 deltaUV1 = uv2 - uv1;
-        glm::vec2 deltaUV2 = uv3 - uv1;
+        float f = deltaUV[0].x * deltaUV[1].y - deltaUV[0].y * deltaUV[1].x;
 
-        float f = deltaUV1.x * deltaUV2.y - deltaUV1.y * deltaUV2.x;
+        glm::vec3 tangent;
+        glm::vec3 bitangent;
 
         if (f == 0.f)
         {
-          debug::LogError("MeshProcessor Error: failed to calculate tangent. Matching UVs.");
-          continue;
-        }
+          error = Error::MATCHING_UVS;
 
-        f = 1.f / f;
-        glm::vec3 tangent = (edge1 * deltaUV2.y - edge2 * deltaUV1.y) * f;
-        glm::vec3 bitangent = (edge2 * deltaUV1.x - edge1 * deltaUV2.x) * f;
+          tangent = edge[0];
+          bitangent = edge[1];
+        }
+        else
+        {
+          f = 1.f / f;
+          tangent   = (edge[0] * deltaUV[1].y - edge[1] * deltaUV[0].y) * f;
+          bitangent = (edge[1] * deltaUV[0].x - edge[0] * deltaUV[1].x) * f;
+        }
 
         for (size_t j = 0u; j < 3u; j++)
         {
-          const uint32 & index = _indices[i + j];
+          auto index = _indices[i + j];
 
           (*_outTangents)[index] += tangent;
           (*_outBitangents)[index] += bitangent;
         }
       }
       
-      for (size_t i = 0; i < _positions.size(); i++)
+      for (size_t i = 0u; i < _positions.size(); i++)
       {
         glm::vec3 & t = (*_outTangents)[i];
         glm::vec3 & b = (*_outBitangents)[i];
@@ -82,9 +128,11 @@ namespace engine
         t = t - n * glm::dot(n, t);
         b = b - n * glm::dot(n, b) - t * glm::dot(t, b);
 
-        if (glm::length(t) > 0) { t = glm::normalize(t); }
-        if (glm::length(b) > 0) { b = glm::normalize(b); }
+        if (glm::length2(t) > 0.f) { t = glm::normalize(t); }
+        if (glm::length2(b) > 0.f) { b = glm::normalize(b); }
       }
+
+      return error;
     }
   }
 }

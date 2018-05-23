@@ -53,6 +53,14 @@ namespace engine
       _buffer.Unbind();
     }
 
+    void LightBuffer::ClearLight(UniformBuffer & _buffer, uint _num)
+    {
+      constexpr LightType type = LightType::None;
+      _buffer.Bind();
+      _buffer.setData(&type, sizeof(LightType), LightBuffer::light_size * _num + LightBuffer::type_offset);
+      _buffer.Unbind();
+    }
+
     void LightBuffer::setAmbient(UniformBuffer & _buffer, const glm::vec3 & _ambient)
     {
       _buffer.Bind();

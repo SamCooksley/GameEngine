@@ -3,7 +3,10 @@
 
 #include "core\Types.h"
 #include "glm\glm.hpp"
-#include "core\Object.h"
+
+#include "Asset.h"
+
+#include "core\NamedObject.h"
 
 #include "ShaderUniform.h"
 
@@ -15,7 +18,7 @@ namespace engine
   {
     class Material;
 
-    class Shader : public Object, public NonCopyable
+    class Shader : public NamedObject, public NonCopyable, public Asset
     {
       friend class Mesh;
       friend class Material;

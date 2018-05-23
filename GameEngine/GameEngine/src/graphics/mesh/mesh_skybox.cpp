@@ -10,7 +10,8 @@ namespace engine
     {
       Skybox::Skybox()
       {
-        std::array<glm::vec3, 24> positions = {
+        MeshData data;
+        data.positions = {
           //back
           glm::vec3(-1.f,  1.f, -1.f),
           glm::vec3( 1.f, -1.f, -1.f),
@@ -48,7 +49,7 @@ namespace engine
           glm::vec3( 1.f, -1.f, -1.f)
         };
 
-        std::array<uint8, 36> indices = {
+        data.indices.setIndices({
           //back
           0, 2, 1,
           0, 1, 3,
@@ -72,18 +73,10 @@ namespace engine
           //bottom
           20, 22, 21,
           20, 21, 23
-        };
+        });
 
-        m_mesh = std::move(Mesh::Create());
-
+        m_mesh = std::make_shared<Mesh>(data, DrawType::TRIANGLES);
         m_mesh->setName("Skybox");
-
-        m_mesh->setDraw(DrawType::TRIANGLES);
-
-        m_mesh->AddVertices(&positions[0], positions.size());
-        m_mesh->setIndices(&indices[0], indices.size());
-
-        m_mesh->Apply();
       }
     }
   }

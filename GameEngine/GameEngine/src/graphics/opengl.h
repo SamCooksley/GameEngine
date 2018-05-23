@@ -3,6 +3,8 @@
 
 #include "glew\glew.h"
 
+#include "debug\Debug.h"
+
 namespace engine 
 { 
   namespace graphics 

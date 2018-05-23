@@ -8,15 +8,10 @@ namespace engine
 {
   namespace graphics
   {
-    std::shared_ptr<TextureCube> TextureCube::Create()
+    std::shared_ptr<TextureCube> TextureCube::Load(const std::array<std::string, 6> & _paths)
     {
       struct enable_texture : public TextureCube { };
 
-      return std::make_shared<enable_texture>();
-    }
-
-    std::shared_ptr<TextureCube> TextureCube::Load(const std::array<std::string, 6> & _paths)
-    {
       std::array<file::ImageData, 6> images;
       for (size_t i = 0; i < _paths.size(); ++i)
       {
@@ -26,10 +21,12 @@ namespace engine
         }
       }
 
-      auto cube = Create();
+      auto cube = std::make_shared<enable_texture>();
       cube->m_width = images[0].width;
       cube->m_height = images[0].height;
+      
       cube->setName(file::getFilenameWithoutExtension(_paths[0]));
+
       cube->setFilter(TextureFilter::LINEAR);
 
       for (size_t i = 0; i < images.size(); ++i)
@@ -47,11 +44,20 @@ namespace engine
       return cube;
     }
 
-    std::shared_ptr<TextureCube> TextureCube::Create(uint _width, uint _height, TextureFormat _format, TextureDataType _type)
+    TextureCube::TextureCube() : 
+      Texture(TextureType::TEXTURE_CUBE)
     {
-      auto cube = Create();
-      cube->setFilter(TextureFilter::LINEAR);
+      GLCALL(glGenTextures(1, &m_id));
+      GLCALL(glBindTexture(GL_TEXTURE_CUBE_MAP, m_id));
 
+      GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
+      GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
+      GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE));
+    }
+
+    TextureCube::TextureCube(uint _width, uint _height, TextureFormat _format, TextureDataType _type) :
+      TextureCube()
+    {
       for (size_t i = 0u; i < 6u; ++i)
       {
         GLCALL(glTexImage2D(
@@ -63,11 +69,10 @@ namespace engine
             nullptr
         ));
       }
-
-      return cube;
     }
 
-    std::shared_ptr<TextureCube> TextureCube::Create(uint _width, uint _height, const glm::vec4 & _colour)
+    TextureCube::TextureCube(uint _width, uint _height, const glm::vec4 & _colour) :
+      TextureCube()
     {
       std::vector<float> pixels(_width * _height * 4);
 
@@ -75,9 +80,6 @@ namespace engine
       {
         memcpy(&pixels[i], glm::value_ptr(_colour), sizeof(float) * 4u);
       }
-
-      auto cube = Create();
-      cube->setFilter(TextureFilter::LINEAR);
 
       for (size_t i = 0; i < 6; ++i)
       {
@@ -89,18 +91,6 @@ namespace engine
           &pixels[0]
         ));
       }
-
-      return cube;
-    }
-
-    TextureCube::TextureCube() : Texture(TextureType::TEXTURE_CUBE)
-    {
-      GLCALL(glGenTextures(1, &m_id));
-      GLCALL(glBindTexture(GL_TEXTURE_CUBE_MAP, m_id));
-
-      GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
-      GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
-      GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE));
     }
 
     TextureCube::~TextureCube()

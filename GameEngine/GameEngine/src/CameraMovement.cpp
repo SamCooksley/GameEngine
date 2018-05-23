@@ -19,7 +19,7 @@ namespace engine
   {
     m_prevMouse = Input::getMousePosition();
 
-    m_moveSpeed = 0.1f;
+    m_moveSpeed = 5.0f;
     m_rotationSpeed = .005f;
 
     m_yaw = m_pitch = 0.f;
@@ -46,7 +46,7 @@ namespace engine
       move.x += m_moveSpeed;
     }
 
-    move * Time::getDeltaTime();
+    move *= Time::getDeltaTime();
 
     auto transform = getGameObject()->getComponent<Transform>();
     glm::vec3 position = transform->getLocalPosition();
@@ -56,7 +56,7 @@ namespace engine
     glm::vec2 mousePos = Input::getMousePosition();
     glm::vec2 delta = m_prevMouse - mousePos;
     m_prevMouse = mousePos;
-
+     
     if (!Input::getKey(KeyCode::LEFT_CONTROL))
     {
       Input::setCursorMode(CursorMode::FIXED);

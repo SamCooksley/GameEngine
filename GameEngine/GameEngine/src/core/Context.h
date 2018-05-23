@@ -11,6 +11,8 @@
 
 #include "utilities\Timer.h"
 
+#include "Asset.h"
+
 namespace engine
 {
   namespace core
@@ -30,7 +32,7 @@ namespace engine
 
       std::vector<std::string> args;
 
-      std::map<std::string, std::shared_ptr<Object>> resources;
+      std::map<std::string, std::shared_ptr<Asset>> resources;
 
       std::unique_ptr<glfw> glfwContext;
 

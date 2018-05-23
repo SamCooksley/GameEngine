@@ -1,7 +1,7 @@
 #ifndef _ENGINE_GRAPHICS_TEXTURETYPES_H_
 #define _ENGINE_GRAPHICS_TEXTURETYPES_H_
 
-#include "opengl.h"
+#include "TypeData.h"
 
 namespace engine
 {

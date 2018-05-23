@@ -12,12 +12,12 @@ namespace engine
   {
     struct TextureUnit
     {
-      int count;
+      int count; //!< Number of uniforms/samplers bound to the unit.
       int unit;
       std::shared_ptr<Texture> texture;
     };
 
-    class Material : public Object
+    class Material : public NamedObject, public NonCopyable
     {
       friend class Shader;
     public:

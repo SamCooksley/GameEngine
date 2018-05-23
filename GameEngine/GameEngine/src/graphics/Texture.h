@@ -1,15 +1,18 @@
 #ifndef _ENGINE_GRAPHICS_TEXTURE_H_
 #define _ENGINE_GRAPHICS_TEXTURE_H_
 
-#include "core\Object.h"
+#include "core\NamedObject.h"
+#include "core\NonCopyable.h"
 
 #include "TextureTypes.h"
+
+#include "Asset.h"
 
 namespace engine
 {
   namespace graphics
   {
-    class Texture : public Object, public NonCopyable
+    class Texture : public NonCopyable, public NamedObject, public Asset
     {
       friend class FrameBuffer;
 

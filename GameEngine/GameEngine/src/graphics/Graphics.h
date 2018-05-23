@@ -27,8 +27,6 @@ namespace engine
 
       std::shared_ptr<BaseRenderer> defaultRenderer;
 
-      std::unique_ptr<VertexArray> vao;
-
       std::shared_ptr<Mesh> screenQuad;
 
       std::vector<std::weak_ptr<::engine::Camera>> cameras;

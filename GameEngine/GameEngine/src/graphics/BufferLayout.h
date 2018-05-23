@@ -10,7 +10,6 @@ namespace engine
   {
     struct BufferElement
     {
-      std::string name;
       ComponentType type;
       uint count;
       uint size;
@@ -30,9 +29,9 @@ namespace engine
       uint getSize() const;
 
       template <typename T>
-      void Add(const std::string & _name, uint _count, bool _normalized = false);
+      void Add(uint _count, bool _normalized = false);
 
-      void Add(std::string _name, ComponentType _type, uint _count, uint _size, bool _normalized = false);
+      void Add(ComponentType _type, uint _count, uint _size, bool _normalized = false);
 
     private:
       std::vector<BufferElement> m_elements;

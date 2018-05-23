@@ -12,7 +12,7 @@ namespace engine
       class Primitive
       {
       public:
-        std::shared_ptr<Mesh> getMesh() const;
+        const std::shared_ptr<Mesh> & getMesh() const;
 
       protected:
         std::shared_ptr<Mesh> m_mesh;

@@ -2,6 +2,7 @@
 #define _ENGINE_UTILITIES_WAVEFRONTPARSER_H_
 
 #include "core\Types.h"
+#include "graphics\MeshData.h"
 
 namespace engine
 {
@@ -14,21 +15,7 @@ namespace engine
       WavefrontParser(const std::string & _name, std::istream & _source);
       ~WavefrontParser();
 
-      bool CanUseIndex8() const;
-      bool CanUseIndex16() const;
-
-      void getIndices(std::vector<uint8> & _out) const;
-      void getIndices(std::vector<uint16> & _out) const;
-      void getIndices(std::vector<uint32> & _out) const;
-
-      const std::vector<uint32> & getIndices() const;
-
-      bool HasUVs() const;
-      bool HasNormals() const;
-
-      const std::vector<glm::vec3> & getVertices() const;
-      const std::vector<glm::vec2> & getUVs() const;
-      const std::vector<glm::vec3> & getNormals() const;
+      graphics::MeshData getMesh() const;
 
       const std::string & getName() const;
 

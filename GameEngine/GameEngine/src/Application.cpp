@@ -17,6 +17,8 @@
 #include "graphics\CameraBuffer.h"
 #include "graphics\LightBuffer.h"
 
+#include "utilities\System.h"
+
 namespace engine
 {
   std::unique_ptr<core::Context> Application::s_context;
@@ -59,7 +61,6 @@ namespace engine
     s_context->graphics.uniformBuffers.Add(graphics::CameraBuffer::Create());
     s_context->graphics.uniformBuffers.Add(graphics::LightBuffer::Create());
 
-    s_context->graphics.vao = std::make_unique<graphics::VertexArray>();
     s_context->graphics.errorShader = Resources::Load<graphics::Shader>("resources/shaders/error.shader");
 
 
@@ -75,8 +76,8 @@ namespace engine
     //texture = Resources::Load<graphics::Texture2D>("resources/textures/bricks/diffuse.png");
     s_context->graphics.defaultMaterial->setTexture("diffuse", texture);
 
-    texture = Resources::Load<graphics::Texture2D>("resources/textures/bricks/normal.png");
-    //texture = Resources::Load<graphics::Texture2D>("resources/textures/flat.png");
+    //texture = Resources::Load<graphics::Texture2D>("resources/textures/bricks/normal.png");
+    texture = Resources::Load<graphics::Texture2D>("resources/textures/flat.png");
     //texture = Resources::Load<graphics::Texture2D>("resources/textures/bricks/normal.png");
     s_context->graphics.defaultMaterial->setTexture("normal", texture);
 
@@ -84,14 +85,15 @@ namespace engine
     texture = Resources::Load<graphics::Texture2D>("resources/textures/bricks/specular.png");
     s_context->graphics.defaultMaterial->setTexture("specular", texture);
 
-    texture = Resources::Load<graphics::Texture2D>("resources/textures/bricks/displacement.png");
     //texture = Resources::Load<graphics::Texture2D>("resources/textures/bricks/displacement.png");
+    //texture = Resources::Load<graphics::Texture2D>("resources/textures/bricks/displacement.png");
+    texture = graphics::Texture2D::Create(64, 64, glm::vec4(0.f));
     s_context->graphics.defaultMaterial->setTexture("displacement", texture);
 
     texture = graphics::Texture2D::Create(64, 64, glm::vec4(1.f));
     s_context->graphics.defaultMaterial->setTexture("opacity", texture);
 
-    s_context->graphics.defaultMaterial->setUniform("displacementScale", 0.025f);
+    s_context->graphics.defaultMaterial->setUniform("displacementScale", 0.01f);// 25f);// 25f);
 
     s_context->graphics.defaultMaterial->setUniform("shininess", 5.f);
     
@@ -135,7 +137,11 @@ namespace engine
 
   void Application::Frame()
   {
-    s_context->totalDeltaTime += s_context->frameTime.getSeconds();
+    if (s_context->targetFrameTime > 0.0f && s_context->deltaTime < s_context->targetFrameTime)
+    {
+      utilities::Sleep(uint((s_context->targetFrameTime - s_context->deltaTime) * 1000.0f));
+    }
+    //s_context->totalDeltaTime += s_context->frameTime.getSeconds();
     s_context->frameTime.Reset();
 
     if (s_context->nextScene)
@@ -143,7 +149,9 @@ namespace engine
       ChangeScene();
     }
 
-    int count = 0;
+    s_context->deltaTime = s_context->targetFrameTime;
+    
+    /*int count = 0;
     while (s_context->totalDeltaTime >= s_context->targetFrameTime)
     {
       s_context->deltaTime = s_context->targetFrameTime;
@@ -152,8 +160,10 @@ namespace engine
       s_context->totalDeltaTime -= s_context->targetFrameTime;
 
       if (++count > s_context->maxUpdatesPerFrame) { break; }
-    }
+    }*/
 
+    HandleEvents();
+    Update();
     Render();
   }
 

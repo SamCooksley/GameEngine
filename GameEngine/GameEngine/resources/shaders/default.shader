@@ -13,6 +13,8 @@ out VS_OUT
 	vec2 texCoords;
 	mat3 tbn;
 
+	vec3 normal;
+
 	vec3 position_tan;
 	vec3 view_position_tan;
 } vs_out;
@@ -33,8 +35,9 @@ void main()
 	vec3 t = normalize(m3 * in_tangent);
 	vec3 b = normalize(m3 * in_bitangent);
 	vec3 n = normalize(m3 * in_normal);
-	
+
 	vs_out.tbn = mat3(t, b, n);
+	vs_out.normal = n;
 
 	mat3 tbn = transpose(vs_out.tbn);
 
@@ -50,6 +53,8 @@ in VS_OUT
 	vec3 position_world;
 	vec2 texCoords;
 	mat3 tbn;
+
+	vec3 normal;
 
 	vec3 position_tan;
 	vec3 view_position_tan;
@@ -76,9 +81,16 @@ void main()
 {
 	vec3 viewDir_world = normalize(camera.position_world - fs_in.position_world);
 
-	vec3 viewDir_tan = normalize(fs_in.view_position_tan - fs_in.position_tan);
+	vec3 viewDir_tan = -normalize(fs_in.view_position_tan - fs_in.position_tan);
 
 	vec2 texCoords = ParallaxMapping(fs_in.texCoords, viewDir_tan, displacementScale, displacement);
+
+
+	if (texCoords.x < 0.0 || texCoords.x > 1.0 ||
+	texCoords.y < 0.0 || texCoords.y > 1.0)
+	{
+		//discard;
+	}
 
 	if (texture(opacity, texCoords).r < 0.1)
 	{

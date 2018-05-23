@@ -9,7 +9,7 @@ namespace engine
   {
     void Log(const std::string & _message);
     void LogWarning(const std::string & _message);
-    void LogError(const std::string& _message);
+    void LogError(const std::string & _message);
   }
 }
 

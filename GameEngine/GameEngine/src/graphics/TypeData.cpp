@@ -17,7 +17,10 @@ namespace engine
         case Type::VEC4:  { return TypeData<glm::vec4>::component; }
         case Type::MAT3:  { return TypeData<glm::mat3>::component; }
         case Type::MAT4:  { return TypeData<glm::mat4>::component; }
-        default: { assert(false); }
+        default: 
+        {
+          throw std::invalid_argument("Invalid type");
+        }
       }
     }
 
@@ -32,7 +35,10 @@ namespace engine
         case Type::VEC4:  { return TypeData<glm::vec4>::count; }
         case Type::MAT3:  { return TypeData<glm::mat3>::count; }
         case Type::MAT4:  { return TypeData<glm::mat4>::count; }
-        default: { assert(false); }
+        default: 
+        { 
+          throw std::invalid_argument("Invalid type");
+        }
       }
     }
 
@@ -47,7 +53,10 @@ namespace engine
         case Type::VEC4:  { return sizeof(glm::vec4); }
         case Type::MAT3:  { return sizeof(glm::mat3); }
         case Type::MAT4:  { return sizeof(glm::mat4); }
-        default: { assert(false); }
+        default: 
+        {
+          throw std::invalid_argument("Invalid type");
+        }
       }
     }
   }

@@ -23,7 +23,7 @@ namespace engine
     GLenum DrawTypeToOpenGL(DrawType _type);
     DrawType OpenGLToDrawType(GLenum _type);
 
-    enum class IndexType
+    enum class IndexType : GLenum
     {
       UNSIGNED_BYTE  = GL_UNSIGNED_BYTE,
       UNSIGNED_SHORT = GL_UNSIGNED_SHORT,

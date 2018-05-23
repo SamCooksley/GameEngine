@@ -1,13 +1,17 @@
 #ifndef _ENGINE_GRAPHICS_MESH_H_
 #define _ENGINE_GRAPHICS_MESH_H_
 
-#include "core\Object.h"
+#include "core\NamedObject.h"
 
 #include "VertexBuffer.h"
 #include "VertexArray.h"
 #include "IndexBuffer.h"
 
 #include "Shader.h"
+
+#include "Asset.h"
+
+#include "MeshData.h"
 
 namespace engine
 {
@@ -16,7 +20,6 @@ namespace engine
     struct VertexAttribute
     {
     public:
-      std::string name;
       uint size;
       Type type;
       uint typeSize;
@@ -25,19 +28,18 @@ namespace engine
       bool normalized;
     };
 
-    class Mesh : public Object, public NonCopyable
+    class Mesh : public NonCopyable, public NamedObject, public Asset
     {
     public:
-      static std::shared_ptr<Mesh> Create();
       static std::shared_ptr<Mesh> Load(const std::string & _path);
 
+      Mesh();
+      Mesh(const MeshData & _data, DrawType _draw = DrawType::TRIANGLES);
       ~Mesh();
 
       void Render() const;
 
-      void setIndices(const uint8 * _indices, uint _count);
-      void setIndices(const uint16 * _indices, uint _count);
-      void setIndices(const uint32 * _indices, uint _count);
+      void setIndices(const Indices & _indices);
 
       void AddVertices(const glm::vec3 * _vertices, uint _count);
       void AddUVs(const glm::vec2 * _uvs, uint _count);
@@ -45,7 +47,6 @@ namespace engine
 
       template <typename T>
       void AddAttribute(
-        const std::string & _name,
         const T * _data, uint _count, 
         bool _normalized = false
       );
@@ -54,12 +55,8 @@ namespace engine
 
       void setDraw(DrawType _draw);
 
-    protected:
-      Mesh();
-
     private:
       void AddAttribute(
-        const std::string & _name, 
         const void * _data, uint _size, 
         uint _count,
         Type _type, 
@@ -68,11 +65,9 @@ namespace engine
         bool _normalized = false
       );
 
-      bool getAttribute(const std::string & _name, VertexAttribute * _outAttribute = nullptr) const;
-
       void ClearAttributes();
 
-      std::unique_ptr<IndexBuffer> m_indices;
+      std::unique_ptr<IndexBuffer> m_ibo;
       std::unique_ptr<VertexArray> m_vao;
 
       DrawType m_draw;
@@ -84,9 +79,7 @@ namespace engine
       uint m_elementCount;
       bool m_interleaved;
 
-
-      std::vector<byte> m_indexData;
-      IndexType m_indexType;
+      Indices m_indices;
     };
   }
 }

@@ -59,7 +59,6 @@ namespace engine
     void BaseRenderer::setAmbient(const glm::vec3 & _ambient)
     {
       m_ambient = _ambient;
-      
     }
   }
 }

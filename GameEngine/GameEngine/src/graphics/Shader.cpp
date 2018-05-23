@@ -19,7 +19,7 @@ namespace engine
         OpenGLToTextureTypeSampler(_type);
         return true;
       }
-      catch (std::invalid_argument & _e)
+      catch (std::invalid_argument&)
       {
         return false;
       }
@@ -32,7 +32,7 @@ namespace engine
         OpenGLToType(_type);
         return true;
       }
-      catch (std::invalid_argument & _e)
+      catch (std::invalid_argument&)
       { }
 
       return IsSupportedSamplerUniformType(_type);

@@ -36,9 +36,15 @@ namespace engine
       if (Graphics::HasUniformBuffer(LightBuffer::name))
       {
         auto & buffer = Graphics::getUniformBuffer(LightBuffer::name);
-        for (size_t i = 0; i < m_lights.size(); ++i)
+        size_t i = 0;
+        for (; i < m_lights.size(); ++i)
         {
           LightBuffer::setLight(buffer, m_lights[i], i);
+        }
+
+        for (; i < MAX_LIGHTS; ++i)
+        {
+          LightBuffer::ClearLight(buffer, i);
         }
 
         LightBuffer::setAmbient(buffer, m_ambient);
@@ -46,6 +52,8 @@ namespace engine
 
       //m_gBuffer->Bind();
       //m_gBuffer->Clear();
+
+      m_commands.begin()->material.lock()->getShader()->Bind();
 
       for (auto & command : m_commands)
       {
@@ -61,7 +69,7 @@ namespace engine
         }
 
         auto shader = material->getShader();
-
+        shader->Bind();
         material->Bind();
 
         shader->setModel(command.transform);
@@ -73,8 +81,6 @@ namespace engine
       }
 
      // m_gBuffer->Unbind();
-
-
 
       if (m_skybox)
       {

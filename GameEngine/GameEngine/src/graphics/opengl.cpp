@@ -2,8 +2,6 @@
 
 #include "opengl.h"
 
-#include "debug\Debug.h"
-
 namespace engine
 {
   namespace graphics

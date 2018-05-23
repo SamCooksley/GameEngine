@@ -1,5 +1,5 @@
-#ifndef _ENGINE_CORE_APPLICATION_H_
-#define _ENGINE_CORE_APPLICATION_H_
+#ifndef _ENGINE_CORE_TYPES_H_
+#define _ENGINE_CORE_TYPES_H_
 
 #include <cstdint>
 
@@ -28,4 +28,4 @@ namespace engine
   using uint = uint32;
 }
 
-#endif //_ENGINE_CORE_APPLICATION_H_
+#endif //_ENGINE_CORE_TYPES_H_

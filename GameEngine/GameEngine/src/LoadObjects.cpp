@@ -9,6 +9,7 @@
 #include "Resources.h"
 
 #include "MeshRenderer.h"
+#include "utilities\MeshProcessor.h"
 
 namespace engine
 {
@@ -104,7 +105,7 @@ namespace engine
       }
       else
       {
-        texture = graphics::Texture2D::Create(64, 64, glm::vec4(0.f, 0.f, 0.f, 1.f));
+        texture = graphics::Texture2D::Create(64, 64, glm::vec4(0.f));// 0.f, 0.f, 1.f));
       }
 
       if (texture)
@@ -131,7 +132,7 @@ namespace engine
     Assimp::Importer importer;
 
     const aiScene * scene = importer.ReadFile(_path,
-      aiProcess_CalcTangentSpace      |
+      //aiProcess_CalcTangentSpace      |
       aiProcess_Triangulate           |
       aiProcess_JoinIdenticalVertices |
       aiProcess_SortByPType
@@ -151,77 +152,55 @@ namespace engine
     auto parent = GameObject::Instantiate();
     auto parentTransform = parent->getComponent<Transform>();
     
+    utilities::MeshProcessor processor;
+
     for (uint i = 0; i < scene->mNumMeshes; ++i)
     {
       const aiMesh * aimesh = scene->mMeshes[i];
 
-      std::vector<glm::vec3> positions(aimesh->mNumVertices);
-      std::vector<glm::vec3> normals(aimesh->mNumVertices);
-      std::vector<glm::vec2> uvs(aimesh->mNumVertices);
-      std::vector<glm::vec3> tangents(aimesh->mNumVertices);
-      std::vector<glm::vec3> bitangents(aimesh->mNumVertices);
+      graphics::MeshData meshData;
+      meshData.positions.resize(aimesh->mNumVertices);
+      meshData.uvs.resize(aimesh->mNumVertices);
+      meshData.normals.resize(aimesh->mNumVertices);
 
       for (uint j = 0; j < aimesh->mNumVertices; ++j)
       {
         const aiVector3D pos = aimesh->mVertices[j];
-        positions[j] = glm::vec3(pos.x, pos.y, pos.z);
+        meshData.positions[j] = glm::vec3(pos.x, pos.y, pos.z);
 
         if (aimesh->HasTextureCoords(0))
         {
           const aiVector3D uv = aimesh->mTextureCoords[0][j];
-          uvs[j] = glm::vec2(uv.x, 1.0f - uv.y);
+          meshData.uvs[j] = glm::vec2(uv.x, 1.0f - uv.y);
         }
 
         if (aimesh->HasNormals())
         {
           const aiVector3D n = aimesh->mNormals[j];
-          normals[j] = glm::vec3(n.x, n.y, n.z);
-        }
-
-        if (aimesh->HasTangentsAndBitangents())
-        {
-          const aiVector3D tan = aimesh->mTangents[0];
-          const aiVector3D bi = aimesh->mBitangents[0];
-
-          tangents[j] = glm::vec3(tan.x, tan.y, tan.z);
-          bitangents[j] = glm::vec3(bi.x, bi.y, bi.z);
+          meshData.normals[j] = glm::vec3(n.x, n.y, n.z);
         }
       }
 
-      std::vector<uint> indices;
       for (uint j = 0; j < aimesh->mNumFaces; ++j)
       {
         const aiFace aiface = aimesh->mFaces[j];
         for (uint k = 0; k < aiface.mNumIndices; ++k)
         {
-          indices.push_back(aiface.mIndices[k]);
+          meshData.indices.add(aiface.mIndices[k]);
         }
       }
 
-      std::shared_ptr<graphics::Mesh> mesh = graphics::Mesh::Create();
+      if (aimesh->HasTextureCoords(0) && aimesh->HasNormals())
+      {
+        processor.CalculateTangents(
+          meshData.indices, 
+          meshData.positions, meshData.uvs, meshData.normals, 
+          &meshData.tangents, &meshData.bitangents
+        );
+      }
+
+      auto mesh = std::make_shared<graphics::Mesh>(meshData);
       mesh->setName(aimesh->mName.C_Str());
-
-      mesh->AddVertices(&positions[0], positions.size());
-
-      if (!uvs.empty())
-      {
-        mesh->AddUVs(&uvs[0], uvs.size());
-      }
-
-      if (!normals.empty())
-      {
-        mesh->AddNormals(&normals[0], normals.size());
-      }
-
-      if (!tangents.empty() && !bitangents.empty())
-      {
-        mesh->AddAttribute(graphics::Shader::ATTR_TANGENT_NAME, &tangents[0], tangents.size());
-        mesh->AddAttribute(graphics::Shader::ATTR_BITANGENT_NAME, &bitangents[0], tangents.size());
-      }
-
-      mesh->setIndices(&indices[0], indices.size());
-
-      mesh->Apply();
 
       auto go = GameObject::Instantiate();
       go->setName(aimesh->mName.C_Str());

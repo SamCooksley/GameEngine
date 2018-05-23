@@ -12,7 +12,7 @@ namespace engine
 {
   namespace graphics
   {
-    class Skybox : public Object
+    class Skybox 
     {
     public:
       Skybox(

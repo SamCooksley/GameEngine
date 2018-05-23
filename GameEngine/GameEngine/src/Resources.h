@@ -3,6 +3,8 @@
 
 #include "Application.h"
 
+#include "Asset.h"
+
 namespace engine
 {
   class Resources

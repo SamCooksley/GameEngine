@@ -37,6 +37,7 @@ namespace engine
       static std::unique_ptr<UniformBuffer> Create();
 
       static void setLight(UniformBuffer & _buffer, const Light & _light, uint _num);
+      static void ClearLight(UniformBuffer & _buffer, uint _num);
       static void setAmbient(UniformBuffer & _buffer, const glm::vec3 & _ambient);
     };
   }

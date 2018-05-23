@@ -11,9 +11,9 @@ namespace engine
     {
     public:
       static std::shared_ptr<TextureCube> Load(const std::array<std::string, 6> & _paths);
-      static std::shared_ptr<TextureCube> Create(uint _width, uint _height, TextureFormat _format, TextureDataType _type);
-      static std::shared_ptr<TextureCube> Create(uint _width, uint _height, const glm::vec4 & _colour);
-      
+
+      TextureCube(uint _width, uint _height, TextureFormat _format, TextureDataType _type);
+      TextureCube(uint _width, uint _height, const glm::vec4 & _colour);
 
       ~TextureCube();
 
@@ -26,8 +26,6 @@ namespace engine
       TextureCube();
 
     private:
-      static std::shared_ptr<TextureCube> Create();
-
       uint m_width, m_height;
       TextureFilter m_filter;
     };

@@ -19,9 +19,10 @@ namespace engine
 
     void Skybox::Render(Camera & _camera)
     {
+      auto shader = m_material->getShader();
+      shader->Bind();
       m_material->Bind();
 
-      auto shader = m_material->getShader();
 
       shader->setView(_camera.view);
       shader->setProjection(_camera.projection);

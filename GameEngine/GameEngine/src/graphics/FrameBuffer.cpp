@@ -71,15 +71,13 @@ namespace engine
       texture->setFilter(TextureFilter::LINEAR);
       texture->setWrap(TextureWrap::CLAMP_TO_EDGE);
 
-      GLCALL(
-        glFramebufferTexture2D(
+      GLCALL(glFramebufferTexture2D(
           GL_FRAMEBUFFER,
           FrameBufferAttachmentToOpenGL(_attachment, m_colourAttachmentCount),
           GL_TEXTURE_2D,
           texture->m_id,
           0
-        )
-      );
+      ));
 
       if (!Attach(_attachment))
       {
@@ -93,17 +91,15 @@ namespace engine
 
     std::shared_ptr<TextureCube> FrameBuffer::AddCubeMap(FrameBufferAttachment _attachment, TextureFormat _format, TextureDataType _type)
     {
-      auto cube = TextureCube::Create(m_width, m_height, _format, _type);
+      auto cube = std::make_shared<TextureCube>(m_width, m_height, _format, _type);
       cube->setFilter(TextureFilter::LINEAR);
 
-      GLCALL(
-        glFramebufferTexture(
+      GLCALL(glFramebufferTexture(
           GL_FRAMEBUFFER,
           FrameBufferAttachmentToOpenGL(_attachment, m_colourAttachmentCount),
           cube->m_id,
           0
-        )
-      );
+      ));
 
       if (!Attach(_attachment))
       {
@@ -119,14 +115,12 @@ namespace engine
     {
       auto renderBuffer = std::make_unique<RenderBuffer>(m_width, m_height, _format);
 
-      GLCALL(
-        glFramebufferRenderbuffer(
+      GLCALL(glFramebufferRenderbuffer(
           GL_FRAMEBUFFER,
           FrameBufferAttachmentToOpenGL(_attachment, m_colourAttachmentCount),
           GL_RENDERBUFFER,
           renderBuffer->m_rb
-        )
-      );
+      ));
 
       if (!Attach(_attachment))
       {

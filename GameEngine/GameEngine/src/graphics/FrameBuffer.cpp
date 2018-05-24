@@ -27,7 +27,10 @@ namespace engine
         case GL_DEPTH_ATTACHMENT:         { return FrameBufferAttachment::DEPTH;         }
         case GL_STENCIL_ATTACHMENT:       { return FrameBufferAttachment::STENCIL;       }
         case GL_DEPTH_STENCIL_ATTACHMENT: { return FrameBufferAttachment::DEPTH_STENCIL; }
-        default: { assert(false); }
+        default: 
+        {
+          throw std::invalid_argument("Invalid buffer attachment");
+        }
       }
 
       return FrameBufferAttachment::COLOUR;

@@ -125,34 +125,23 @@ namespace engine
 
       std::vector<byte> data;
 
-      switch (type)
+      if (type == IndexType::UNSIGNED_BYTE)
       {
-        case IndexType::UNSIGNED_BYTE:
-        {
-          std::vector<uint8> i = ToByte();
-          data.resize(m_indices.size() * sizeof(uint8));
-          memcpy(&data[0], &i[0], data.size());
-          break;
-        }
-        case IndexType::UNSIGNED_SHORT:
-        {
-          std::vector<uint16> i = ToShort();
-          data.resize(m_indices.size() * sizeof(uint16));
-          memcpy(&data[0], &i[0], data.size());
-          break;
-        }
-        case IndexType::UNSIGNED_INT:
-        {
-          std::vector<uint32> i = ToInt();
-          data.resize(m_indices.size() * sizeof(uint32));
-          memcpy(&data[0], &i[0], data.size());
-          break;
-        }
-        default:
-        {
-          assert(false);
-          break;
-        }
+        std::vector<uint8> i = ToByte();
+        data.resize(m_indices.size() * sizeof(uint8));
+        memcpy(&data[0], &i[0], data.size());
+      }
+      else if (type == IndexType::UNSIGNED_SHORT)
+      {
+        std::vector<uint16> i = ToShort();
+        data.resize(m_indices.size() * sizeof(uint16));
+        memcpy(&data[0], &i[0], data.size());
+      }
+      else
+      {
+        std::vector<uint32> i = ToInt();
+        data.resize(m_indices.size() * sizeof(uint32));
+        memcpy(&data[0], &i[0], data.size());
       }
 
       return std::move(std::make_pair(type, std::move(data)));

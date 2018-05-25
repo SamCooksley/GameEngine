@@ -12,6 +12,8 @@
 
 #include "ShaderType.h"
 
+#include "UniformBuffer.h"
+
 namespace engine
 {
   namespace graphics
@@ -23,6 +25,7 @@ namespace engine
       friend class Mesh;
       friend class Material;
       friend class DefaultRenderer;
+      friend class UniformBuffers;
 
     public:
       static const std::string PROJECTION_NAME;
@@ -59,6 +62,8 @@ namespace engine
       void SetupUniformBuffers();
       void SetupUniforms();
 
+      void SetupUniformBuffer(const UniformBuffer & _ub);
+
       bool SetSystemUniform(const std::string & _name, GLint _location);
 
       void RetreiveUniformData(std::vector<byte> & _outData);
@@ -89,6 +94,9 @@ namespace engine
       bool getAttribute(const std::string & _name, ShaderAttribute * _outAttribute) const;
       bool getUniform(const std::string & _name, ShaderUniform * _outUniform) const;
       bool getSampler(const std::string & _name, ShaderSampler * _outSampler) const;
+
+      static void AddShader(const std::shared_ptr<Shader> & _shader);
+      void RemoveShader();
 
       GLuint m_program;
       std::vector<GLuint> m_shaders;

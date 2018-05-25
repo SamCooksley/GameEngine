@@ -13,7 +13,7 @@ namespace engine
     {
     public:
       UniformBuffer(std::string _name);
-      ~UniformBuffer();
+      virtual ~UniformBuffer();
 
       void Bind() const;
       void Unbind() const;
@@ -26,7 +26,7 @@ namespace engine
       void setBind(GLuint _index);
       GLuint getBind() const;
 
-      const std::string& getName() const;
+      const std::string & getName() const;
    
     private:
       GLuint m_ubo;

@@ -30,6 +30,8 @@ namespace engine
       std::shared_ptr<Mesh> screenQuad;
 
       std::vector<std::weak_ptr<::engine::Camera>> cameras;
+
+      std::vector<std::weak_ptr<Shader>> shaders;
     };
   }
 
@@ -39,14 +41,20 @@ namespace engine
     friend class graphics::Shader;
     friend class graphics::Material;
     friend class Camera;
+    friend class graphics::UniformBuffers;
 
   public:
     Graphics() = delete;
 
-    static bool HasUniformBuffer(const std::string & _name);
-    static graphics::UniformBuffer & getUniformBuffer(const std::string & _name);
-
     static std::shared_ptr<graphics::Material> getDefaultMaterial();
+
+    template <class T>
+    static T * getUniformBuffer()
+    {
+      return getContext().uniformBuffers.getBuffer<T>();
+    }
+
+    static graphics::UniformBuffer * getUniformBuffer(const std::string & _name);
 
   private:
     static std::shared_ptr<graphics::Shader> getErrorShader();

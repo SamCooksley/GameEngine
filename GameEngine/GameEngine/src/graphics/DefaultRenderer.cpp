@@ -27,27 +27,39 @@ namespace engine
 
     void DefaultRenderer::Render()
     {
-      if (Graphics::HasUniformBuffer(CameraBuffer::name))
+      auto cameraBuffer = Graphics::getUniformBuffer<CameraBuffer>();
+      if (cameraBuffer != nullptr)
       {
-        auto & buffer = Graphics::getUniformBuffer(CameraBuffer::name);
-        CameraBuffer::setCamera(buffer, m_camera);
+        cameraBuffer->Bind();
+        cameraBuffer->setCamera(m_camera);
       }
 
-      if (Graphics::HasUniformBuffer(LightBuffer::name))
+      auto lightBuffer = Graphics::getUniformBuffer<LightBuffer>();
+      if (lightBuffer != nullptr)
       {
-        auto & buffer = Graphics::getUniformBuffer(LightBuffer::name);
-        size_t i = 0;
-        for (; i < m_lights.size(); ++i)
+        size_t i = 0u;
+
+        size_t size = m_lights.size();
+        if (size > LightBuffer::max_lights)
         {
-          LightBuffer::setLight(buffer, m_lights[i], i);
+          debug::LogWarning("Maximum amount of lights reached.");
+
+          size = LightBuffer::max_lights;
         }
 
-        for (; i < MAX_LIGHTS; ++i)
+        lightBuffer->Bind();
+
+        for (; i < size; ++i)
         {
-          LightBuffer::ClearLight(buffer, i);
+          lightBuffer->setLight(m_lights[i], i);
         }
 
-        LightBuffer::setAmbient(buffer, m_ambient);
+        for (; i < LightBuffer::max_lights; ++i)
+        {
+          lightBuffer->ClearLight(i);
+        }
+
+        lightBuffer->setAmbient(m_ambient);
       }
 
       //m_gBuffer->Bind();

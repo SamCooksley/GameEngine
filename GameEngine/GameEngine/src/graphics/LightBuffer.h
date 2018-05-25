@@ -9,16 +9,15 @@ namespace engine
 {
   namespace graphics
   {
-    class LightBuffer
+    class LightBuffer : public UniformBuffer
     {
     public:
-      LightBuffer() = delete;
-
       static const std::string name; 
 
-      static const uint
-        max_lights,
+      static const uint max_lights;
 
+    private:
+      static const uint
         type_offset,
         position_offset,
         direction_offset,
@@ -30,15 +29,18 @@ namespace engine
 
         light_size,
         lights_size,
+
         ambient_offset,
 
         size;
 
-      static std::unique_ptr<UniformBuffer> Create();
+    public:
+      LightBuffer();
+      ~LightBuffer();
 
-      static void setLight(UniformBuffer & _buffer, const Light & _light, uint _num);
-      static void ClearLight(UniformBuffer & _buffer, uint _num);
-      static void setAmbient(UniformBuffer & _buffer, const glm::vec3 & _ambient);
+      void setLight(const Light & _light, uint _num);
+      void ClearLight(uint _num);
+      void setAmbient(const glm::vec3 & _ambient);
     };
   }
 }

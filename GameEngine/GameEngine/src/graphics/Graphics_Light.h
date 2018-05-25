@@ -7,8 +7,6 @@ namespace engine
 {
   namespace graphics
   {
-    constexpr int MAX_LIGHTS = 10;
-
     enum class LightType : int
     {
       None = -1,

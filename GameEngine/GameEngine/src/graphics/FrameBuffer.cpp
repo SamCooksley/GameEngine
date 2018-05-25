@@ -18,10 +18,12 @@ namespace engine
 
     FrameBufferAttachment OpenGLToFrameBufferAttachment(GLenum _attachment)
     {
+      //TODO:GL_MAX_COLOR_ATTACHMENTS 
       if (_attachment >= GL_COLOR_ATTACHMENT0 && _attachment <= GL_COLOR_ATTACHMENT15)
       {
         return FrameBufferAttachment::COLOUR;
       }
+
       switch (_attachment)
       {
         case GL_DEPTH_ATTACHMENT:         { return FrameBufferAttachment::DEPTH;         }

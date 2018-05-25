@@ -73,6 +73,8 @@ namespace engine
         shader->SetupUniformBuffers();
         shader->SetupAttributes();
         shader->SetupUniforms();
+
+        Shader::AddShader(shader);
       }
       catch (std::exception & _e)
       {
@@ -92,6 +94,8 @@ namespace engine
 
     Shader::~Shader()
     {
+      RemoveShader();
+
       GLCALL(glDeleteProgram(m_program));
     }
 
@@ -177,11 +181,16 @@ namespace engine
       auto & buffers = Graphics::getContext().uniformBuffers.m_buffers;
       for (auto & buffer : buffers)
       {
-        GLuint index = getUniformBlockIndex(buffer.first);
-        if (index != GL_INVALID_INDEX)
-        {
-          setUniformBlockBinding(index, buffer.second->getBind());
-        }
+        SetupUniformBuffer(*buffer.second);
+      }
+    }
+
+    void Shader::SetupUniformBuffer(const UniformBuffer & _ub)
+    {
+      GLuint index = getUniformBlockIndex(_ub.getName());
+      if (index != GL_INVALID_INDEX)
+      {
+        setUniformBlockBinding(index, _ub.getBind());
       }
     }
 
@@ -540,6 +549,34 @@ namespace engine
       }
 
       return true;
+    }
+
+    void Shader::AddShader(const std::shared_ptr<Shader> & _shader)
+    {
+      auto & shaders = Graphics::getContext().shaders;
+
+      for (size_t i = 0u; i < shaders.size(); ++i)
+      {
+        if (shaders[i].lock() == _shader)
+        {
+          return;
+        }
+      }
+
+      shaders.push_back(_shader);
+    }
+
+    void Shader::RemoveShader()
+    {
+      auto & shaders = Graphics::getContext().shaders;
+      for (size_t i = 0u; i < shaders.size();)
+      {
+        if (shaders[i].lock().get() == this)
+        {
+          shaders.erase(shaders.begin() + i);
+        }
+        else { ++i; }
+      }
     }
   }
 }

@@ -27,45 +27,44 @@ namespace engine
 
     const uint LightBuffer::size = LightBuffer::lights_size + sizeof(glm::vec4);
 
-    std::unique_ptr<UniformBuffer> LightBuffer::Create()
+    LightBuffer::LightBuffer() :
+      UniformBuffer(LightBuffer::name)
     {
-      auto buffer = std::make_unique<graphics::UniformBuffer>(graphics::LightBuffer::name);
-      buffer->Reserve(graphics::LightBuffer::size);
-      buffer->Unbind();
-      return std::move(buffer);
+      Reserve(LightBuffer::size);
     }
 
-    void LightBuffer::setLight(UniformBuffer & _buffer, const Light & _light, uint _num)
+    LightBuffer::~LightBuffer()
+    { }
+
+    void LightBuffer::setLight(const Light & _light, uint _num)
     {
+      assert(_num < max_lights);
+
       std::vector<byte> data(LightBuffer::light_size);
 
-      memcpy(&data[LightBuffer::type_offset], &_light.type, sizeof(LightType));
-      memcpy(&data[LightBuffer::position_offset], glm::value_ptr(_light.position), sizeof(glm::vec3));
-      memcpy(&data[LightBuffer::direction_offset], glm::value_ptr(_light.direction), sizeof(glm::vec3));
-      memcpy(&data[LightBuffer::colour_offset], glm::value_ptr(_light.colour), sizeof(glm::vec3));
-      memcpy(&data[LightBuffer::linear_offset], &_light.linear, sizeof(float));
-      memcpy(&data[LightBuffer::quadratic_offset], &_light.quadratic, sizeof(float));
-      memcpy(&data[LightBuffer::cutoff_offset], &_light.cutoff, sizeof(float));
-      memcpy(&data[LightBuffer::outercutoff_offset], &_light.outerCutoff, sizeof(float));
+      memcpy(&data[LightBuffer::type_offset],        &_light.type,                     sizeof(LightType));
+      memcpy(&data[LightBuffer::position_offset],    glm::value_ptr(_light.position),  sizeof(glm::vec3));
+      memcpy(&data[LightBuffer::direction_offset],   glm::value_ptr(_light.direction), sizeof(glm::vec3));
+      memcpy(&data[LightBuffer::colour_offset],      glm::value_ptr(_light.colour),    sizeof(glm::vec3));
+      memcpy(&data[LightBuffer::linear_offset],      &_light.linear,                   sizeof(float));
+      memcpy(&data[LightBuffer::quadratic_offset],   &_light.quadratic,                sizeof(float));
+      memcpy(&data[LightBuffer::cutoff_offset],      &_light.cutoff,                   sizeof(float));
+      memcpy(&data[LightBuffer::outercutoff_offset], &_light.outerCutoff,              sizeof(float));
 
-      _buffer.Bind();
-      _buffer.setData(&data[0], LightBuffer::light_size, LightBuffer::light_size * _num);
-      _buffer.Unbind();
+      setData(&data[0], LightBuffer::light_size, LightBuffer::light_size * _num);
     }
 
-    void LightBuffer::ClearLight(UniformBuffer & _buffer, uint _num)
+    void LightBuffer::ClearLight(uint _num)
     {
+      assert(_num < max_lights);
+
       constexpr LightType type = LightType::None;
-      _buffer.Bind();
-      _buffer.setData(&type, sizeof(LightType), LightBuffer::light_size * _num + LightBuffer::type_offset);
-      _buffer.Unbind();
+      setData(&type, sizeof(LightType), LightBuffer::light_size * _num + LightBuffer::type_offset);
     }
 
-    void LightBuffer::setAmbient(UniformBuffer & _buffer, const glm::vec3 & _ambient)
+    void LightBuffer::setAmbient(const glm::vec3 & _ambient)
     {
-      _buffer.Bind();
-      _buffer.setData(glm::value_ptr(_ambient), sizeof(glm::vec3), LightBuffer::ambient_offset);
-      _buffer.Unbind();
+      setData(glm::value_ptr(_ambient), sizeof(glm::vec3), LightBuffer::ambient_offset);
     }
   }
 }

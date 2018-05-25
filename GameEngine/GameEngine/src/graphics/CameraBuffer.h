@@ -9,23 +9,25 @@ namespace engine
 {
   namespace graphics
   {
-    class CameraBuffer
+    class CameraBuffer : public UniformBuffer
     {
     public:
-      CameraBuffer() = delete;
-
       static const std::string name;
 
+    private:
       static const uint
         projection_offset,
         view_offset,
         vp_offset,
         position_offset,
-        
+
         size;
 
-      static std::unique_ptr<UniformBuffer> Create();
-      static void setCamera(UniformBuffer & _buffer, const Camera & _camera);
+    public:
+      CameraBuffer();
+      ~CameraBuffer();
+
+      void setCamera(const Camera & _camera);
     };
   }
 }

@@ -58,9 +58,14 @@ namespace engine
     glEnable(GL_CULL_FACE);
     glEnable(GL_DEPTH_TEST);
 
-    s_context->graphics.uniformBuffers.Add(graphics::CameraBuffer::Create());
-    s_context->graphics.uniformBuffers.Add(graphics::LightBuffer::Create());
+    //uniform buffers
+    {
+      auto camera = std::make_unique<graphics::CameraBuffer>();
+      s_context->graphics.uniformBuffers.Add(std::move(camera));
 
+      auto lights = std::make_unique<graphics::LightBuffer>();
+      s_context->graphics.uniformBuffers.Add(std::move(lights));
+    }
     s_context->graphics.errorShader = Resources::Load<graphics::Shader>("resources/shaders/error.shader");
 
 

@@ -3,6 +3,8 @@
 
 #include "UniformBuffer.h"
 
+
+
 namespace engine
 {
   namespace graphics
@@ -16,11 +18,26 @@ namespace engine
 
       void Add(std::unique_ptr<UniformBuffer> _buffer);
 
-      bool Exists(const std::string & _name) const;
+      template <class T>
+      T * getBuffer()
+      {
+        static_assert(std::is_base_of<UniformBuffer, T>::value, "Object must be type of UniformBuffer");
 
-      UniformBuffer & getBuffer(const std::string & _name);
+        for (auto & buffer : m_buffers)
+        {
+          T * b = dynamic_cast<T*>(buffer.second.get());
+          if (b != nullptr)
+          {
+            return b;
+          }
+        }
 
-    private:
+        return nullptr;
+      }
+
+      UniformBuffer * getBuffer(const std::string & _name);
+
+    private: 
       std::map<std::string, std::unique_ptr<UniformBuffer>> m_buffers;
     };
   }

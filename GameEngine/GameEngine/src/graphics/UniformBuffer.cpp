@@ -56,7 +56,7 @@ namespace engine
       return m_index;
     }
 
-    const std::string& UniformBuffer::getName() const
+    const std::string & UniformBuffer::getName() const
     {
       return m_name;
     }

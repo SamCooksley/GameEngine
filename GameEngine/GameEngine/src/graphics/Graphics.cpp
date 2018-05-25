@@ -6,12 +6,7 @@
 
 namespace engine
 {
-  bool Graphics::HasUniformBuffer(const std::string & _name)
-  {
-    return Application::s_context->graphics.uniformBuffers.Exists(_name);
-  }
-
-  graphics::UniformBuffer & Graphics::getUniformBuffer(const std::string & _name)
+  graphics::UniformBuffer * Graphics::getUniformBuffer(const std::string & _name)
   {
     return Application::s_context->graphics.uniformBuffers.getBuffer(_name);
   }

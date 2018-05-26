@@ -6,45 +6,39 @@ namespace engine
 {
   namespace graphics
   {
-    CullFace OpenGLToCullFace(GLenum _cull)
+    Cull OpenGLToCull(GLenum _cull)
     {
       switch (_cull)
       {
-        case GL_FRONT:          { return CullFace::FRONT; }
-        case GL_BACK:           { return CullFace::BACK;  }
-        case GL_FRONT_AND_BACK: { return CullFace::BOTH;  }
-        default: 
-        {
-          throw std::invalid_argument("Invalid cull face");
-        }
+        case GL_FRONT:          { return Cull::FRONT; }
+        case GL_BACK:           { return Cull::BACK;  }
+        case GL_FRONT_AND_BACK: { return Cull::BOTH;  }
+        default:                { return Cull::NONE;  }
       }
     }
 
-    GLenum CullFaceToOpenGL(CullFace _cull)
+    GLenum CullToOpenGL(Cull _cull)
     {
       return static_cast<GLenum>(_cull);
     }
 
-    DepthFunc OpenGLToDepthFunc(GLenum _depth)
+    Depth OpenGLToDepth(GLenum _depth)
     {
       switch (_depth)
       {
-        case GL_NEVER:    { return DepthFunc::NEVER;    }
-        case GL_ALWAYS:   { return DepthFunc::ALWAYS;   }
-        case GL_LESS:     { return DepthFunc::LESS;     }
-        case GL_GREATER:  { return DepthFunc::GREATER;  }
-        case GL_EQUAL:    { return DepthFunc::EQUAL;    }
-        case GL_NOTEQUAL: { return DepthFunc::NOTEQUAL; }
-        case GL_LEQUAL:   { return DepthFunc::LEQUAL;   }
-        case GL_GEQUAL:   { return DepthFunc::GEQUAL;   }
-        default:
-        {
-          throw std::invalid_argument("Invalid depth func");
-        }
+        case GL_NEVER:    { return Depth::NEVER;    }
+        case GL_ALWAYS:   { return Depth::ALWAYS;   }
+        case GL_LESS:     { return Depth::LESS;     }
+        case GL_GREATER:  { return Depth::GREATER;  }
+        case GL_EQUAL:    { return Depth::EQUAL;    }
+        case GL_NOTEQUAL: { return Depth::NOTEQUAL; }
+        case GL_LEQUAL:   { return Depth::LEQUAL;   }
+        case GL_GEQUAL:   { return Depth::GEQUAL;   }
+        default:          { return Depth::NONE;     }
       }
     }
 
-    GLenum DepthFuncToOpenGL(DepthFunc _depth)
+    GLenum DepthToOpenGL(Depth _depth)
     {
       return static_cast<GLenum>(_depth);
     }
@@ -70,7 +64,7 @@ namespace engine
         case GL_SRC_ALPHA_SATURATE:       { return BlendFunc::SRC_ALPHA_SATURATE; }
         default:
         {
-          throw std::invalid_argument("Invalid blend func");
+          throw std::invalid_argument("Invalid blend function");
         }
       }
     }
@@ -80,31 +74,68 @@ namespace engine
       return static_cast<GLenum>(_blend);
     }
 
+    BlendOp OpenGLToBlendOp(GLenum _op)
+    {
+      switch (_op)
+      {
+        case GL_FUNC_ADD:              { return BlendOp::ADD; }
+        case GL_FUNC_SUBTRACT:         { return BlendOp::SUBTRACT; }
+        case GL_FUNC_REVERSE_SUBTRACT: { return BlendOp::REVERSE_SUBTRACT; }
+        case GL_MIN:                   { return BlendOp::MIN; }
+        case GL_MAX:                   { return BlendOp::MAX; }
+        default: 
+        {
+          throw std::invalid_argument("Invalid blend operation");
+        }
+      }
+    }
+
+    GLenum BlendOpToOpenGL(BlendOp _op)
+    {
+      return static_cast<GLenum>(_op);
+    }
+
     GLData::GLData() : 
-      m_depth(false), m_cull(false), m_blend(false),
-      m_depthFunc(DepthFunc::LESS), 
-      m_cullFace(CullFace::BACK),
-      m_blendSrc(BlendFunc::ONE),
-      m_blendDst(BlendFunc::ZERO),
+      m_depth(Depth::NONE), m_cull(Cull::NONE), 
+      m_blend({ false, BlendFunc::ONE, BlendFunc::ZERO, BlendOp::ADD }),
       m_maxUniformBuffers(36), 
       m_maxColourAttachments(4)
     { 
-      GLCALL(m_depth = glIsEnabled(GL_DEPTH_TEST) == GL_TRUE);
-      GLCALL(m_cull = glIsEnabled(GL_CULL_FACE) == GL_TRUE);
-      GLCALL(m_blend = glIsEnabled(GL_BLEND) == GL_TRUE);
-
+      bool enable;
       GLint get;
-      GLCALL(glGetIntegerv(GL_DEPTH_FUNC, &get));
-      m_depthFunc = OpenGLToDepthFunc(get);
 
-      GLCALL(glGetIntegerv(GL_CULL_FACE_MODE, &get));
-      m_cullFace = OpenGLToCullFace(get);
+      GLCALL(enable = glIsEnabled(GL_DEPTH_TEST) == GL_TRUE);
+      if (!enable)
+      {
+        m_depth = Depth::NONE;
+      }
+      else
+      {
+        GLCALL(glGetIntegerv(GL_DEPTH_FUNC, &get));
+        m_depth = OpenGLToDepth(get);
+      }
+
+      GLCALL(enable = glIsEnabled(GL_CULL_FACE) == GL_TRUE);
+      if (!enable)
+      {
+        m_cull = Cull::NONE;
+      }
+      else
+      {
+        GLCALL(glGetIntegerv(GL_CULL_FACE_MODE, &get));
+        m_cull = OpenGLToCull(get);
+      }
+
+      GLCALL(m_blend.enable = glIsEnabled(GL_BLEND) == GL_TRUE);
 
       GLCALL(glGetIntegerv(GL_BLEND_SRC, &get));
-      m_blendSrc = OpenGLToBlendFunc(get);
+      m_blend.src = OpenGLToBlendFunc(get);
 
       GLCALL(glGetIntegerv(GL_BLEND_DST, &get));
-      m_blendDst = OpenGLToBlendFunc(get);
+      m_blend.dst = OpenGLToBlendFunc(get);
+
+      GLCALL(glGetIntegerv(GL_BLEND_EQUATION_ALPHA, &get));
+      m_blend.op = OpenGLToBlendOp(get);
 
       GLCALL(glGetIntegerv(GL_MAX_UNIFORM_BUFFER_BINDINGS, &m_maxUniformBuffers));
 
@@ -114,64 +145,79 @@ namespace engine
     GLData::~GLData()
     { }
 
-    void GLData::SetDepth(bool _enable)
+    void GLData::SetDepth(Depth _depth)
     {
-      if (_enable != m_depth)
+      if (_depth != m_depth)
       {
-        m_depth = _enable;
-        if (m_depth) { GLCALL(glEnable(GL_DEPTH_TEST)); }
-        else         { GLCALL(glDisable(GL_DEPTH_TEST)); }
+        if (_depth == Depth::NONE)
+        {
+          GLCALL(glDisable(GL_DEPTH_TEST));
+        }
+        else
+        {
+          if (m_depth == Depth::NONE)
+          {
+            GLCALL(glEnable(GL_DEPTH_TEST));
+          }
+
+          GLCALL(glDepthFunc(DepthToOpenGL(_depth)));
+        }
+        m_depth = _depth;
       }
     }
 
-    void GLData::SetDepthFunc(DepthFunc _depth)
+    void GLData::SetCull(Cull _cull)
     {
-      if (_depth != m_depthFunc)
+      if (_cull != m_cull)
       {
-        m_depthFunc = _depth;
-        GLCALL(glDepthFunc(DepthFuncToOpenGL(m_depthFunc)));
+        if (_cull == Cull::NONE)
+        {
+          GLCALL(glDisable(GL_CULL_FACE));
+        }
+        else
+        {
+          if (m_cull == Cull::NONE)
+          {
+            GLCALL(glEnable(GL_CULL_FACE));
+          }
+
+          GLCALL(glCullFace(CullToOpenGL(_cull)));
+        }
+        m_cull = _cull;
       }
     }
 
-    void GLData::SetCull(bool _enable)
+    void GLData::EnableBlend(BlendFunc _src, BlendFunc _dst, BlendOp _op)
     {
-      if (_enable != m_cull)
+      if (!m_blend.enable)
       {
-        m_cull = _enable;
-        if (m_depth) { GLCALL(glEnable(GL_CULL_FACE)); }
-        else         { GLCALL(glDisable(GL_CULL_FACE)); }
+        GLCALL(glEnable(GL_BLEND));
+        m_blend.enable = true;
       }
-    }
 
-    void GLData::SetCullFace(CullFace _face)
-    {
-      if (_face != m_cullFace)
+      if (_src != m_blend.src || _dst != m_blend.dst)
       {
-        m_cullFace = _face;
-        GLCALL(glCullFace(CullFaceToOpenGL(m_cullFace)));
-      }
-    }
-
-    void GLData::SetBlend(bool _enable)
-    {
-      if (_enable != m_blend)
-      {
-        m_blend = _enable;
-        if (m_blend) { GLCALL(glEnable(GL_BLEND)); }
-        else         { GLCALL(glDisable(GL_BLEND)); }
-      }
-    }
-
-    void GLData::SetBlendFunc(BlendFunc _src, BlendFunc _dst)
-    {
-      if (_src != m_blendSrc || _dst != m_blendDst)
-      {
-        m_blendSrc = _src;
-        m_blendDst = _dst;
         GLCALL(glBlendFunc(
-          BlendFuncToOpenGL(m_blendSrc),
-          BlendFuncToOpenGL(m_blendDst)
+          BlendFuncToOpenGL(_src),
+          BlendFuncToOpenGL(_dst)
         ));
+        m_blend.src = _src;
+        m_blend.dst = _dst;
+      }
+
+      if (_op != m_blend.op)
+      {
+        GLCALL(glBlendEquation(BlendOpToOpenGL(_op)));
+        m_blend.op = _op;
+      }
+    }
+
+    void GLData::DisableBlend()
+    {
+      if (m_blend.enable)
+      {
+        GLCALL(glDisable(GL_BLEND));
+        m_blend.enable = false;
       }
     }
 

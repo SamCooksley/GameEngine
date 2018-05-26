@@ -28,9 +28,9 @@ namespace engine
       shader->setView(_camera.view);
       shader->setProjection(_camera.projection);
 
-      Graphics::GL().SetDepthFunc(DepthFunc::LEQUAL);
+      Graphics::GL().SetDepth(Depth::LEQUAL);
       m_mesh->Render();
-      Graphics::GL().SetDepthFunc(DepthFunc::LESS);
+      Graphics::GL().SetDepth(Depth::LESS);
 
       m_material->Unbind();
     }

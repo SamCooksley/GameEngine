@@ -57,14 +57,9 @@ namespace engine
  
     s_context->graphics.glData = std::make_unique<graphics::GLData>();
 
-    s_context->graphics.glData->SetCull(true);
-    s_context->graphics.glData->SetCullFace(graphics::CullFace::BACK);
-
-    s_context->graphics.glData->SetDepth(true);
-    s_context->graphics.glData->SetDepthFunc(graphics::DepthFunc::LESS);
-
-    s_context->graphics.glData->SetBlend(true);
-    s_context->graphics.glData->SetBlendFunc(graphics::BlendFunc::SRC_ALPHA, graphics::BlendFunc::ONE_MINUS_SRC_ALPHA);
+    s_context->graphics.glData->SetCull(graphics::Cull::BACK);
+    s_context->graphics.glData->SetDepth(graphics::Depth::LESS);
+    s_context->graphics.glData->EnableBlend(graphics::BlendFunc::SRC_ALPHA, graphics::BlendFunc::ONE_MINUS_SRC_ALPHA);
 
     //uniform buffers
     {

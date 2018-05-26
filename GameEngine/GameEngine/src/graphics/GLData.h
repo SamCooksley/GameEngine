@@ -7,18 +7,9 @@ namespace engine
 {
   namespace graphics
   {
-    enum class CullFace : GLenum
+    enum class Depth : GLenum
     {
-      FRONT = GL_FRONT,
-      BACK  = GL_BACK,
-      BOTH  = GL_FRONT_AND_BACK
-    };
-
-    CullFace OpenGLToCullFace(GLenum _cull);
-    GLenum CullFaceToOpenGL(CullFace _cull);
-
-    enum class DepthFunc : GLenum
-    {
+      NONE,
       NEVER    = GL_NEVER,
       ALWAYS   = GL_ALWAYS,
       LESS     = GL_LESS,
@@ -29,8 +20,19 @@ namespace engine
       GEQUAL   = GL_GEQUAL,
     };
 
-    DepthFunc OpenGLToDepthFunc(GLenum _depth);
-    GLenum DepthFuncToOpenGL(DepthFunc _depth);
+    Depth OpenGLToDepth(GLenum _depth);
+    GLenum DepthToOpenGL(Depth _depth);
+
+    enum class Cull : GLenum
+    {
+      NONE,
+      FRONT = GL_FRONT,
+      BACK  = GL_BACK,
+      BOTH  = GL_FRONT_AND_BACK
+    };
+
+    Cull OpenGLToCull(GLenum _cull);
+    GLenum CullToOpenGL(Cull _cull);
 
     enum class BlendFunc : GLenum
     {
@@ -54,36 +56,46 @@ namespace engine
     BlendFunc OpenGLToBlendFunc(GLenum _blend);
     GLenum BlendFuncToOpenGL(BlendFunc _blend);
 
+    enum class BlendOp : GLenum
+    {
+      ADD              = GL_FUNC_ADD,
+      SUBTRACT         = GL_FUNC_SUBTRACT,
+      REVERSE_SUBTRACT = GL_FUNC_REVERSE_SUBTRACT,
+      MIN              = GL_MIN,
+      MAX              = GL_MAX
+    };
+
+    BlendOp OpenGLToBlendOp(GLenum _op);
+    GLenum BlendOpToOpenGL(BlendOp _op);
+
+    struct Blend
+    {
+      bool enable;
+      BlendFunc src;
+      BlendFunc dst;
+      BlendOp op;
+    };
+
     class GLData
     {
     public:
       GLData();
       ~GLData();
 
-      void SetDepth(bool _enable);
-      void SetDepthFunc(DepthFunc _depth);
+      void SetDepth(Depth _depth);
+      void SetCull(Cull _cull);
 
-      void SetCull(bool _enable);
-      void SetCullFace(CullFace _face);
-
-      void SetBlend(bool _enable);
-      void SetBlendFunc(BlendFunc _src, BlendFunc _dst);
+      void EnableBlend(BlendFunc _src, BlendFunc _dst, BlendOp _op = BlendOp::ADD);
+      void DisableBlend();
 
       int GetMaxUniformBuffers() const;
 
       int GetMaxColourAttachments() const;
 
     private:
-      bool m_depth;
-      bool m_cull;
-      bool m_blend;
-
-      DepthFunc m_depthFunc;
-
-      CullFace m_cullFace;
-
-      BlendFunc m_blendSrc;
-      BlendFunc m_blendDst;
+      Depth m_depth;
+      Cull m_cull;
+      Blend m_blend;
 
       int m_maxUniformBuffers;
       int m_maxColourAttachments;

@@ -37,6 +37,7 @@
     <ClCompile Include="src\graphics\BufferLayout.cpp" />
     <ClCompile Include="src\graphics\CameraBuffer.cpp" />
     <ClCompile Include="src\graphics\FrameBuffer.cpp" />
+    <ClCompile Include="src\graphics\GLData.cpp" />
     <ClCompile Include="src\graphics\Graphics_Camera.cpp" />
     <ClCompile Include="src\graphics\DefaultRenderer.cpp" />
     <ClCompile Include="src\graphics\Graphics.cpp" />
@@ -112,6 +113,7 @@
     <ClInclude Include="src\graphics\BufferLayout.h" />
     <ClInclude Include="src\graphics\CameraBuffer.h" />
     <ClInclude Include="src\graphics\FrameBuffer.h" />
+    <ClInclude Include="src\graphics\GLData.h" />
     <ClInclude Include="src\graphics\Graphics_Camera.h" />
     <ClInclude Include="src\graphics\DefaultRenderer.h" />
     <ClInclude Include="src\graphics\Graphics.h" />

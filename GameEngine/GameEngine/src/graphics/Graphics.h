@@ -12,6 +12,8 @@
 
 #include "UniformBuffers.h"
 
+#include "GLData.h"
+
 namespace engine
 {
   namespace graphics
@@ -32,6 +34,8 @@ namespace engine
       std::vector<std::weak_ptr<::engine::Camera>> cameras;
 
       std::vector<std::weak_ptr<Shader>> shaders;
+
+      std::unique_ptr<GLData> glData;
     };
   }
 
@@ -46,7 +50,7 @@ namespace engine
   public:
     Graphics() = delete;
 
-    static std::shared_ptr<graphics::Material> getDefaultMaterial();
+    static const std::shared_ptr<graphics::Material> & getDefaultMaterial();
 
     template <class T>
     static T * getUniformBuffer()
@@ -55,6 +59,8 @@ namespace engine
     }
 
     static graphics::UniformBuffer * getUniformBuffer(const std::string & _name);
+
+    static graphics::GLData & GL();
 
   private:
     static std::shared_ptr<graphics::Shader> getErrorShader();

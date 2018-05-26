@@ -21,8 +21,7 @@ namespace engine
       );
       ~Skybox();
       
-      void Render(Camera & _camera);
-      void Render();
+      void Render(const Camera & _camera);
 
     private:
       std::shared_ptr<Material> m_material;

@@ -2,6 +2,8 @@
 
 #include "Skybox.h"
 
+#include "Graphics.h"
+
 namespace engine
 {
   namespace graphics
@@ -17,30 +19,18 @@ namespace engine
     Skybox::~Skybox()
     { }
 
-    void Skybox::Render(Camera & _camera)
+    void Skybox::Render(const Camera & _camera)
     {
       auto shader = m_material->getShader();
       shader->Bind();
       m_material->Bind();
 
-
       shader->setView(_camera.view);
       shader->setProjection(_camera.projection);
 
-      GLCALL(glDepthFunc(GL_LEQUAL));
+      Graphics::GL().SetDepthFunc(DepthFunc::LEQUAL);
       m_mesh->Render();
-      GLCALL(glDepthFunc(GL_LESS));
-
-      m_material->Unbind();
-    }
-
-    void Skybox::Render()
-    {
-      m_material->Bind();
-
-      GLCALL(glDepthFunc(GL_LEQUAL));
-      m_mesh->Render();
-      GLCALL(glDepthFunc(GL_LESS));
+      Graphics::GL().SetDepthFunc(DepthFunc::LESS);
 
       m_material->Unbind();
     }

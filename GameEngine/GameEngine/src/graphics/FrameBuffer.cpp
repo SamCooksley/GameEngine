@@ -2,6 +2,8 @@
 
 #include "FrameBuffer.h"
 
+#include "Graphics.h"
+
 namespace engine
 {
   namespace graphics
@@ -18,8 +20,7 @@ namespace engine
 
     FrameBufferAttachment OpenGLToFrameBufferAttachment(GLenum _attachment)
     {
-      //TODO:GL_MAX_COLOR_ATTACHMENTS 
-      if (_attachment >= GL_COLOR_ATTACHMENT0 && _attachment <= GL_COLOR_ATTACHMENT15)
+      if (_attachment >= GL_COLOR_ATTACHMENT0 && _attachment < GL_DEPTH_ATTACHMENT)
       {
         return FrameBufferAttachment::COLOUR;
       }
@@ -139,15 +140,16 @@ namespace engine
 
     bool FrameBuffer::Attach(FrameBufferAttachment _attachment)
     {
-      //if it was a colour attachment, increase the colour count.
-      if (_attachment == FrameBufferAttachment::COLOUR)
-      {
-        ++m_colourAttachmentCount;
-      }
-
       //make the frame buffer clear attachmented types.
       if (_attachment == FrameBufferAttachment::COLOUR)
       {
+        if (m_colourAttachmentCount >= Graphics::GL().GetMaxColourAttachments())
+        {
+          throw std::runtime_error("Maximum colour attachments reached");
+        }
+
+        ++m_colourAttachmentCount;
+
         //draw all the colour buffers.
         std::vector<GLenum> buffers(m_colourAttachmentCount);
         for (uint i = 0; i < m_colourAttachmentCount; ++i)

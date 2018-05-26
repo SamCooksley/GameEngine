@@ -11,9 +11,14 @@ namespace engine
     return Application::s_context->graphics.uniformBuffers.getBuffer(_name);
   }
 
-  std::shared_ptr<graphics::Material> Graphics::getDefaultMaterial()
+  const std::shared_ptr<graphics::Material> & Graphics::getDefaultMaterial()
   {
     return Application::s_context->graphics.defaultMaterial;
+  }
+
+  graphics::GLData & Graphics::GL()
+  {
+    return *Application::s_context->graphics.glData;
   }
 
   std::shared_ptr<graphics::Shader> Graphics::getErrorShader()

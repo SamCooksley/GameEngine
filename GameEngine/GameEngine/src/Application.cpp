@@ -55,8 +55,16 @@ namespace engine
     debug::Log("OpenGL version: " + std::string(reinterpret_cast<const char*>(glGetString(GL_VERSION))));
     debug::Log("GLSL version: " + std::string(reinterpret_cast<const char*>(glGetString(GL_SHADING_LANGUAGE_VERSION))));
  
-    glEnable(GL_CULL_FACE);
-    glEnable(GL_DEPTH_TEST);
+    s_context->graphics.glData = std::make_unique<graphics::GLData>();
+
+    s_context->graphics.glData->SetCull(true);
+    s_context->graphics.glData->SetCullFace(graphics::CullFace::BACK);
+
+    s_context->graphics.glData->SetDepth(true);
+    s_context->graphics.glData->SetDepthFunc(graphics::DepthFunc::LESS);
+
+    s_context->graphics.glData->SetBlend(true);
+    s_context->graphics.glData->SetBlendFunc(graphics::BlendFunc::SRC_ALPHA, graphics::BlendFunc::ONE_MINUS_SRC_ALPHA);
 
     //uniform buffers
     {

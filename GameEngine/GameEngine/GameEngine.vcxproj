@@ -114,6 +114,7 @@
     <ClInclude Include="src\graphics\CameraBuffer.h" />
     <ClInclude Include="src\graphics\FrameBuffer.h" />
     <ClInclude Include="src\graphics\GLData.h" />
+    <ClInclude Include="src\graphics\GLType.h" />
     <ClInclude Include="src\graphics\Graphics_Camera.h" />
     <ClInclude Include="src\graphics\DefaultRenderer.h" />
     <ClInclude Include="src\graphics\Graphics.h" />

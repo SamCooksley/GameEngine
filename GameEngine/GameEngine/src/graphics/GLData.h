@@ -3,77 +3,121 @@
 
 #include "opengl.h"
 
+#include "GLType.h"
+
 namespace engine
 {
   namespace graphics
   {
-    enum class Depth : GLenum
+    class Depth
     {
-      NONE,
-      NEVER    = GL_NEVER,
-      ALWAYS   = GL_ALWAYS,
-      LESS     = GL_LESS,
-      GREATER  = GL_GREATER,
-      EQUAL    = GL_EQUAL,
-      NOTEQUAL = GL_NOTEQUAL,
-      LEQUAL   = GL_LEQUAL,
-      GEQUAL   = GL_GEQUAL,
+    public:
+      Depth() = delete;
+
+      enum Func
+      {
+        NONE = -1,
+        NEVER,  ALWAYS,
+        LESS,   GREATER,
+        EQUAL,  NOTEQUAL,
+        LEQUAL, GEQUAL,
+
+        COUNT
+      };
+
+      static GLenum ToOpenGL(Func _depth);
+      static Func FromOpenGL(GLenum _dept);
+
+      static const std::string & ToString(Func _depth);
+      static Func FromString(const std::string & _s);
+
+    private:
+      static const std::array<std::string, COUNT + 1> s_names;
     };
 
-    Depth OpenGLToDepth(GLenum _depth);
-    GLenum DepthToOpenGL(Depth _depth);
-
-    enum class Cull : GLenum
+    class Cull
     {
-      NONE,
-      FRONT = GL_FRONT,
-      BACK  = GL_BACK,
-      BOTH  = GL_FRONT_AND_BACK
+    public:
+      Cull() = delete;
+
+      enum Face
+      {
+        NONE = -1,
+        FRONT, BACK,
+
+        COUNT
+      };
+
+      static GLenum ToOpenGL(Face _cull);
+      static Face FromOpenGL(GLenum _cull);
+
+      static const std::string & ToString(Face _cull);
+      static Face FromString(const std::string & _s);
+
+    private:
+      static const std::array<std::string, COUNT + 1> s_names;
     };
 
-    Cull OpenGLToCull(GLenum _cull);
-    GLenum CullToOpenGL(Cull _cull);
-
-    enum class BlendFunc : GLenum
+    class BlendFactor
     {
-      ZERO                     = GL_ZERO,
-      ONE                      = GL_ONE,
-      SRC                      = GL_SRC_COLOR,
-      ONE_MINUS_SRC            = GL_ONE_MINUS_SRC_COLOR,
-      DST                      = GL_DST_COLOR,
-      ONE_MINUS_DST            = GL_ONE_MINUS_DST_COLOR,
-      SRC_ALPHA                = GL_SRC_ALPHA,
-      ONE_MINUS_SRC_ALPHA      = GL_ONE_MINUS_SRC_ALPHA,
-      DST_ALPHA                = GL_DST_ALPHA,
-      ONE_MINUS_DST_ALPHA      = GL_ONE_MINUS_DST_ALPHA,
-      CONSTANT                 = GL_CONSTANT_COLOR,
-      ONE_MINUS_CONSTANT       = GL_ONE_MINUS_CONSTANT_COLOR,
-      CONSTANT_ALPHA           = GL_CONSTANT_ALPHA,
-      ONE_MINUS_CONSTANT_ALPHA = GL_ONE_MINUS_CONSTANT_ALPHA,
-      SRC_ALPHA_SATURATE       = GL_SRC_ALPHA_SATURATE,
+    public:
+      BlendFactor() = delete;
+
+      enum Factor
+      {
+        NONE = -1,
+        ZERO, ONE,
+        SRC_COLOUR, ONE_MINUS_SRC_COLOUR,
+        SRC_ALPHA,  ONE_MINUS_SRC_ALPHA,
+        DST_COLOUR, ONE_MINUS_DST_COLOUR,
+        DST_ALPHA,  ONE_MINUS_DST_ALPHA,
+
+        COUNT
+      };
+
+      static GLenum ToOpenGL(Factor _blend);
+      static Factor FromOpenGL(GLenum _blend);
+
+      static const std::string & ToString(Factor _blend);
+      static Factor FromString(const std::string & _s);
+
+    private:
+      static const std::array<std::string, COUNT + 1> s_names;
     };
 
-    BlendFunc OpenGLToBlendFunc(GLenum _blend);
-    GLenum BlendFuncToOpenGL(BlendFunc _blend);
-
-    enum class BlendOp : GLenum
+    class BlendOp
     {
-      ADD              = GL_FUNC_ADD,
-      SUBTRACT         = GL_FUNC_SUBTRACT,
-      REVERSE_SUBTRACT = GL_FUNC_REVERSE_SUBTRACT,
-      MIN              = GL_MIN,
-      MAX              = GL_MAX
-    };
+    public:
+      BlendOp() = delete;
 
-    BlendOp OpenGLToBlendOp(GLenum _op);
-    GLenum BlendOpToOpenGL(BlendOp _op);
+      enum Op
+      {
+        NONE = -1,
+        ADD,
+        SUB, REV_SUB,
+        MIN, MAX,
+
+        COUNT
+      };
+
+      static GLenum ToOpenGL(Op _op);
+      static Op FromOpenGL(GLenum _op);
+
+      static const std::string & ToString(Op _op);
+      static Op FromString(const std::string & _s);
+
+    private:
+      static const std::array<std::string, COUNT + 1> s_names;
+    };
 
     struct Blend
     {
       bool enable;
-      BlendFunc src;
-      BlendFunc dst;
-      BlendOp op;
+      BlendFactor::Factor src;
+      BlendFactor::Factor dst;
+      BlendOp::Op op;
+
+      static Blend Disable();
     };
 
     class GLData
@@ -82,23 +126,24 @@ namespace engine
       GLData();
       ~GLData();
 
-      void SetDepth(Depth _depth);
-      void SetCull(Cull _cull);
+      void SetDepth(Depth::Func _depth);
+      void SetCull(Cull::Face _cull);
 
-      void EnableBlend(BlendFunc _src, BlendFunc _dst, BlendOp _op = BlendOp::ADD);
+      void EnableBlend(BlendFactor::Factor _src, BlendFactor::Factor _dst, BlendOp::Op _op = BlendOp::ADD);
       void DisableBlend();
 
-      int GetMaxUniformBuffers() const;
+      void SetBlend(const Blend & _blend);
 
-      int GetMaxColourAttachments() const;
+      uint GetMaxUniformBuffers() const;
+      uint GetMaxColourAttachments() const;
 
     private:
-      Depth m_depth;
-      Cull m_cull;
+      Depth::Func m_depth;
+      Cull::Face m_cull;
       Blend m_blend;
 
-      int m_maxUniformBuffers;
-      int m_maxColourAttachments;
+      uint m_maxUniformBuffers;
+      uint m_maxColourAttachments;
     };
   }
 }

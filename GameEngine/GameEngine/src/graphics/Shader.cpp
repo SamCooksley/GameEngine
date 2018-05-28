@@ -60,13 +60,19 @@ namespace engine
         shader = std::make_shared<enable_shader>();
         shader->setName(parser.getName());
 
-        for (ShaderType::Type i = 0; i < ShaderType::Count; ++i)
+        shader->m_depth = parser.getDepth();
+        shader->m_cull = parser.getCull();
+        shader->m_blend = parser.getBlend();
+
+        for (int i = ShaderType::VERTEX; i <= ShaderType::GEOMETRY; ++i)
         {
-          if (parser.HasShader(i))
+          ShaderType::Type type = static_cast<ShaderType::Type>(i);
+          if (parser.HasShader(type))
           {
-            shader->CreateShader(parser.getShaderSource(i), i);
+            shader->CreateShader(parser.getShaderSource(type), type);
           }
         }
+
         shader->LinkProgram();
         shader->DetachAndDeleteShaders();
 
@@ -87,7 +93,9 @@ namespace engine
 
     Shader::Shader() :
       m_uniformSize(0u),
-      m_modelLoc(-1), m_viewLoc(-1), m_projectionLoc(-1)
+      m_modelLoc(-1), m_viewLoc(-1), m_projectionLoc(-1),
+      m_depth(Depth::LESS), m_cull(Cull::BACK), 
+      m_blend(Blend::Disable())
     {
       GLCALL(m_program = glCreateProgram());
     }
@@ -102,6 +110,10 @@ namespace engine
     void Shader::Bind() const
     {
       GLCALL(glUseProgram(m_program));
+
+      Graphics::GL().SetDepth(m_depth);
+      Graphics::GL().SetCull(m_cull);
+      Graphics::GL().SetBlend(m_blend);
     }
 
     void Shader::Unbind() const

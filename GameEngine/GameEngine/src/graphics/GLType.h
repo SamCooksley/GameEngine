@@ -11,7 +11,7 @@ namespace engine
     class GLType
     {
     public:
-      const T & ToOpenGL() const { return m_value; }
+      virtual T ToOpenGL() const { return m_value; }
 
     protected:
       GLType() :
@@ -30,6 +30,11 @@ namespace engine
       friend inline bool operator!=(const GLType<T> & _lhs, const GLType<T> & _rhs)
       {
         return _lhs.m_value != _rhs.m_value;
+      }
+
+      friend inline bool operator<(const GLType<T> & _lhs, const GLType<T> & _rhs)
+      {
+        return _lhs.m_value < _rhs.m_value;
       }
     };
   }

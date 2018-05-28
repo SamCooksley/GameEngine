@@ -59,7 +59,7 @@ namespace engine
 
     s_context->graphics.glData->SetCull(graphics::Cull::BACK);
     s_context->graphics.glData->SetDepth(graphics::Depth::LESS);
-    s_context->graphics.glData->EnableBlend(graphics::BlendFunc::SRC_ALPHA, graphics::BlendFunc::ONE_MINUS_SRC_ALPHA);
+    s_context->graphics.glData->EnableBlend(graphics::BlendFactor::SRC_ALPHA, graphics::BlendFactor::ONE_MINUS_SRC_ALPHA);
 
     //uniform buffers
     {
@@ -101,7 +101,7 @@ namespace engine
     texture = graphics::Texture2D::Create(64, 64, glm::vec4(1.f));
     s_context->graphics.defaultMaterial->setTexture("opacity", texture);
 
-    s_context->graphics.defaultMaterial->setUniform("displacementScale", 0.01f);// 25f);// 25f);
+    s_context->graphics.defaultMaterial->setUniform("displacementScale", 0.01f);
 
     s_context->graphics.defaultMaterial->setUniform("shininess", 5.f);
     
@@ -115,7 +115,7 @@ namespace engine
     }
 
     auto skyboxCube = graphics::TextureCube::Load(skyboxTexturePaths);
-    skyboxMaterial->setTexture("cubemap", skyboxCube);
+    skyboxMaterial->setTexture("cubemap", skyboxCube); 
 
     //auto inverseCube = Resources::Load<graphics::Mesh>("resources/models/skybox.obj");
     auto skybox = std::make_shared<graphics::Skybox>(skyboxMaterial);

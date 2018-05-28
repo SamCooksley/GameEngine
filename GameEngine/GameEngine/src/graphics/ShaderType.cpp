@@ -6,42 +6,50 @@ namespace engine
 {
   namespace graphics
   {
-    GLenum ShaderType::ToOpenGL(ShaderType::Type _type)
-    {
-      switch (_type)
-      {
-        case ShaderType::Vertex:   { return GL_VERTEX_SHADER;   }
-        case ShaderType::Fragment: { return GL_FRAGMENT_SHADER; }
-        case ShaderType::Geometry: { return GL_GEOMETRY_SHADER; }
-        default: { return 0; }
-      }
-    }
-
-    static const std::array<std::string, ShaderType::Count + 1> s_shaderTypeString = {
+    const std::array<std::string, ShaderType::COUNT + 1> ShaderType::s_names = {
       "vertex", "fragment", "geometry", "none"
     };
 
-    const std::string & ShaderType::ToString(ShaderType::Type _type)
+    GLenum ShaderType::ToOpenGL(Type _shader)
     {
-      size_t index = static_cast<size_t>(_type);
-      if (index >= s_shaderTypeString.size())
+      switch (_shader)
       {
-        return s_shaderTypeString.back();
+      case VERTEX: { return GL_VERTEX_SHADER;   }
+      case FRAGMENT: { return GL_FRAGMENT_SHADER; }
+      case GEOMETRY: { return GL_GEOMETRY_SHADER; }
+      default:
+      {
+        throw std::invalid_argument("ShaderType.ToOpenGL");
       }
-      return s_shaderTypeString[index];
+      }
     }
 
-    ShaderType::Type ShaderType::FromString(const std::string & _type)
+    const std::string & ShaderType::ToString(Type _shader)
     {
-      for (ShaderType::Type i = 0; i < ShaderType::Count; ++i)
+      if (_shader == NONE)
       {
-        if (string::AreIEqual(_type, ShaderType::ToString(i)))
+        return s_names.back();
+      }
+
+      if (_shader < 0 || _shader >= COUNT)
+      {
+        throw std::invalid_argument("ShaderType.ToString");
+      }
+
+      return s_names[_shader];
+    }
+
+    ShaderType::Type ShaderType::FromString(const std::string & _s)
+    {
+      for (size_t i = 0u; i < s_names.size(); ++i)
+      {
+        if (string::AreIEqual(s_names[i], _s))
         {
-          return i;
+          return static_cast<Type>(i);
         }
       }
 
-      return ShaderType::None;
+      throw std::invalid_argument("ShaderType.FromString");
     }
   }
 }

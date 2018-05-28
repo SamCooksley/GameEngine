@@ -2,30 +2,34 @@
 #define _ENGINE_GRAPHICS_SHADERTYPE_H_
 
 #include "core\Types.h"
-#include "opengl.h"
+#include "GLType.h"
 
 namespace engine
 {
   namespace graphics
   {
-    //enum class 
-    struct ShaderType
+    class ShaderType
     {
     public:
       ShaderType() = delete;
 
-      using Type = int8;
+      enum Type
+      {
+        NONE     = -1,
+        VERTEX   = 0,
+        FRAGMENT,
+        GEOMETRY,
 
-      static constexpr Type None = -1;
-      static constexpr Type Vertex = 0;
-      static constexpr Type Fragment = 1;
-      static constexpr Type Geometry = 2;
+        COUNT = 3
+      };
 
-      static constexpr Type Count = 3;
+      static GLenum ToOpenGL(Type _shader);
 
-      static GLenum ToOpenGL(Type _type);
-      static const std::string & ToString(Type _type);
-      static Type FromString(const std::string & _string);
+      static const std::string & ToString(Type _shader);
+      static Type FromString(const std::string & _s);
+
+    private:
+      static const std::array<std::string, COUNT + 1> s_names;
     };
   }
 }

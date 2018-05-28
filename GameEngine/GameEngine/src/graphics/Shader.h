@@ -14,6 +14,8 @@
 
 #include "UniformBuffer.h"
 
+#include "GLData.h"
+
 namespace engine
 {
   namespace graphics
@@ -108,6 +110,10 @@ namespace engine
       Dictionary<std::string, ShaderSampler> m_samplers;
 
       GLint m_modelLoc, m_viewLoc, m_projectionLoc;
+
+      Depth::Func m_depth;
+      Cull::Face m_cull;
+      Blend m_blend;
     };
   }
 }

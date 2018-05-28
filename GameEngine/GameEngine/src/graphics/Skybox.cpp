@@ -22,15 +22,12 @@ namespace engine
     void Skybox::Render(const Camera & _camera)
     {
       auto shader = m_material->getShader();
-      shader->Bind();
       m_material->Bind();
 
       shader->setView(_camera.view);
       shader->setProjection(_camera.projection);
 
-      Graphics::GL().SetDepth(Depth::LEQUAL);
       m_mesh->Render();
-      Graphics::GL().SetDepth(Depth::LESS);
 
       m_material->Unbind();
     }

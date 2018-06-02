@@ -6,12 +6,12 @@ namespace engine
 {
   namespace graphics
   {
-    const std::array<std::string, Depth::COUNT + 1> Depth::s_names = {
+    const std::array<std::string, Depth::COUNT> Depth::s_names = {
+      "none",
       "never",  "always",
       "less",   "greater",
       "equal",  "notequal",
-      "lequal", "gequal",  
-      "none"
+      "lequal", "gequal"
     };
 
     GLenum Depth::ToOpenGL(Func _depth)
@@ -51,11 +51,6 @@ namespace engine
 
     const std::string & Depth::ToString(Func _depth)
     {
-      if (_depth == NONE)
-      {
-        return s_names.back();
-      }
-
       if (_depth < 0 || _depth >= COUNT)
       {
         throw std::invalid_argument("Depth.ToString");
@@ -77,9 +72,9 @@ namespace engine
       throw std::invalid_argument("Depth.FromString");
     }
 
-    const std::array<std::string, Cull::COUNT + 1> Cull::s_names = {
-      "front", "back",
-      "none"
+    const std::array<std::string, Cull::COUNT> Cull::s_names = {
+      "none",
+      "front", "back"
     };
 
     GLenum Cull::ToOpenGL(Face _cull)
@@ -107,11 +102,6 @@ namespace engine
 
     const std::string & Cull::ToString(Face _cull)
     {
-      if (_cull == NONE)
-      {
-        return s_names.back();
-      }
-
       if (_cull < 0 || _cull >= COUNT)
       {
         throw std::invalid_argument("Cull.ToString");
@@ -133,13 +123,13 @@ namespace engine
       throw std::invalid_argument("Cull.FromString");
     }
 
-    const std::array<std::string, BlendFactor::COUNT + 1> BlendFactor::s_names = {
+    const std::array<std::string, BlendFactor::COUNT> BlendFactor::s_names = {
+      "none",
       "zero", "one",
       "srccolour", "oneminussrccolour",
       "srcalpha", "oneminussrcalpha",
       "dstcolour", "oneminusdstcolour",
-      "dstalpha", "oneminusdstsalpha",
-      "none"
+      "dstalpha", "oneminusdstsalpha"
     };
 
     GLenum BlendFactor::ToOpenGL(Factor _blend)
@@ -183,11 +173,6 @@ namespace engine
 
     const std::string & BlendFactor::ToString(Factor _blend)
     {
-      if (_blend == NONE)
-      {
-        return s_names.back();
-      }
-
       if (_blend < 0 || _blend >= COUNT)
       {
         throw std::invalid_argument("BlendFactor.ToString");
@@ -210,10 +195,10 @@ namespace engine
     }
 
     const std::array<std::string, BlendOp::COUNT + 1> BlendOp::s_names = {
+      "none",
       "add",
       "sub", "revsub",
       "min", "max",
-      "none"
     };
 
     GLenum BlendOp::ToOpenGL(Op _op)
@@ -247,11 +232,6 @@ namespace engine
 
     const std::string & BlendOp::ToString(Op _blend)
     {
-      if (_blend == NONE)
-      {
-        return s_names.back();
-      }
-
       if (_blend < 0 || _blend >= COUNT)
       {
         throw std::invalid_argument("BlendOp.ToString");
@@ -275,23 +255,82 @@ namespace engine
 
     Blend Blend::Disable()
     {
-      const Blend blend = {
+      return {
         false,
         BlendFactor::ONE,
         BlendFactor::ZERO,
         BlendOp::ADD
       };
-      return blend;
+    }
+
+    const std::array<std::string, PolygonMode::COUNT> PolygonMode::s_names = {
+      "point", "line", "fill"
+    };
+
+    GLenum PolygonMode::ToOpenGL(Mode _mode)
+    {
+      switch (_mode)
+      {
+        case POINT: { return GL_POINT; }
+        case LINE:  { return GL_LINE;  }
+        case FILL:  { return GL_FILL;  }
+        default:
+        {
+          throw std::invalid_argument("PolygonMode.ToOpenGL");
+        }
+      }
+    }
+
+    PolygonMode::Mode PolygonMode::FromOpenGL(GLenum _mode)
+    {
+      switch (_mode)
+      {
+        case GL_POINT: { return POINT; }
+        case GL_LINE:  { return LINE;  }
+        case GL_FILL:  { return FILL;  }
+        default:
+        {
+          throw std::invalid_argument("PolygonMode.FromOpenGL");
+        }
+      }
+    }
+
+    const std::string & PolygonMode::ToString(Mode _blend)
+    {
+      if (_blend < 0 || _blend >= COUNT)
+      {
+        throw std::invalid_argument("PolygonMode.ToString");
+      }
+
+      return s_names[_blend];
+    }
+
+    PolygonMode::Mode PolygonMode::FromString(const std::string & _s)
+    {
+      for (size_t i = 0u; i < s_names.size(); ++i)
+      {
+        if (string::AreIEqual(s_names[i], _s))
+        {
+          return static_cast<Mode>(i);
+        }
+      }
+
+      throw std::invalid_argument("PolygonMode.FromString");
     }
 
     GLData::GLData() : 
-      m_depth(Depth::NONE), m_cull(Cull::NONE), 
+      m_depthWrite(true), m_depth(Depth::NONE),
+      m_cull(Cull::NONE), m_polygonMode(PolygonMode::FILL),
       m_blend({ false, BlendFactor::ONE, BlendFactor::ZERO, BlendOp::ADD }),
       m_maxUniformBuffers(36), 
       m_maxColourAttachments(4)
     { 
       bool enable;
       GLint get;
+      
+      GLCALL(glGetIntegerv(GL_DEPTH_WRITEMASK, &get));
+      m_depthWrite = get != 0;
+
       GLCALL(enable = glIsEnabled(GL_DEPTH_TEST) == GL_TRUE);
       if (!enable)
       {
@@ -314,6 +353,10 @@ namespace engine
         m_cull = Cull::FromOpenGL(get);
       }
 
+      GLint get2[2];
+      GLCALL(glGetIntegerv(GL_POLYGON_MODE, get2));
+      m_polygonMode = PolygonMode::FromOpenGL(get2[0]);
+
       GLCALL(m_blend.enable = glIsEnabled(GL_BLEND) == GL_TRUE);
 
       GLCALL(glGetIntegerv(GL_BLEND_SRC, &get));
@@ -334,6 +377,15 @@ namespace engine
 
     GLData::~GLData()
     { }
+
+    void GLData::SetDepthWrite(bool _write)
+    {
+      if (_write != m_depthWrite)
+      {
+        GLCALL(glDepthMask(_write));
+        m_depthWrite = _write;
+      }
+    }
 
     void GLData::SetDepth(Depth::Func _depth)
     {
@@ -370,10 +422,18 @@ namespace engine
           {
             GLCALL(glEnable(GL_CULL_FACE));
           }
-
           GLCALL(glCullFace(Cull::ToOpenGL(_cull)));
         }
         m_cull = _cull;
+      }
+    }
+
+    void GLData::SetPolygonMode(PolygonMode::Mode _mode)
+    {
+      if (_mode != m_polygonMode)
+      {
+        GLCALL(glPolygonMode(GL_FRONT_AND_BACK, PolygonMode::ToOpenGL(_mode)));
+        m_polygonMode = _mode;
       }
     }
 

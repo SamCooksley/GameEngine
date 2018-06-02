@@ -13,7 +13,9 @@ namespace engine
     ShaderParser::ShaderParser(const std::string & _path) :
       m_name(), m_currentFile(),
       m_currentType(ShaderType::NONE), m_currentSource(nullptr),
-      m_depth(Depth::LESS), m_cull(Cull::BACK), m_blend(Blend::Disable())
+      m_depthWrite(true), m_depth(Depth::LESS),
+      m_cull(Cull::BACK), m_blend(Blend::Disable()),
+      m_queue(RenderQueue::FORWARD)
     {
       m_name = file::getFilenameWithoutExtension(_path);
       std::ifstream file(_path);
@@ -31,7 +33,9 @@ namespace engine
     ShaderParser::ShaderParser(const std::string & _name, std::istream & _source) :
       m_name(_name), m_currentFile(),
       m_currentType(ShaderType::NONE), m_currentSource(nullptr),
-      m_depth(graphics::Depth::LESS), m_cull(graphics::Cull::BACK), m_blend(graphics::Blend::Disable())
+      m_depthWrite(true), m_depth(graphics::Depth::LESS), 
+      m_cull(graphics::Cull::BACK), m_blend(graphics::Blend::Disable()),
+      m_queue(RenderQueue::FORWARD)
     {
       ParseSource(_source);
     }
@@ -54,6 +58,11 @@ namespace engine
       return m_sources[_type];
     }
 
+    bool ShaderParser::getDepthWrite() const
+    {
+      return m_depthWrite;
+    }
+
     Depth::Func ShaderParser::getDepth() const
     {
       return m_depth;
@@ -67,6 +76,11 @@ namespace engine
     Blend ShaderParser::getBlend() const
     {
       return m_blend;
+    }
+
+    RenderQueue::Queue ShaderParser::getQueue() const
+    {
+      return m_queue;
     }
 
     void ShaderParser::ParseSource(std::istream & _source)
@@ -116,6 +130,12 @@ namespace engine
         Include(_line.substr(pos, pos - _line.size()));
         return false;
       }
+      else if ((pos = _line.find("#depthwrite")) != std::string::npos)
+      {
+        pos += 12;
+        SetDepthWrite(_line.substr(pos, pos - _line.size()));
+        return false;
+      }
       else if ((pos = _line.find("#depth")) != std::string::npos)
       {
         pos += 7;
@@ -134,7 +154,12 @@ namespace engine
         SetBlend(_line.substr(pos, pos - _line.size()));
         return false;
       }
-
+      else if ((pos = _line.find("#queue")) != std::string::npos)
+      {
+        pos += 7;
+        SetQueue(_line.substr(pos, pos - _line.size()));
+        return false;
+      }
       return true;
     }
 
@@ -184,6 +209,30 @@ namespace engine
       ParseSource(file);
 
       m_currentFile = lastFile;
+    }
+
+    void ShaderParser::SetDepthWrite(const std::string & _params)
+    {
+      std::vector<std::string> params;
+      string::SplitStringWhitespace(_params, params);
+      if (params.size() != 1)
+      {
+        throw std::runtime_error("Invalid depth write arguments");
+      }
+
+      if (params[0] == "on")
+      {
+        m_depthWrite = true;
+      }
+      else if (params[0] == "off")
+      {
+        m_depthWrite = false;
+      }
+      else
+      {
+        debug::Log(params[0]);
+        throw std::invalid_argument("Invalid depth write");
+      }
     }
 
     void ShaderParser::SetDepth(const std::string & _params)
@@ -238,6 +287,19 @@ namespace engine
       {
         throw std::runtime_error("Invalid cull arguments");
       }
+    }
+
+    void ShaderParser::SetQueue(const std::string & _params)
+    {
+      std::vector<std::string> params;
+      string::SplitStringWhitespace(_params, params);
+
+      if (params.size() != 1)
+      {
+        throw std::runtime_error("Invalid queue arguments");
+      }
+
+      m_queue = RenderQueue::FromString(params[0]);
     }
 
     void ShaderParser::SetCurrentShaderType(ShaderType::Type _type)

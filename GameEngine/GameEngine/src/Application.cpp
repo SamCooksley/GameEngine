@@ -37,7 +37,7 @@ namespace engine
     s_context->glfwContext.reset(new core::glfw());
 
     s_context->window.reset(new graphics::Window("Engine", 640, 480));
-    //s_context->window->setVsync(true);
+    s_context->window->setVsync(false);
 
     s_context->targetFrameTime = 1.f / 60.f;
     s_context->maxUpdatesPerFrame = 5;
@@ -56,10 +56,6 @@ namespace engine
     debug::Log("GLSL version: " + std::string(reinterpret_cast<const char*>(glGetString(GL_SHADING_LANGUAGE_VERSION))));
  
     s_context->graphics.glData = std::make_unique<graphics::GLData>();
-
-    s_context->graphics.glData->SetCull(graphics::Cull::BACK);
-    s_context->graphics.glData->SetDepth(graphics::Depth::LESS);
-    s_context->graphics.glData->EnableBlend(graphics::BlendFactor::SRC_ALPHA, graphics::BlendFactor::ONE_MINUS_SRC_ALPHA);
 
     //uniform buffers
     {
@@ -84,9 +80,7 @@ namespace engine
     //texture = Resources::Load<graphics::Texture2D>("resources/textures/bricks/diffuse.png");
     s_context->graphics.defaultMaterial->setTexture("diffuse", texture);
 
-    //texture = Resources::Load<graphics::Texture2D>("resources/textures/bricks/normal.png");
-    texture = Resources::Load<graphics::Texture2D>("resources/textures/flat.png");
-    //texture = Resources::Load<graphics::Texture2D>("resources/textures/bricks/normal.png");
+    texture = Resources::Load<graphics::Texture2D>("resources/textures/bricks/normal.png");
     s_context->graphics.defaultMaterial->setTexture("normal", texture);
 
     //texture = Resources::Load<graphics::Texture2D>("resources/textures/bricks/roughness.jpg");
@@ -147,7 +141,7 @@ namespace engine
   {
     if (s_context->targetFrameTime > 0.0f && s_context->deltaTime < s_context->targetFrameTime)
     {
-      utilities::Sleep(uint((s_context->targetFrameTime - s_context->deltaTime) * 1000.0f));
+      //utilities::Sleep(uint((s_context->targetFrameTime - s_context->deltaTime) * 1000.0f));
     }
     //s_context->totalDeltaTime += s_context->frameTime.getSeconds();
     s_context->frameTime.Reset();

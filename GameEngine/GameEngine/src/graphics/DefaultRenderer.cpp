@@ -65,31 +65,44 @@ namespace engine
       //m_gBuffer->Bind();
       //m_gBuffer->Clear();
 
-      m_commands.begin()->material.lock()->getShader()->Bind();
+      std::shared_ptr<Material> prevMat;
+      auto & forward = m_commands.getForwardCommands();
 
-      for (auto & command : m_commands)
+      for (auto & command : forward)
       {
-        auto mesh = command.mesh.lock();
-        auto material = command.material.lock();
-
-        if (!mesh || !material)
+        if (command.material != prevMat)
         {
-          debug::LogError(
-            "DefaultRenderer Error: mesh or material missing from command. Has it been destroyed?"
-          );
-          continue;
+          command.material->Bind();
+
+          prevMat = command.material;
         }
 
-        auto shader = material->getShader();
-        shader->Bind();
-        material->Bind();
-
+        const auto & shader = command.material->getShader();
         shader->setModel(command.transform);
         shader->setView(m_camera.view);
         shader->setProjection(m_camera.projection);
 
-        mesh->Render();
-        material->Unbind();
+        command.mesh->Render();
+      }
+
+      prevMat = nullptr;
+      auto & trans = m_commands.getTransparentCommands();
+
+      for (auto & command : trans)
+      {
+        if (command.material != prevMat)
+        {
+          command.material->Bind();
+
+          prevMat = command.material;
+        }
+
+        const auto & shader = command.material->getShader();
+        shader->setModel(command.transform);
+        shader->setView(m_camera.view);
+        shader->setProjection(m_camera.projection);
+
+        command.mesh->Render();
       }
 
      // m_gBuffer->Unbind();

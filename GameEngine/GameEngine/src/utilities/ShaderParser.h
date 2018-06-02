@@ -5,6 +5,8 @@
 
 #include "graphics\GLData.h"
 
+#include "graphics\RenderQueue.h"
+
 namespace engine 
 { 
   namespace file
@@ -22,9 +24,11 @@ namespace engine
 
       const std::string & getShaderSource(graphics::ShaderType::Type _type) const;
 
+      bool getDepthWrite() const;
       graphics::Depth::Func getDepth() const;
       graphics::Cull::Face getCull() const;
       graphics::Blend getBlend() const;
+      graphics::RenderQueue::Queue getQueue() const;
 
     private:
       void ParseSource(std::istream & _source);
@@ -33,9 +37,11 @@ namespace engine
       void SetShader(const std::string & _params);
       void Include(const std::string & _params);
 
+      void SetDepthWrite(const std::string & _params);
       void SetDepth(const std::string & _params);
       void SetCull(const std::string & _params);
       void SetBlend(const std::string & _params);
+      void SetQueue(const std::string & _params);
 
       void SetCurrentShaderType(graphics::ShaderType::Type _type);
 
@@ -47,9 +53,11 @@ namespace engine
       std::string * m_currentSource;
       std::array<std::string, graphics::ShaderType::COUNT> m_sources;
 
+      bool m_depthWrite;
       graphics::Depth::Func m_depth;
       graphics::Cull::Face m_cull;
       graphics::Blend m_blend;
+      graphics::RenderQueue::Queue m_queue;
     };
 
   } 

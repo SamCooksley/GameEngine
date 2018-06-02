@@ -46,7 +46,7 @@ namespace engine
       Error getTexture(const std::string & _name, std::shared_ptr<Texture2D> * _outTexture) const;
       Error getTexture(const std::string & _name, std::shared_ptr<TextureCube> * _outTextureCube) const;
       
-      std::shared_ptr<Shader> getShader();
+      const std::shared_ptr<Shader> & getShader();
 
     protected:
       static std::shared_ptr<Material> CreateInternal(std::shared_ptr<Shader> _shader);

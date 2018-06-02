@@ -16,13 +16,15 @@
 
 #include "GLData.h"
 
+#include "RenderQueue.h"
+
 namespace engine
 {
   namespace graphics
   {
     class Material;
 
-    class Shader : public NamedObject, public NonCopyable, public Asset
+    class Shader : public NamedObject, public NonCopyable, public Asset, public std::enable_shared_from_this<Shader>
     {
       friend class Mesh;
       friend class Material;
@@ -44,12 +46,14 @@ namespace engine
 
       ~Shader();
 
-      void Bind() const;
-      void Unbind() const;
+      void Bind();
+      void Unbind();
 
       void setModel(const glm::mat4 & _model);
       void setView(const glm::mat4 & _view);
       void setProjection(const glm::mat4 & _projection);
+
+      RenderQueue::Queue getRenderQueue() const;
 
     protected:
       Shader();
@@ -111,9 +115,11 @@ namespace engine
 
       GLint m_modelLoc, m_viewLoc, m_projectionLoc;
 
+      bool m_depthWrite;
       Depth::Func m_depth;
       Cull::Face m_cull;
       Blend m_blend;
+      RenderQueue::Queue m_queue;
     };
   }
 }

@@ -16,7 +16,7 @@ namespace engine
 
       enum Func
       {
-        NONE = -1,
+        NONE, 
         NEVER,  ALWAYS,
         LESS,   GREATER,
         EQUAL,  NOTEQUAL,
@@ -32,7 +32,7 @@ namespace engine
       static Func FromString(const std::string & _s);
 
     private:
-      static const std::array<std::string, COUNT + 1> s_names;
+      static const std::array<std::string, COUNT> s_names;
     };
 
     class Cull
@@ -42,7 +42,7 @@ namespace engine
 
       enum Face
       {
-        NONE = -1,
+        NONE,
         FRONT, BACK,
 
         COUNT
@@ -55,7 +55,7 @@ namespace engine
       static Face FromString(const std::string & _s);
 
     private:
-      static const std::array<std::string, COUNT + 1> s_names;
+      static const std::array<std::string, COUNT> s_names;
     };
 
     class BlendFactor
@@ -65,7 +65,7 @@ namespace engine
 
       enum Factor
       {
-        NONE = -1,
+        NONE,
         ZERO, ONE,
         SRC_COLOUR, ONE_MINUS_SRC_COLOUR,
         SRC_ALPHA,  ONE_MINUS_SRC_ALPHA,
@@ -82,7 +82,7 @@ namespace engine
       static Factor FromString(const std::string & _s);
 
     private:
-      static const std::array<std::string, COUNT + 1> s_names;
+      static const std::array<std::string, COUNT> s_names;
     };
 
     class BlendOp
@@ -92,7 +92,7 @@ namespace engine
 
       enum Op
       {
-        NONE = -1,
+        NONE,
         ADD,
         SUB, REV_SUB,
         MIN, MAX,
@@ -120,14 +120,38 @@ namespace engine
       static Blend Disable();
     };
 
+    class PolygonMode
+    {
+    public:
+      PolygonMode() = delete;
+
+      enum Mode
+      {
+        POINT, LINE, FILL,
+
+        COUNT
+      };
+
+      static GLenum ToOpenGL(Mode _mode);
+      static Mode FromOpenGL(GLenum _mode);
+
+      static const std::string & ToString(Mode _mode);
+      static Mode FromString(const std::string & _s);
+
+    private:
+      static const std::array<std::string, COUNT> s_names;
+    };
+
     class GLData
     {
     public:
       GLData();
       ~GLData();
 
+      void SetDepthWrite(bool _write);
       void SetDepth(Depth::Func _depth);
       void SetCull(Cull::Face _cull);
+      void SetPolygonMode(PolygonMode::Mode _mode);
 
       void EnableBlend(BlendFactor::Factor _src, BlendFactor::Factor _dst, BlendOp::Op _op = BlendOp::ADD);
       void DisableBlend();
@@ -138,8 +162,10 @@ namespace engine
       uint GetMaxColourAttachments() const;
 
     private:
+      bool m_depthWrite;
       Depth::Func m_depth;
       Cull::Face m_cull;
+      PolygonMode::Mode m_polygonMode;
       Blend m_blend;
 
       uint m_maxUniformBuffers;

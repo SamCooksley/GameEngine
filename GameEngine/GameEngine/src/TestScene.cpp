@@ -11,6 +11,8 @@
 
 #include "LoadObjects.h"
 
+#include "graphics\mesh\mesh_quad.h"
+
 namespace engine
 {
   TestScene::TestScene()
@@ -60,10 +62,41 @@ namespace engine
 
     go->getComponent<Transform>()->setPosition(glm::vec3(2, 0, -5));
 
+    auto transShader = Resources::Load<graphics::Shader>("resources/shaders/transparent.shader");
+    auto transMat = graphics::Material::Create(transShader);
 
+    transMat->setTexture("diffuse", Resources::Load<graphics::Texture2D>("resources/textures/window.png"));
+    transMat->setTexture("normal", Resources::Load<graphics::Texture2D>("resources/textures/flat.png"));
+    transMat->setTexture("specular", graphics::Texture2D::Create(64, 64, glm::vec4(1.f)));
+    transMat->setTexture("displacement", graphics::Texture2D::Create(64, 64, glm::vec4(0.f)));
 
+    auto quad = Resources::Load<graphics::Mesh>("resources/models/quad.obj");
 
+    go = GameObject::Instantiate();
 
+    mr = go->AddComponent<MeshRenderer>();
+    mr->setMesh(quad);
+    mr->setMaterial(transMat);
+
+    go->getComponent<Transform>()->setPosition(glm::vec3(0.f, .5f, -1.f)).setRotation(glm::quat(glm::radians(glm::vec3(90.f, 0.f, 0.f))));
+
+    go = GameObject::Instantiate();
+
+    mr = go->AddComponent<MeshRenderer>();
+    mr->setMesh(quad);
+    mr->setMaterial(transMat);
+
+    go->getComponent<Transform>()->setPosition(glm::vec3(-0.5f, 1.5f, -1.5f)).setRotation(glm::quat(glm::radians(glm::vec3(90.f, 0.f, 0.f))));
+
+    go = GameObject::Instantiate();
+
+    mr = go->AddComponent<MeshRenderer>();
+    mr->setMesh(quad);
+    mr->setMaterial(transMat);
+
+    go->getComponent<Transform>()->setPosition(glm::vec3(0.5f, 1.f, -2.f)).setRotation(glm::quat(glm::radians(glm::vec3(90.f, 0.f, 0.f))));
+
+    
 
 
     go = GameObject::Instantiate();

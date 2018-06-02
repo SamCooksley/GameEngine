@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClCompile Include="src\Application.cpp" />
     <ClCompile Include="src\Asset.cpp" />
+    <ClCompile Include="src\Bounds.cpp" />
     <ClCompile Include="src\Camera.cpp" />
     <ClCompile Include="src\CameraMovement.cpp" />
     <ClCompile Include="src\Component.cpp" />
@@ -36,6 +37,7 @@
     <ClCompile Include="src\graphics\BaseRenderer.cpp" />
     <ClCompile Include="src\graphics\BufferLayout.cpp" />
     <ClCompile Include="src\graphics\CameraBuffer.cpp" />
+    <ClCompile Include="src\graphics\CommandBuffer.cpp" />
     <ClCompile Include="src\graphics\FrameBuffer.cpp" />
     <ClCompile Include="src\graphics\GLData.cpp" />
     <ClCompile Include="src\graphics\Graphics_Camera.cpp" />
@@ -53,6 +55,7 @@
     <ClCompile Include="src\graphics\opengl.cpp" />
     <ClCompile Include="src\graphics\RenderBuffer.cpp" />
     <ClCompile Include="src\graphics\Renderer.cpp" />
+    <ClCompile Include="src\graphics\RenderQueue.cpp" />
     <ClCompile Include="src\graphics\Shader.cpp" />
     <ClCompile Include="src\graphics\ShaderType.cpp" />
     <ClCompile Include="src\graphics\ShaderUniform.cpp" />
@@ -94,6 +97,7 @@
   <ItemGroup>
     <ClInclude Include="src\Application.h" />
     <ClInclude Include="src\Asset.h" />
+    <ClInclude Include="src\Bounds.h" />
     <ClInclude Include="src\Camera.h" />
     <ClInclude Include="src\CameraMovement.h" />
     <ClInclude Include="src\Component.h" />
@@ -112,6 +116,7 @@
     <ClInclude Include="src\graphics\BaseRenderer.h" />
     <ClInclude Include="src\graphics\BufferLayout.h" />
     <ClInclude Include="src\graphics\CameraBuffer.h" />
+    <ClInclude Include="src\graphics\CommandBuffer.h" />
     <ClInclude Include="src\graphics\FrameBuffer.h" />
     <ClInclude Include="src\graphics\GLData.h" />
     <ClInclude Include="src\graphics\GLType.h" />
@@ -131,6 +136,7 @@
     <ClInclude Include="src\graphics\opengl.h" />
     <ClInclude Include="src\graphics\RenderBuffer.h" />
     <ClInclude Include="src\graphics\Renderer.h" />
+    <ClInclude Include="src\graphics\RenderQueue.h" />
     <ClInclude Include="src\graphics\Shader.h" />
     <ClInclude Include="src\graphics\ShaderType.h" />
     <ClInclude Include="src\graphics\ShaderUniform.h" />

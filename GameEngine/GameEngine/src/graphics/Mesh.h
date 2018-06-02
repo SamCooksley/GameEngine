@@ -13,6 +13,8 @@
 
 #include "MeshData.h"
 
+#include "Bounds.h"
+
 namespace engine
 {
   namespace graphics
@@ -55,6 +57,8 @@ namespace engine
 
       void setDraw(DrawType _draw);
 
+      const Bounds & getBounds() const;
+
     private:
       void AddAttribute(
         const void * _data, uint _size, 
@@ -66,6 +70,8 @@ namespace engine
       );
 
       void ClearAttributes();
+
+      void UpdateBounds();
 
       std::unique_ptr<IndexBuffer> m_ibo;
       std::unique_ptr<VertexArray> m_vao;
@@ -80,6 +86,8 @@ namespace engine
       bool m_interleaved;
 
       Indices m_indices;
+
+      Bounds m_bounds;
     };
   }
 }

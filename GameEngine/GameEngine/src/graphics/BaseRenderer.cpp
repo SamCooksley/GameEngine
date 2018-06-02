@@ -21,18 +21,14 @@ namespace engine
     }
 
     void BaseRenderer::Add(
-      std::weak_ptr<Mesh> _mesh,
-      std::weak_ptr<Material> _material,
+      const std::shared_ptr<Mesh> & _mesh,
+      const std::shared_ptr<Material> & _material,
       const glm::mat4 & _transform
     )
     {
       Renderer::Add(_mesh, _material, _transform);
 
-      m_commands.push_back({
-        std::move(_mesh),
-        std::move(_material),
-        _transform
-      });
+      m_commands.Add(_mesh, _material, _transform);
     }
 
     void BaseRenderer::Add(const Light & _light)
@@ -43,11 +39,13 @@ namespace engine
     }
 
     void BaseRenderer::End()
-    { }
+    {
+      m_commands.Sort(m_camera);
+    }
 
     void BaseRenderer::Reset()
     {
-      m_commands.clear();
+      m_commands.Clear();
       m_lights.clear();
     }
 

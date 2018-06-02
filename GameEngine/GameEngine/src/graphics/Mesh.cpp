@@ -18,7 +18,6 @@ namespace engine
         file::WavefrontParser parser(_path);
         utilities::MeshProcessor processor;
         
-         
         auto data = parser.getMesh();
 
         processor.CalculateTangents(
@@ -45,7 +44,10 @@ namespace engine
     Mesh::Mesh(const MeshData & _mesh, DrawType _draw) :
       m_draw(_draw), m_elementCount(0), m_interleaved(true)
     {
-      setIndices(_mesh.indices);
+      if (_mesh.HasIndicies())
+      {
+        setIndices(_mesh.indices);
+      }
 
       AddVertices(_mesh.positions.data(), _mesh.positions.size());
 
@@ -73,7 +75,7 @@ namespace engine
 
     void Mesh::Render() const
     {
-      if (!m_vao || !m_ibo)
+      if (!m_vao)
       {
         debug::LogError("Mesh " + getName() + " does not exist.");
         return;
@@ -81,11 +83,16 @@ namespace engine
 
       m_vao->Bind();
 
-      m_ibo->Bind();
-      m_ibo->Draw(m_draw);
-      m_ibo->Unbind();
 
-      m_vao->Unbind();
+      if (m_ibo)
+      {
+        m_ibo->Bind();
+        m_ibo->Draw(m_draw);
+      }
+      else
+      {
+        GLCALL(glDrawArrays(DrawTypeToOpenGL(m_draw), 0, m_vertices.size()));
+      }
     }
 
     void Mesh::setIndices(const Indices & _indices)
@@ -177,15 +184,15 @@ namespace engine
 
       m_vao->Unbind();
 
-      if (m_indices.empty())
+      if (!m_indices.empty())
       {
-        throw std::range_error("Mesh Error: no index data given in mesh " + getName());
+        auto i = m_indices.get();
+
+        m_ibo = std::make_unique<IndexBuffer>(&i.second[0], i.second.size(), i.first);
+        m_ibo->Unbind();
       }
 
-      auto i = m_indices.get();
-   
-      m_ibo = std::make_unique<IndexBuffer>(&i.second[0], i.second.size(), i.first);
-      m_ibo->Unbind();      
+      UpdateBounds();
     }
 
     void Mesh::AddAttribute( 
@@ -229,6 +236,34 @@ namespace engine
     void Mesh::setDraw(DrawType _draw)
     {
       m_draw = _draw;
+    }
+
+    const Bounds & Mesh::getBounds() const
+    {
+      return m_bounds;
+    }
+
+    void Mesh::UpdateBounds()
+    {
+      if (m_vertices.empty()) 
+      {
+        m_bounds.min = m_bounds.max = glm::vec3(0.f);
+        return;
+      }
+
+      m_bounds.min = m_bounds.max = m_vertices.front();
+     
+      for (size_t i = 1u; i < m_vertices.size(); ++i)
+      {
+        const glm::vec3 & pos = m_vertices[i];
+        m_bounds.min.x = glm::min(m_bounds.min.x, pos.x);
+        m_bounds.min.y = glm::min(m_bounds.min.y, pos.y);
+        m_bounds.min.z = glm::min(m_bounds.min.z, pos.z);
+
+        m_bounds.max.x = glm::max(m_bounds.min.x, pos.x);
+        m_bounds.max.y = glm::max(m_bounds.min.y, pos.y);
+        m_bounds.max.z = glm::max(m_bounds.min.z, pos.z);
+      }
     }
   }
 }

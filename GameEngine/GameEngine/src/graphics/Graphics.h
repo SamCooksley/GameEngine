@@ -35,8 +35,11 @@ namespace engine
 
       std::vector<std::weak_ptr<Shader>> shaders;
 
+      std::weak_ptr<Shader> activeShader;
       std::unique_ptr<GLData> glData;
     };
+
+    class Debug;
   }
 
   class Graphics
@@ -46,6 +49,7 @@ namespace engine
     friend class graphics::Material;
     friend class Camera;
     friend class graphics::UniformBuffers;
+    friend class graphics::Debug;
 
   public:
     Graphics() = delete;

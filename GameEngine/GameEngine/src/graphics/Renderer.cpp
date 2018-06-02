@@ -19,8 +19,8 @@ namespace engine
     }
 
     void Renderer::Add(
-      std::weak_ptr<Mesh> _mesh,
-      std::weak_ptr<Material> _material,
+      const std::shared_ptr<Mesh> & _mesh,
+      const std::shared_ptr<Material> & _material,
       const glm::mat4 & _transform
     )
     { }

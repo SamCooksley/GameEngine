@@ -63,6 +63,7 @@ namespace engine
         shader->m_depth = parser.getDepth();
         shader->m_cull = parser.getCull();
         shader->m_blend = parser.getBlend();
+        shader->m_queue = parser.getQueue();
 
         for (int i = ShaderType::VERTEX; i <= ShaderType::GEOMETRY; ++i)
         {
@@ -107,18 +108,24 @@ namespace engine
       GLCALL(glDeleteProgram(m_program));
     }
 
-    void Shader::Bind() const
+    void Shader::Bind()
     {
-      GLCALL(glUseProgram(m_program));
+      if (this != Graphics::getContext().activeShader.lock().get())
+      {
+        GLCALL(glUseProgram(m_program));
 
-      Graphics::GL().SetDepth(m_depth);
-      Graphics::GL().SetCull(m_cull);
-      Graphics::GL().SetBlend(m_blend);
+        Graphics::GL().SetDepth(m_depth);
+        Graphics::GL().SetCull(m_cull);
+        Graphics::GL().SetBlend(m_blend);
+
+        Graphics::getContext().activeShader = shared_from_this();
+      }
     }
 
-    void Shader::Unbind() const
+    void Shader::Unbind()
     {
       GLCALL(glUseProgram(0));
+      Graphics::getContext().activeShader.reset();
     }
 
     void Shader::CreateShader(const std::string & _source, ShaderType::Type _type)
@@ -416,6 +423,11 @@ namespace engine
       }
     }
 
+    RenderQueue::Queue Shader::getRenderQueue() const
+    {
+      return m_queue;
+    }
+
     GLint Shader::getUniformLocation(const std::string & _name) const
     {
       GLCALL(GLint loc = glGetUniformLocation(m_program, _name.c_str()));
@@ -583,8 +595,10 @@ namespace engine
       auto & shaders = Graphics::getContext().shaders;
       for (size_t i = 0u; i < shaders.size();)
       {
-        if (shaders[i].lock().get() == this)
+        if (shaders[i].expired() ||
+            shaders[i].lock().get() == this)
         {
+          debug::Log("Delete");
           shaders.erase(shaders.begin() + i);
         }
         else { ++i; }

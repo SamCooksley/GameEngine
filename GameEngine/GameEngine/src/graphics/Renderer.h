@@ -18,6 +18,7 @@ namespace engine
       using Type = uint8;
       static constexpr Type None = 0;
       static constexpr Type Shadow = 1 << 0;
+      static constexpr Type Debug = 1 << 1;
     };
 
     class Renderer
@@ -28,8 +29,8 @@ namespace engine
       RenderFlags::Type getFlags() const;
 
       virtual void Add(
-        std::weak_ptr<Mesh> _mesh, 
-        std::weak_ptr<Material> _material, 
+        const std::shared_ptr<Mesh> & _mesh, 
+        const std::shared_ptr<Material> & _material,
         const glm::mat4 & _transform
       );
 

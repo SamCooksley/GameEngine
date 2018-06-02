@@ -306,7 +306,7 @@ namespace engine
       return unit;
     }
 
-    std::shared_ptr<Shader> Material::getShader()
+    const std::shared_ptr<Shader> & Material::getShader()
     {
       return m_shader;
     }

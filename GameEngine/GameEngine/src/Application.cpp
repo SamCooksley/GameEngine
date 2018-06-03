@@ -19,22 +19,22 @@
 
 #include "utilities\System.h"
 
-namespace engine
-{
-  std::unique_ptr<core::Context> Application::s_context;
+namespace engine {
+
+  std::unique_ptr<Context> Application::s_context;
 
   void Application::Init(int _argc, char** _argv)
   {
-    s_context.reset(new core::Context());
+    s_context.reset(new Context());
 
-    s_context->state = core::EngineState::Init;
+    s_context->state = EngineState::Init;
 
     for (int i = 0; i < _argc; ++i)
     {
       s_context->args.push_back(_argv[i]);
     }
 
-    s_context->glfwContext.reset(new core::glfw());
+    s_context->glfwContext.reset(new glfw());
 
     s_context->window.reset(new graphics::Window("Engine", 640, 480));
     s_context->window->setVsync(true);
@@ -49,11 +49,11 @@ namespace engine
     GLenum error = glewInit();
     if (error != GLEW_OK)
     {
-      throw std::runtime_error("glew error: " + std::to_string(error) + ": " + std::string((const char*)glewGetErrorString(error)));
+      throw std::runtime_error("glew error: " + std::to_string(error) + ": " + String((const char*)glewGetErrorString(error)));
     }
 
-    debug::Log("OpenGL version: " + std::string(reinterpret_cast<const char*>(glGetString(GL_VERSION))));
-    debug::Log("GLSL version: " + std::string(reinterpret_cast<const char*>(glGetString(GL_SHADING_LANGUAGE_VERSION))));
+    debug::Log("OpenGL version: " + String(reinterpret_cast<const char*>(glGetString(GL_VERSION))));
+    debug::Log("GLSL version: " + String(reinterpret_cast<const char*>(glGetString(GL_SHADING_LANGUAGE_VERSION))));
  
     s_context->graphics = std::make_unique<graphics::Context>();
 
@@ -102,7 +102,7 @@ namespace engine
     auto skyboxShader = Resources::Load<graphics::Shader>("resources/shaders/skybox.shader");
     auto skyboxMaterial = graphics::Material::Create(skyboxShader);
 
-    std::array<std::string, 6> skyboxTexturePaths;
+    std::array<String, 6> skyboxTexturePaths;
     for (size_t i = 0; i < 6; ++i)
     {
       skyboxTexturePaths[i] = "resources/textures/skybox/skybox" + std::to_string(i + 1) + ".jpg";
@@ -111,17 +111,16 @@ namespace engine
     auto skyboxCube = graphics::TextureCube::Load(skyboxTexturePaths);
     skyboxMaterial->setTexture("cubemap", skyboxCube); 
 
-    //auto inverseCube = Resources::Load<graphics::Mesh>("resources/models/skybox.obj");
     auto skybox = std::make_shared<graphics::Skybox>(skyboxMaterial);
     s_context->graphics->defaultRenderer->setSkybox(skybox);
   }
 
   void Application::Loop()
   {
-    s_context->state = core::EngineState::Running;
+    s_context->state = EngineState::Running;
     s_context->frameTime.Reset();
 
-    while (s_context->state == core::EngineState::Running)
+    while (s_context->state == EngineState::Running)
     {
       Frame();
     }
@@ -141,7 +140,7 @@ namespace engine
 
   void Application::Quit()
   {
-    s_context->state = core::EngineState::Exit;
+    s_context->state = EngineState::Exit;
   }
 
   void Application::Frame()
@@ -237,4 +236,5 @@ namespace engine
       s_context->scene->Init();
     }
   }
-}
+
+} // engine

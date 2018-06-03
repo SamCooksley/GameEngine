@@ -1,6 +1,0 @@
-namespace engine
-{
-  namespace core 
-  {
-  } 
-}

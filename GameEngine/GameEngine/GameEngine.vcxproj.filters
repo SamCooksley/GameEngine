@@ -81,9 +81,6 @@
     <ClCompile Include="src\Component.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\core\Core.cpp">
-      <Filter>Source Files\core</Filter>
-    </ClCompile>
     <ClCompile Include="src\Transform.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -157,9 +154,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\CameraMovement.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Engine_Time.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\graphics\Texture.cpp">
@@ -264,6 +258,9 @@
     <ClCompile Include="src\graphics\Camera.cpp">
       <Filter>Source Files\graphics</Filter>
     </ClCompile>
+    <ClCompile Include="src\eTime.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\stdafx.h">
@@ -304,9 +301,6 @@
     </ClInclude>
     <ClInclude Include="src\Component.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\core\Core.h">
-      <Filter>Header Files\core</Filter>
     </ClInclude>
     <ClInclude Include="src\Transform.h">
       <Filter>Header Files</Filter>
@@ -386,9 +380,6 @@
     <ClInclude Include="src\CameraMovement.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Engine_Time.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\graphics\Texture.h">
       <Filter>Header Files\graphics</Filter>
     </ClInclude>
@@ -464,9 +455,6 @@
     <ClInclude Include="src\graphics\GLData.h">
       <Filter>Header Files\graphics</Filter>
     </ClInclude>
-    <ClInclude Include="src\graphics\GLType.h">
-      <Filter>Header Files\graphics</Filter>
-    </ClInclude>
     <ClInclude Include="src\graphics\CommandBuffer.h">
       <Filter>Header Files\graphics</Filter>
     </ClInclude>
@@ -494,13 +482,13 @@
     <ClInclude Include="src\graphics\Light.h">
       <Filter>Header Files\graphics</Filter>
     </ClInclude>
+    <ClInclude Include="src\eTime.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\GameObject.inl">
       <Filter>Header Files</Filter>
-    </None>
-    <None Include="src\core\Core.inl">
-      <Filter>Header Files\core</Filter>
     </None>
     <None Include="src\Scene.inl">
       <Filter>Header Files</Filter>

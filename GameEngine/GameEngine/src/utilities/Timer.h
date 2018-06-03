@@ -3,14 +3,15 @@
 
 #include <chrono>
 
-namespace engine
-{
-  namespace utilities
-  {
+namespace engine {
+namespace utilities {
+
     class Timer
     {
+     private:
       using Clock = std::chrono::steady_clock;
-    public:
+
+     public:
       Timer();
       ~Timer();
 
@@ -19,10 +20,10 @@ namespace engine
       float getSeconds()     const;
       float getMiliseconds() const;
 
-    private:
+     private:
       std::chrono::time_point<Clock> m_start;
     };
-  }
-}
+
+} } // engine::utilities
 
 #endif //_ENGINE_UTILITIES_TIMER_H_

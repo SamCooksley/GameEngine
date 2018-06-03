@@ -2,36 +2,34 @@
 #define _ENGINE_GRAPHICS_TYPES_H_
 
 #include "core\Types.h"
-
 #include "opengl.h"
 
-namespace engine
-{
-  namespace graphics
+namespace engine {
+namespace graphics {
+
+  enum class Type : GLenum
   {
-    enum class Type : GLenum
-    {
-      INT = GL_INT,
-      FLOAT = GL_FLOAT,
-      VEC2 = GL_FLOAT_VEC2,
-      VEC3 = GL_FLOAT_VEC3,
-      VEC4 = GL_FLOAT_VEC4,
-      MAT3 = GL_FLOAT_MAT3,
-      MAT4 = GL_FLOAT_MAT4
-    };
+    INT = GL_INT,
+    FLOAT = GL_FLOAT,
+    VEC2 = GL_FLOAT_VEC2,
+    VEC3 = GL_FLOAT_VEC3,
+    VEC4 = GL_FLOAT_VEC4,
+    MAT3 = GL_FLOAT_MAT3,
+    MAT4 = GL_FLOAT_MAT4
+  };
+  
+  GLenum TypeToOpenGL(Type _type);
+  Type OpenGLToType(GLenum _type);
+  
+  enum class ComponentType : GLenum
+  {
+    INT = GL_INT,
+    FLOAT = GL_FLOAT
+  };
+  
+  GLenum ComponentTypeToOpenGL(ComponentType _type);
+  ComponentType OpenGLToComponentType(GLenum _type);
 
-    GLenum TypeToOpenGL(Type _type);
-    Type OpenGLToType(GLenum _type);
-
-    enum class ComponentType : GLenum
-    {
-      INT = GL_INT,
-      FLOAT = GL_FLOAT
-    };
-
-    GLenum ComponentTypeToOpenGL(ComponentType _type);
-    ComponentType OpenGLToComponentType(GLenum _type);
-  }
-}
+} } // engine::graphics
 
 #endif //_ENGINE_GRAPHICS_TYPES_H_

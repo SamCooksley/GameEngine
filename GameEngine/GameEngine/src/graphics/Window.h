@@ -5,46 +5,47 @@
 
 struct GLFWwindow;
 
-namespace engine
-{
-  namespace core { class glfw; }
-  class Input;
+namespace engine {
 
-  namespace graphics
+class glfw;
+class Input;
+
+namespace graphics {
+
+  class Window
   {
-    class Window
-    {
-      friend class core::glfw;
-      friend class Input;
+    friend class glfw;
+    friend class Input;
 
-    public:
-      Window(const std::string & _title, uint _width, uint _height);
-      ~Window();
+   public:
+    Window(const String & _title, uint _width, uint _height);
+    ~Window();
 
-      void Present();
+    void Present();
 
-      void Resize(uint _width, uint _height);
-      void setTitle(const std::string & _title);
+    void Resize(uint _width, uint _height);
+    void setTitle(const String & _title);
 
-      void setFullscreen(bool _fullscreen);
-      void setVsync(bool _vsync);
+    void setFullscreen(bool _fullscreen);
+    void setVsync(bool _vsync);
 
-      void MakeCurrent();
+    void MakeCurrent();
 
-      int getWidth() const;
-      int getHeight() const;
+    int getWidth() const;
+    int getHeight() const;
 
-    private:
-      void Close();
+   private:
+    void Close();
 
-      GLFWwindow * m_window;
+   private:
+    GLFWwindow * m_window;
 
-      std::string m_title;
-      uint m_width, m_height;
+    String m_title;
+    uint m_width, m_height;
 
-      bool m_fullscreen, m_vsync;
-    };
-  }
-}
+    bool m_fullscreen, m_vsync;
+  };
+
+} } // engine::graphics
 
 #endif //_ENGINE_GRAPHICS_WINDOW_H_

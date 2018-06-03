@@ -1,14 +1,15 @@
 #ifndef _ENGINE_ASSET_H_
 #define _ENGINE_ASSET_H_
 
-namespace engine
-{
+namespace engine {
+
   class Asset
   {
-  public:
+   public:
     Asset() = default;
     virtual ~Asset() = default;
   };
-}
+
+} // engine
 
 #endif //_ENGINE_ASSET_H_

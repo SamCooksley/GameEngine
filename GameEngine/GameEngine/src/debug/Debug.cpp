@@ -4,23 +4,22 @@
 
 #include <iostream>
 
-namespace engine
-{
-  namespace debug
+namespace engine {
+namespace debug {
+
+  void Log(const String & _message)
   {
-    void Log(const std::string & _message)
-    {
-      std::cout << _message << std::endl;
-    }
-
-    void LogWarning(const std::string & _message)
-    {
-      std::cout << "Warning: " << _message << std::endl;
-    }
-
-    void LogError(const std::string & _message)
-    {
-      std::cerr << "Error: " << _message << std::endl;
-    }
+    std::cout << _message << std::endl;
   }
-}
+  
+  void LogWarning(const String & _message)
+  {
+    std::cout << "Warning: " << _message << std::endl;
+  }
+  
+  void LogError(const String & _message)
+  {
+    std::cerr << "Error: " << _message << std::endl;
+  }
+  
+} } // engine::debug

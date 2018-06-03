@@ -1,5 +1,5 @@
-namespace engine
-{
+namespace engine {
+
   template <class T>
   inline std::shared_ptr<T> GameObject::AddComponent()
   {
@@ -114,4 +114,5 @@ namespace engine
       if (c) { _outComponents.push_back(c); }
     }
   }
-}
+
+} // engine

@@ -5,44 +5,43 @@
 
 #include "UniformBuffer.h"
 
-namespace engine
-{
-  namespace graphics
+namespace engine {
+namespace graphics {
+    
+  class LightBuffer : public UniformBuffer
   {
-    class LightBuffer : public UniformBuffer
-    {
-    public:
-      static const std::string name; 
+   public:
+    static const String name; 
+  
+    static const uint max_lights;
+  
+   private:
+    static const uint
+      type_offset,
+      position_offset,
+      direction_offset,
+      colour_offset,
+      linear_offset,
+      quadratic_offset,
+      cutoff_offset,
+      outercutoff_offset,
+  
+      light_size,
+      lights_size,
+  
+      ambient_offset,
+  
+      size;
+  
+   public:
+    LightBuffer();
+    ~LightBuffer();
+  
+    void setLight(const Light & _light, uint _num);
+    void ClearLight(uint _num);
+    void setAmbient(const glm::vec3 & _ambient);
+  };
 
-      static const uint max_lights;
-
-    private:
-      static const uint
-        type_offset,
-        position_offset,
-        direction_offset,
-        colour_offset,
-        linear_offset,
-        quadratic_offset,
-        cutoff_offset,
-        outercutoff_offset,
-
-        light_size,
-        lights_size,
-
-        ambient_offset,
-
-        size;
-
-    public:
-      LightBuffer();
-      ~LightBuffer();
-
-      void setLight(const Light & _light, uint _num);
-      void ClearLight(uint _num);
-      void setAmbient(const glm::vec3 & _ambient);
-    };
-  }
-}
+} } // engine::graphics
 
 #endif //_ENGINE_GRAPHICS_LIGHTBUFFER_H_

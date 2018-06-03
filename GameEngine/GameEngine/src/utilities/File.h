@@ -3,15 +3,16 @@
 
 #include <fstream>
 
-namespace engine 
-{ 
-  namespace file 
-  {  
-    std::string getDirectory(const std::string & _path);
-    std::string getFilename(const std::string & _path);
-    std::string getFilenameWithoutExtension(const std::string & _path);
-    std::string getFileExtension(const std::string & _path);
-  }
-}
+#include "core\Types.h"
+
+namespace engine { 
+namespace file {  
+    
+  String getDirectory(const String & _path);
+  String getFilename(const String & _path);
+  String getFilenameWithoutExtension(const String & _path);
+  String getFileExtension(const String & _path);
+ 
+} } // engine::file
 
 #endif //_ENGINE_UTILITIES_FILE_H_

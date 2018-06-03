@@ -2,8 +2,8 @@
 
 #include "Context.h"
 
-namespace engine
-{
+namespace engine {
+
   void Destroy(std::unique_ptr<graphics::Context> & _context)
   {
     if (!_context) { return; }
@@ -15,4 +15,5 @@ namespace engine
 
     _context = nullptr;
   }
-}
+
+} // engine

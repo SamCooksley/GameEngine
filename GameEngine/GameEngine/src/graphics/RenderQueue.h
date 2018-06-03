@@ -3,24 +3,23 @@
 
 #include "core\String.h"
 
-namespace engine
-{
-  namespace graphics
+namespace engine {
+namespace graphics {
+
+  class RenderQueue
   {
-    class RenderQueue
-    {
-    public:
-      RenderQueue() = delete;
-
-      enum Queue { DEFERRED, FORWARD, TRANSPARENT, COUNT };
-
-      static const std::string & ToString(Queue _queue);
-      static Queue FromString(const std::string & _s);
-
-    private:
-      static const std::array<std::string, COUNT> s_names;
-    };
-  }
-}
+   public:
+    RenderQueue() = delete;
+  
+    enum Queue { DEFERRED, FORWARD, TRANSPARENT, COUNT };
+  
+    static const String & ToString(Queue _queue);
+    static Queue FromString(const String & _s);
+  
+   private:
+    static const std::array<String, COUNT> s_names;
+  };
+ 
+} } // engine::graphics
 
 #endif //_ENGINE_GRAPHICS_RENDERQUEUE_H_

@@ -3,8 +3,8 @@
 
 #include "core/Context.h"
 
-namespace engine
-{
+namespace engine {
+
   class Application
   {
     friend class Input;
@@ -17,7 +17,7 @@ namespace engine
     friend class Graphics;
     friend class Camera;
 
-  public:
+   public:
     Application() = delete;
 
     static void Init(int _argc, char** _argv);
@@ -26,7 +26,7 @@ namespace engine
 
     static void Quit();
 
-  private:
+   private:
     static void Frame();
 
     static void HandleEvents();
@@ -35,8 +35,10 @@ namespace engine
 
     static void ChangeScene();
 
-    static std::unique_ptr<core::Context> s_context;
+   private:
+    static std::unique_ptr<Context> s_context;
   };
-}
+
+} // engine
 
 #endif //_ENGINE_APPLICATION_H_

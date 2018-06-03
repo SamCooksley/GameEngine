@@ -4,8 +4,8 @@
 
 #include "GameObject.h"
 
-namespace engine
-{
+namespace engine {
+
   Light::Light()
   { }
 
@@ -73,4 +73,5 @@ namespace engine
     m_light.linear = _linear;
     m_light.quadratic = _quadratic;
   }
-}
+
+} // engine

@@ -3,11 +3,11 @@
 
 #include "core/Types.h"
 
-namespace engine
-{
+namespace engine {
+
   class Bounds
   {
-  public:
+   public:
     glm::vec3 min;
     glm::vec3 max;
 
@@ -26,6 +26,7 @@ namespace engine
 
     Bounds Multiply(const glm::mat4 & _transform) const;
   };
-}
+
+} // engine
 
 #endif //_ENGINE_BOUNDS_H_

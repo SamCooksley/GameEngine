@@ -5,13 +5,14 @@
 
 #include "GameObject.h"
 
-namespace engine
-{
+namespace engine {
+
   class Scene : public Object
   {
     friend class Application;
     friend class GameObject;
-  public:
+
+   public:
     template <class T>
     static void SetScene();
 
@@ -19,19 +20,21 @@ namespace engine
 
     void Clear();
 
-  protected:
+   protected:
     Scene();
     virtual void Init();
 
-  private:
-    void Add(std::shared_ptr<GameObject> _gameObject);
+   private:
+    void Add(const std::shared_ptr<GameObject> & _gameObject);
 
     void Update();
     void Render(graphics::Renderer & _renderer);
 
+   private:
     std::vector<std::shared_ptr<GameObject>> m_gameObjects;
   };
-}
+
+} // engine
 
 #include "Scene.inl"
 

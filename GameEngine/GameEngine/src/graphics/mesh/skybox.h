@@ -3,19 +3,16 @@
 
 #include "primitive.h"
 
-namespace engine
-{
-  namespace graphics
+namespace engine {
+namespace graphics {
+namespace mesh {
+
+  class Skybox : public Primitive
   {
-    namespace mesh
-    {
-      class Skybox : public Primitive
-      {
-      public:
-        Skybox();
-      };
-    }
-  }
-}
+   public:
+    Skybox();
+  };
+
+} } } // engine::graphics::mesh
 
 #endif //_ENGINE_GRAPHICS_MESH_SKYBOX_H_

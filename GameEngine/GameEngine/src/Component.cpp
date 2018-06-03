@@ -4,8 +4,8 @@
 
 #include "GameObject.h"
 
-namespace engine
-{
+namespace engine {
+
   Component::Component()
   { }
 
@@ -93,4 +93,5 @@ namespace engine
   {
     m_shouldDestroy = true;
   }
-}
+
+} // engine

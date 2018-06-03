@@ -5,19 +5,20 @@
 
 #include "Asset.h"
 
-namespace engine
-{
+namespace engine {
+
   class Resources
   {
-  public:
+   public:
     Resources() = delete;
 
     template <class T>
-    static std::shared_ptr<T> Load(const std::string & _path);    
+    static std::shared_ptr<T> Load(const String & _path);    
 
     static void Clear();
   };
-}
+
+} // engine
 
 #include "Resources.inl"
 

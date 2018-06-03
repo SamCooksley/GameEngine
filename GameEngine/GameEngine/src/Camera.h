@@ -9,8 +9,8 @@
 
 #include "Scene.h"
 
-namespace engine
-{
+namespace engine {
+
   enum class CameraType
   {
     PERSPECTIVE,
@@ -21,7 +21,7 @@ namespace engine
   {
     friend class Application;
 
-  public:
+   public:
     Camera();
     ~Camera();
 
@@ -42,11 +42,11 @@ namespace engine
 
     void setZClipping(float _near, float _far);
 
-  protected:
+   protected:
     void OnAwake() override;
     void OnDestroy() override;
 
-  private:
+   private:
     void UpdateProjection();
 
     void SetupRender();
@@ -54,6 +54,7 @@ namespace engine
     static void AddCamera(const std::shared_ptr<Camera> & _camera);
     void RemoveCamera();
 
+   private:
     CameraType m_type;
 
     union
@@ -73,6 +74,7 @@ namespace engine
 
     ENGINE_SETUPSHARED(Camera);
   };
-}
+
+} // engine
 
 #endif //_ENGINE_CAMERA_H_

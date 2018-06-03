@@ -3,16 +3,18 @@
 
 #include <string>
 
-namespace engine
-{
-  namespace string
-  {
-    bool AreIEqual(const std::string & _lhs, const std::string & _rhs);
+namespace engine {
 
-    void SplitStringWhitespace(const std::string & _input, std::vector<std::string> & _output);
-    void SplitString(const std::string & _input, char _separator, std::vector<std::string> & _output);
-    void SplitString(const std::string & _input, const std::string & _separators, std::vector<std::string> & _output);  
-  }
-}
+using String = std::string;
+
+namespace string {
+  
+  bool AreIEqual(const String & _lhs, const String & _rhs);
+  
+  std::vector<String> SplitStringWhitespace(const String & _input);
+  std::vector<String> SplitString(const String & _input, char _separator);
+  std::vector<String> SplitString(const String & _input, const String & _separators);
+  
+} } // engine::string
 
 #endif //_ENGINE_CORE_STRING_H_

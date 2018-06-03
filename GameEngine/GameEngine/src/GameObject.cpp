@@ -5,8 +5,8 @@
 #include "Application.h"
 #include "Transform.h"
 
-namespace engine
-{
+namespace engine {
+
   std::shared_ptr<GameObject> GameObject::Instantiate()
   {
     auto go = Create();
@@ -94,4 +94,5 @@ namespace engine
     }
     m_components.clear();
   }
-}
+
+} // engine

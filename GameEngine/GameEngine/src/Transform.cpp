@@ -2,8 +2,8 @@
 
 #include "Transform.h"
 
-namespace engine 
-{
+namespace engine {
+
   glm::mat4 Transform::getTransform(
       const glm::vec3 & _position,
       const glm::quat & _rotation,
@@ -231,7 +231,7 @@ namespace engine
     DestroyChildren();
   }
 
-  void Transform::DetachChildren(std::shared_ptr<Transform> _newParent)
+  void Transform::DetachChildren(const std::shared_ptr<Transform> & _newParent)
   {
     //if it is being added to the same parent, nothing changes.
     if (_newParent.get() == this) { return; }
@@ -253,7 +253,7 @@ namespace engine
     }
   }
 
-  Transform & Transform::setParent(std::shared_ptr<Transform> _parent)
+  Transform & Transform::setParent(const std::shared_ptr<Transform> & _parent)
   {
     std::shared_ptr<Transform> parent = m_parent.lock();
     if (parent)
@@ -271,7 +271,7 @@ namespace engine
     return *this;
   }
 
-  void Transform::AddChild(std::shared_ptr<Transform> _child)
+  void Transform::AddChild(const std::shared_ptr<Transform> & _child)
   {
     //exit if the child already exits.
     for (size_t i = 0; i < m_children.size(); ++i)
@@ -285,7 +285,7 @@ namespace engine
     m_children.push_back(_child);
   }
 
-  void Transform::RemoveChild(std::shared_ptr<Transform> _child)
+  void Transform::RemoveChild(const std::shared_ptr<Transform> & _child)
   {
     for (size_t i = 0; i < m_children.size();)
     {
@@ -301,4 +301,5 @@ namespace engine
   {
     return getTransform(m_localPosition, m_localRotation, m_localScale);
   }
-}
+
+} // engine

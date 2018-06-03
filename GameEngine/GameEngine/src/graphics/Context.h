@@ -5,31 +5,30 @@
 #include "Material.h"
 #include "BaseRenderer.h"
 
-namespace engine
-{
-  namespace graphics
+namespace engine {
+namespace graphics {
+
+  struct Context
   {
-    struct Context
-    {
-    public:
-      UniformBuffers uniformBuffers;
-      GLData glData;
+  public:
+    UniformBuffers uniformBuffers;
+    GLData glData;
 
-      std::vector<std::weak_ptr<Shader>> shaders;
-      std::shared_ptr<Shader> errorShader;
+    std::vector<std::weak_ptr<Shader>> shaders;
+    std::shared_ptr<Shader> errorShader;
 
-      std::shared_ptr<Material> defaultMaterial;
+    std::shared_ptr<Material> defaultMaterial;
 
-      std::shared_ptr<BaseRenderer> defaultRenderer;
+    std::shared_ptr<BaseRenderer> defaultRenderer;
 
-      std::shared_ptr<Mesh> screenQuad;
+    std::shared_ptr<Mesh> screenQuad;
 
+    std::weak_ptr<Shader> activeShader;
+  };
+} // graphics
 
-      std::weak_ptr<Shader> activeShader;
-    };
-  }
+void Destroy(std::unique_ptr<graphics::Context> & _context);
 
-  void Destroy(std::unique_ptr<graphics::Context> & _context);
-}
+} // engine
 
 #endif //_ENGINE_GRAPHICS_CONTEXT_H_

@@ -1,13 +1,14 @@
 #include "stdafx.h"
 
-#include "Engine_Time.h"
+#include "eTime.h"
 
 #include "Application.h"
 
-namespace engine
-{
+namespace engine {
+
   float Time::getDeltaTime()
   {
     return Application::s_context->deltaTime;
   }
-}
+
+} // engine

@@ -5,10 +5,10 @@
 #include "GameObject.h"
 
 #include "Input.h"
-#include "Engine_Time.h"
+#include "eTime.h"
 
-namespace engine
-{
+namespace engine {
+
   CameraMovement::CameraMovement()
   { }
 
@@ -73,4 +73,4 @@ namespace engine
 
     transform->setRotation(glm::quat(glm::vec3(m_pitch, m_yaw, 0.f)));  
   }
-}
+} // engine

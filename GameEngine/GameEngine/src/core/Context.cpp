@@ -2,9 +2,9 @@
 
 #include "Context.h"
 
-namespace engine
-{
-  void Destroy(std::unique_ptr<core::Context> & _context)
+namespace engine {
+
+  void Destroy(std::unique_ptr<Context> & _context)
   {
     if (!_context) { return; }
 
@@ -17,4 +17,5 @@ namespace engine
 
     _context = nullptr;
   }
-}
+
+} // engine

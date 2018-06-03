@@ -8,8 +8,8 @@
 
 #include "glfw\glfw3.h"
 
-namespace engine
-{
+namespace engine {
+
   Input::KeyList Input::s_keys;
   Input::KeyList Input::s_keysDown;
   Input::KeyList Input::s_keysUp;
@@ -204,4 +204,5 @@ namespace engine
     }
     s_cursorMode = _mode;
   }
-}
+
+} // engine

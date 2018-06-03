@@ -13,8 +13,8 @@
 
 #include "graphics\mesh\quad.h"
 
-namespace engine
-{
+namespace engine {
+
   TestScene::TestScene()
   { }
 
@@ -111,4 +111,5 @@ namespace engine
     //auto sponza = Load("resources/sponza/sponza.obj");
     //sponza->getComponent<Transform>()->setLocalScale(glm::vec3(0.01f));
   }
-}
+
+} // engine

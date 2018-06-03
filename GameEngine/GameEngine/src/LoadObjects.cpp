@@ -6,14 +6,15 @@
 #include "assimp\scene.h"
 #include "assimp\postprocess.h"
 
+#include "utilities\File.h"
 #include "Resources.h"
 
 #include "MeshRenderer.h"
 #include "utilities\MeshProcessor.h"
 
-namespace engine
-{
-  static void LoadMaterials(const aiScene * _aiScene, const std::string & _directory, const std::shared_ptr<graphics::Material> _defaultMaterial, std::vector<std::shared_ptr<graphics::Material>> & _outMaterials)
+namespace engine {
+
+  static void LoadMaterials(const aiScene * _aiScene, const String & _directory, const std::shared_ptr<graphics::Material> _defaultMaterial, std::vector<std::shared_ptr<graphics::Material>> & _outMaterials)
   {
     for (uint i = 0; i < _aiScene->mNumMaterials; ++i)
     {
@@ -127,7 +128,7 @@ namespace engine
     return nullptr;
   }
 
-  std::shared_ptr<GameObject> Load(const std::string & _path, std::shared_ptr<graphics::Material> _baseMaterial)
+  std::shared_ptr<GameObject> Load(const String & _path, std::shared_ptr<graphics::Material> _baseMaterial)
   {
     Assimp::Importer importer;
 
@@ -144,7 +145,7 @@ namespace engine
       return nullptr;
     }
 
-    std::string directory = file::getDirectory(_path);
+    String directory = file::getDirectory(_path);
 
     std::vector<std::shared_ptr<graphics::Material>> materials;
     LoadMaterials(scene, directory, _baseMaterial, materials);
@@ -219,4 +220,5 @@ namespace engine
 
     return parent;
   }
-}
+
+} // engine

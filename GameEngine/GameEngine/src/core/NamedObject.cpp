@@ -2,19 +2,20 @@
 
 #include "NamedObject.h"
 
-namespace engine
-{
-  NamedObject::NamedObject(std::string _name) :
-    m_name(std::move(_name))
+namespace engine {
+
+  NamedObject::NamedObject(const String & _name) :
+    m_name(_name)
   { }
 
-  void NamedObject::setName(std::string _name)
+  void NamedObject::setName(const String & _name)
   {
-    m_name = std::move(_name);
+    m_name = _name;
   }
 
-  const std::string & NamedObject::getName() const
+  const String & NamedObject::getName() const
   {
     return m_name;
   }
-}
+
+} // engine

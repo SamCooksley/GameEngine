@@ -6,16 +6,18 @@
 #include "Component.h"
 #include "Transform.h"
 
-namespace engine 
-{
+namespace engine {
+
   class GameObject : public Object
   {
     friend class Component;
     friend class Scene;
 
-  public:
+   public:
     static std::shared_ptr<GameObject> Instantiate();
     static std::shared_ptr<GameObject> Create();
+
+   public:
 
     ~GameObject();
 
@@ -35,10 +37,10 @@ namespace engine
 
     void Destroy();
 
-  protected:
+   protected:
     GameObject();
 
-  private:
+   private:
     void Update();
     void Render(graphics::Renderer & _renderer);
 
@@ -56,6 +58,7 @@ namespace engine
     template <class T>
     void getComponentsInternal(std::vector<std::shared_ptr<T>> & _outComponents);
 
+   private:
     bool m_enabled;
     bool m_shouldDestroy;
 
@@ -65,7 +68,8 @@ namespace engine
 
     ENGINE_SETUPSHARED(GameObject);
   };
-}
+
+} // engine
 
 #include "GameObject.inl"
 

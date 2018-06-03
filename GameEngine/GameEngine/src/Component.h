@@ -12,7 +12,8 @@ namespace engine {
   class Component : public Object
   {
     friend class GameObject;
-  public:
+
+   public:
     virtual ~Component();
 
     std::shared_ptr<GameObject> getGameObject();
@@ -23,7 +24,7 @@ namespace engine {
 
     void Destroy();
 
-  protected:
+   protected:
     Component();
 
     virtual void OnAwake();
@@ -35,11 +36,12 @@ namespace engine {
 
     virtual void OnDestroy();
 
-  private:
+   private:
     void Awake();
     void Update();
     void Render(graphics::Renderer & _renderer);
 
+   private:
     std::weak_ptr<GameObject> m_gameObject;
 
     bool m_enabled;

@@ -3,19 +3,16 @@
 
 #include "primitive.h"
 
-namespace engine
-{
-  namespace graphics
+namespace engine {
+namespace graphics {
+namespace mesh {
+
+  class Quad : public Primitive
   {
-    namespace mesh
-    {
-      class Quad : public Primitive
-      {
-      public:
-        Quad();
-      };
-    }
-  }
-}
+   public:
+    Quad();
+  };
+  
+} } } // engine::graphics::mesh
 
 #endif //_ENGINE_GRAPHICS_MESH_QUAD_H_

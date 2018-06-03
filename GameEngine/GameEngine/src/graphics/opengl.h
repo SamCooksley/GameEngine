@@ -5,17 +5,14 @@
 
 #include "debug\Debug.h"
 
-namespace engine 
-{ 
-  namespace graphics 
-  {
-    namespace opengl
-    {
-      void ClearError();
-      bool LogError(const char * _function, const char * _file, int _line);
-    }
-  } 
-}
+namespace engine { 
+namespace graphics {
+namespace opengl {
+
+  void ClearError();
+  bool LogError(const char * _function, const char * _file, int _line);
+
+} } } // engine::graphics::opengl
 
 #if _DEBUG
 #define GLCALL(x) \

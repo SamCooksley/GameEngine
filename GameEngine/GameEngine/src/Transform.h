@@ -1,16 +1,13 @@
 #ifndef _ENGINE_TRANSFORM_H_
 #define _ENGINE_TRANSFORM_H_
 
-#include "glm\glm.hpp"
-#include "glm\ext.hpp"
-
 #include "Component.h"
 
-namespace engine
-{
+namespace engine {
+
   class Transform : public Component
   {
-  public:
+   public:
     static glm::mat4 getTransform(
       const glm::vec3 & _position, 
       const glm::quat & _rotation, 
@@ -21,6 +18,7 @@ namespace engine
     static glm::vec3 getUp(const glm::mat4 & _transform);
     static glm::vec3 getForward(const glm::mat4 & _transform);
 
+   public:
     Transform();
     ~Transform();
 
@@ -53,19 +51,20 @@ namespace engine
     Transform & setLocalRotation(const glm::quat & _rotation);
     Transform & setLocalScale(const glm::vec3 & _scale);
 
-    Transform & setParent(std::shared_ptr<Transform> _parent);
+    Transform & setParent(const std::shared_ptr<Transform> & _parent);
 
-  protected:
+   protected:
     void OnAwake() override;
     void OnDestroy() override;
 
-    void DetachChildren(std::shared_ptr<Transform> _newParent = std::shared_ptr<Transform>());
+    void DetachChildren(const std::shared_ptr<Transform> & _newParent = nullptr);
     void DestroyChildren();
 
-  private:
-    void AddChild(std::shared_ptr<Transform> _child);
-    void RemoveChild(std::shared_ptr<Transform> _child);
+   private:
+    void AddChild(const std::shared_ptr<Transform> & _child);
+    void RemoveChild(const std::shared_ptr<Transform> & _child);
 
+   private:
     glm::mat4 getLocalTransform() const;
 
     glm::vec3 m_localPosition;
@@ -77,6 +76,7 @@ namespace engine
 
     ENGINE_SETUPSHARED(Transform);
   };
-}
+
+} // engine
 
 #endif //_ENGINE_TRANSFORM_H_

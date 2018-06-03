@@ -1,7 +1,7 @@
-namespace engine
-{
+namespace engine {
+
   template <class T>
-  std::shared_ptr<T> Resources::Load(const std::string & _path)
+  std::shared_ptr<T> Resources::Load(const String & _path)
   {
     static_assert(std::is_base_of<Asset, T>::value, "Resource must be type of Object.");
 
@@ -21,4 +21,5 @@ namespace engine
     Application::s_context->resources[_path] = asset;
     return asset;
   }
-}
+
+} // engine

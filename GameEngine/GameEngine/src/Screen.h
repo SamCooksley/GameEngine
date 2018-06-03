@@ -3,16 +3,17 @@
 
 #include "core\Types.h"
 
-namespace engine
-{
+namespace engine {
+
   class Screen
   {
-  public:
+   public:
     Screen() = delete;
 
     static uint getWidth();
     static uint getHeight();
   };
-}
+
+} // engine
 
 #endif //_ENGINE_SCREEN_H_

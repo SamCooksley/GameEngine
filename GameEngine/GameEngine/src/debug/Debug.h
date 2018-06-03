@@ -3,14 +3,13 @@
 
 #include "core\Types.h"
 
-namespace engine
-{
-  namespace debug
-  {
-    void Log(const std::string & _message);
-    void LogWarning(const std::string & _message);
-    void LogError(const std::string & _message);
-  }
-}
+namespace engine {
+namespace debug {
+
+  void Log(const String & _message);
+  void LogWarning(const String & _message);
+  void LogError(const String & _message);
+
+} } // engine::debug
 
 #endif //_ENGINE_DEBUG_H_

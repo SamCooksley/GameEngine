@@ -1,40 +1,37 @@
 #ifndef _ENGINE_GRAPHICS_SHADERUNIFORM_H_
 #define _ENGINE_GRAPHICS_SHADERUNIFORM_H_
 
-#include "core\Types.h"
-
 #include "TypeData.h"
 
 #include "Texture2D.h"
 #include "TextureCube.h"
 
-namespace engine
-{
-  namespace graphics
+namespace engine {
+namespace graphics {
+
+  struct ShaderAttribute
   {
-    struct ShaderAttribute
-    {
-      std::string name;
-      Type type;
-      GLint location;
-    };
+    String name;
+    Type type;
+    GLint location;
+  };
+  
+  struct ShaderUniform
+  {
+    String name;
+    Type type;
+    uint size;
+    GLint location;
+    int offset;
+  };
+  
+  struct ShaderSampler
+  {
+    String name;
+    TextureType type;
+    uint uniformIndex;
+  };
 
-    struct ShaderUniform
-    {
-      std::string name;
-      Type type;
-      uint size;
-      GLint location;
-      int offset;
-    };
-
-    struct ShaderSampler
-    {
-      std::string name;
-      TextureType type;
-      uint uniformIndex;
-    };
-  }
-}
+} } // engine::graphics
 
 #endif //_ENGINE_GRAPHICS_SHADERUNIFORM_H_

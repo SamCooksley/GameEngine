@@ -4,9 +4,9 @@
 
 #include "Application.h"
 
-namespace engine
-{
-  graphics::UniformBuffer * Graphics::getUniformBuffer(const std::string & _name)
+namespace engine {
+
+  graphics::UniformBuffer * Graphics::getUniformBuffer(const String & _name)
   {
     return getContext().uniformBuffers.getBuffer(_name);
   }
@@ -31,4 +31,5 @@ namespace engine
     assert(Application::s_context && Application::s_context->graphics);
     return *Application::s_context->graphics;
   }
-}
+
+} // engine

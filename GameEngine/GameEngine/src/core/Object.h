@@ -5,26 +5,21 @@
 
 #include "debug\Debug.h"
 
-namespace engine
-{
-  class Object : public std::enable_shared_from_this<Object>
+namespace engine {
+
+  class Object : public std::enable_shared_from_this<Object>, public NamedObject
   {
-  public:
+   public:
     virtual ~Object();
-
-    const std::string & getName() const;
-    void setName(const std::string & _name);
-
-  protected:
+  
+   protected:
     Object();
-
-  private:
-    std::string m_name;
   };
-
+  
   bool operator==(const Object & _lhs, const Object & _rhs);
   bool operator!=(const Object & _lhs, const Object & _rhs);
-}
+
+} // engine
 
 #define ENGINE_SETUPSHARED(x) \
   public: \

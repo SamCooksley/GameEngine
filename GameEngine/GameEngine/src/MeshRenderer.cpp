@@ -6,8 +6,8 @@
 
 #include "graphics\Graphics.h"
 
-namespace engine
-{
+namespace engine {
+
   MeshRenderer::MeshRenderer()
   { }
 
@@ -48,13 +48,14 @@ namespace engine
     _renderer.Add(m_mesh, m_material, model);
   }
 
-  void MeshRenderer::setMesh(std::shared_ptr<graphics::Mesh> _mesh)
+  void MeshRenderer::setMesh(const std::shared_ptr<graphics::Mesh> & _mesh)
   {
-    m_mesh = std::move(_mesh);
+    m_mesh = _mesh;
   }
 
-  void MeshRenderer::setMaterial(std::shared_ptr<graphics::Material> _material)
+  void MeshRenderer::setMaterial(const std::shared_ptr<graphics::Material> & _material)
   {
-    m_material = std::move(_material);
+    m_material = _material;
   }
-}
+
+} // engine

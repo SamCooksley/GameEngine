@@ -33,14 +33,6 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)core\</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)core\</XMLDocumentationFileName>
     </ClCompile>
-    <ClCompile Include="src\core\Core.cpp">
-      <AssemblerListingLocation Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)core\</AssemblerListingLocation>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)core\</ObjectFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)core\</XMLDocumentationFileName>
-      <AssemblerListingLocation Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)core\</AssemblerListingLocation>
-      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)core\</ObjectFileName>
-      <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)core\</XMLDocumentationFileName>
-    </ClCompile>
     <ClCompile Include="src\core\Dictionary.cpp">
       <AssemblerListingLocation Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)core\</AssemblerListingLocation>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)core\</ObjectFileName>
@@ -89,7 +81,7 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)debug\</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)debug\</XMLDocumentationFileName>
     </ClCompile>
-    <ClCompile Include="src\Engine_Time.cpp" />
+    <ClCompile Include="src\eTime.cpp" />
     <ClCompile Include="src\GameObject.cpp" />
     <ClCompile Include="src\graphics\BaseRenderer.cpp">
       <AssemblerListingLocation Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)graphics\</AssemblerListingLocation>
@@ -475,7 +467,6 @@
     <ClInclude Include="src\CameraMovement.h" />
     <ClInclude Include="src\Component.h" />
     <ClInclude Include="src\core\Context.h" />
-    <ClInclude Include="src\core\Core.h" />
     <ClInclude Include="src\core\Dictionary.h" />
     <ClInclude Include="src\core\glfw.h" />
     <ClInclude Include="src\core\NamedObject.h" />
@@ -484,7 +475,7 @@
     <ClInclude Include="src\core\String.h" />
     <ClInclude Include="src\core\Types.h" />
     <ClInclude Include="src\debug\Debug.h" />
-    <ClInclude Include="src\Engine_Time.h" />
+    <ClInclude Include="src\eTime.h" />
     <ClInclude Include="src\GameObject.h" />
     <ClInclude Include="src\graphics\BaseRenderer.h" />
     <ClInclude Include="src\graphics\BufferLayout.h" />
@@ -493,7 +484,6 @@
     <ClInclude Include="src\graphics\Context.h" />
     <ClInclude Include="src\graphics\FrameBuffer.h" />
     <ClInclude Include="src\graphics\GLData.h" />
-    <ClInclude Include="src\graphics\GLType.h" />
     <ClInclude Include="src\graphics\Camera.h" />
     <ClInclude Include="src\graphics\DefaultRenderer.h" />
     <ClInclude Include="src\graphics\Graphics.h" />
@@ -546,7 +536,6 @@
     <ClInclude Include="src\utilities\WavefrontParser.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="src\core\Core.inl" />
     <None Include="src\core\Dictionary.inl" />
     <None Include="src\GameObject.inl" />
     <None Include="src\graphics\BufferLayout.inl" />

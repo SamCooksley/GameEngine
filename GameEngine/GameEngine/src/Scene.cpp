@@ -2,8 +2,8 @@
 
 #include "Scene.h"
 
-namespace engine
-{
+namespace engine {
+
   Scene::Scene()
   { }
 
@@ -24,7 +24,7 @@ namespace engine
   void Scene::Init()
   { }
 
-  void Scene::Add(std::shared_ptr<GameObject> _gameObject)
+  void Scene::Add(const std::shared_ptr<GameObject> & _gameObject)
   {
     m_gameObjects.push_back(_gameObject);
   }
@@ -54,4 +54,5 @@ namespace engine
       go->Render(_renderer);
     }
   }
-}
+
+} // engine

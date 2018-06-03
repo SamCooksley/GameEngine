@@ -3,19 +3,19 @@
 
 #include "Component.h"
 
-namespace engine
-{
+namespace engine {
+
   class CameraMovement : public Component
   {
-  public:
+   public:
     CameraMovement();
     ~CameraMovement();
 
-  protected:
+   protected:
     void OnStart() override;
     void OnUpdate() override;
 
-  private:
+   private:
     float m_moveSpeed;
     float m_rotationSpeed;
 
@@ -23,6 +23,7 @@ namespace engine
 
     glm::vec2 m_prevMouse;
   };
-}
+
+} // engine
 
 #endif //_ENGINE_CAMERAMOVEMENT_H_

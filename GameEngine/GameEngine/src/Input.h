@@ -1,13 +1,11 @@
 #ifndef _ENGINE_INPUT_H_
 #define _ENGINE_INPUT_H_
 
-#include "glm\glm.hpp"
-
 #include "KeyCode.h"
 
-namespace engine
-{
-  namespace core { class glfw; }
+namespace engine {
+
+  class glfw;
 
   enum class CursorMode
   {
@@ -19,13 +17,13 @@ namespace engine
   class Input
   {
     friend class Application;
-    friend class core::glfw;
+    friend class glfw;
 
-  private:
+   private:
     using KeyList = std::vector<KeyCode::Key>;
     using ButtonList = std::vector<MouseButton::Button>;
 
-  public:
+   public:
     Input() = delete;
 
     static bool getKey(KeyCode::Key _key);    
@@ -48,7 +46,7 @@ namespace engine
 
     static void setCursorMode(CursorMode _mode);
 
-  private:
+   private:
     static void PressKey(KeyCode::Key _key);
     static void ReleaseKey(KeyCode::Key _key);
 
@@ -60,7 +58,8 @@ namespace engine
     static void Reset();
 
     static void Init();
-
+ 
+   private:
     static KeyList s_keys;
     static KeyList s_keysDown;
     static KeyList s_keysUp;
@@ -73,6 +72,7 @@ namespace engine
 
     static CursorMode s_cursorMode;
   };
-}
+
+} // engine
 
 #endif //_ENGINE_INPUT_H_

@@ -5,29 +5,28 @@
 #include "opengl.h"
 #include "TextureTypes.h"
 
-namespace engine
-{
-  namespace graphics
+namespace engine {
+namespace graphics {
+
+  class RenderBuffer
   {
-    class RenderBuffer
-    {
-      friend class FrameBuffer;
-
-    public:
-      RenderBuffer(uint _width, uint _height, TextureFormat _format);
-      ~RenderBuffer();
-
-      void Bind() const;
-      void Unbind() const;
-
-    private:
-      GLuint m_rb;
-
-      uint m_width, m_height;
-
-      TextureFormat m_format;
-    };
-  }
-}
+    friend class FrameBuffer;
+  
+   public:
+    RenderBuffer(uint _width, uint _height, TextureFormat _format);
+    ~RenderBuffer();
+  
+    void Bind() const;
+    void Unbind() const;
+  
+   private:
+    GLuint m_rb;
+  
+    uint m_width, m_height;
+  
+    TextureFormat m_format;
+  };
+  
+} } // engine::graphics
 
 #endif //_ENGINE_GRAPHICS_RENDERBUFFER_H_

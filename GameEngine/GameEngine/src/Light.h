@@ -2,14 +2,13 @@
 #define _ENGINE_LIGHT_H_
 
 #include "Component.h"
-
 #include "graphics\Light.h"
 
-namespace engine
-{
+namespace engine {
+
   class Light : public Component
   {
-  public:
+   public:
     Light();
     ~Light();
 
@@ -23,16 +22,17 @@ namespace engine
 
     void setSpot(float _cutoff, float _outerCutoff, float _linear, float _quadratic);
 
-  protected:
+   protected:
     void OnAwake() override;
     void OnRender(graphics::Renderer & _renderer) override;
 
-  private:
+   private:
     graphics::Light m_light;
 
     float m_cutoffAngle;
     float m_outerCuttofAngle;
   };
-}
+
+} // engine
 
 #endif //_ENGINE_LIGHT_H_

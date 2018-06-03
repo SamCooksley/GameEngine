@@ -7,11 +7,10 @@
 #include "graphics\Graphics.h"
 
 #include "Screen.h"
-
 #include "Application.h"
 
-namespace engine
-{
+namespace engine {
+
   Camera::Camera()
   { }
 
@@ -189,4 +188,5 @@ namespace engine
       else { ++i; }
     }
   }
-}
+
+} // engine

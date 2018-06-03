@@ -3,17 +3,18 @@
 
 #include "Scene.h"
 
-namespace engine
-{
+namespace engine {
+
   class TestScene : public Scene
   {
-  public:
+   public:
     TestScene();
     ~TestScene();
 
-  protected:
+   protected:
     void Init() override;
   };
-}
+
+} // engine
 
 #endif //_ENGINE_TESTSCENE_H_

@@ -8,26 +8,25 @@
 
 #include "mesh\skybox.h"
 
-namespace engine
-{
-  namespace graphics
-  {
-    class Skybox 
-    {
-    public:
-      Skybox(
-        std::shared_ptr<Material> _material,
-        std::shared_ptr<Mesh> _mesh = mesh::Skybox().getMesh()
-      );
-      ~Skybox();
-      
-      void Render(const Camera & _camera);
+namespace engine {
+namespace graphics {
 
-    private:
-      std::shared_ptr<Material> m_material;
-      std::shared_ptr<Mesh> m_mesh;
-    };
-  }
-}
+  class Skybox 
+  {
+   public:
+    Skybox(
+      const std::shared_ptr<Material> & _material,
+      const std::shared_ptr<Mesh> & _mesh = mesh::Skybox().getMesh()
+    );
+    ~Skybox();
+    
+    void Render(const Camera & _camera);
+  
+   private:
+    std::shared_ptr<Material> m_material;
+    std::shared_ptr<Mesh> m_mesh;
+  };
+
+} } // engine::graphics
 
 #endif //_ENGINE_GRAPHICS_SKYBOX_H_

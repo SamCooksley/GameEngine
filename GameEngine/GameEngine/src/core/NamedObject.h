@@ -3,21 +3,22 @@
 
 #include "String.h"
 
-namespace engine
-{
+namespace engine {
+
   class NamedObject
   {
-  public:
+   public:
     NamedObject() = default;
-    NamedObject(std::string _name);
+    NamedObject(const String & _name);
     virtual ~NamedObject() = default;
-
-    void setName(std::string _name);
-    const std::string & getName() const;
-
-  private:
-    std::string m_name;
+  
+    void setName(const String & _name);
+    const String & getName() const;
+  
+   private:
+    String m_name;
   };
-}
+
+} // engine
 
 #endif //_ENGINE_CORE_NAMEDOBJECT_H_

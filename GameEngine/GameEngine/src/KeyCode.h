@@ -1,12 +1,14 @@
 #ifndef _ENGINE_KEYCODE_H_
 #define _ENGINE_KEYCODE_H_
 
-namespace engine
-{
+#include "core\Types.h"
+
+namespace engine {
+
   class KeyCode
   {
-  public:
-    using Key = int;
+   public:
+    using Key = uint;
 
     static const Key
       _0, _1, _2, _3, _4, _5, _6, _7, _8, _9,
@@ -40,13 +42,14 @@ namespace engine
 
   class MouseButton
   {
-  public:
-    using Button = int;
+   public:
+    using Button = uint;
 
     static const Button
       LEFT, RIGHT, MIDDLE,
       _1, _2;
   };
-}
+
+} // engine
 
 #endif //_ENGINE_KEYCODE_H_

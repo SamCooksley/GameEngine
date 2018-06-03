@@ -2,10 +2,7 @@
 
 #include "ShaderUniform.h"
 
-namespace engine
-{
-  namespace graphics
-  {
+namespace engine {
+namespace graphics {
    
-  }
-}
+} } // engine::graphics

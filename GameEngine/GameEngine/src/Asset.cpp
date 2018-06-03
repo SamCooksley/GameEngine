@@ -2,7 +2,6 @@
 
 #include "Asset.h"
 
-namespace engine
-{
+namespace engine {
 
-}
+} // engine

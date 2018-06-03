@@ -5,26 +5,25 @@
 
 #include "FrameBuffer.h"
 
-namespace engine
-{
-  namespace graphics
+namespace engine {
+namespace graphics {
+
+  class DefaultRenderer : public BaseRenderer
   {
-    class DefaultRenderer : public BaseRenderer
-    {
-    public:
-      DefaultRenderer();
-      ~DefaultRenderer();
+  public:
+    DefaultRenderer();
+    ~DefaultRenderer();
+  
+    void Render() override;
+  
+  private:
+    void CreateGBuffer(uint _width, uint _height);
+  
+    std::unique_ptr<FrameBuffer> m_gBuffer;
+  
+    std::shared_ptr<Material> m_differedMat;
+  };
 
-      void Render() override;
-
-    private:
-      void CreateGBuffer(uint _width, uint _height);
-
-      std::unique_ptr<FrameBuffer> m_gBuffer;
-
-      std::shared_ptr<Material> m_differedMat;
-    };
-  }
-}
+} } // engine::graphics
 
 #endif //_ENGINE_GRAPHICS_DEFAULTRENDERER_H_

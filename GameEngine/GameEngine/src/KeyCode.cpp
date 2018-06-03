@@ -4,8 +4,8 @@
 
 #include "glfw\glfw3.h"
 
-namespace engine
-{
+namespace engine {
+
   const KeyCode::Key KeyCode::_0 = GLFW_KEY_0;
   const KeyCode::Key KeyCode::_1 = GLFW_KEY_1;
   const KeyCode::Key KeyCode::_2 = GLFW_KEY_2;
@@ -126,4 +126,5 @@ namespace engine
   const MouseButton::Button MouseButton::MIDDLE = GLFW_MOUSE_BUTTON_MIDDLE;
   const MouseButton::Button MouseButton::_1 = GLFW_MOUSE_BUTTON_4;
   const MouseButton::Button MouseButton::_2 = GLFW_MOUSE_BUTTON_5;
-}
+
+} // engine

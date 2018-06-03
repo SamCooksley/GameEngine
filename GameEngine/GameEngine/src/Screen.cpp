@@ -4,8 +4,8 @@
 
 #include "Application.h"
 
-namespace engine
-{
+namespace engine {
+
   uint Screen::getWidth()
   {
     return Application::s_context->window->getWidth();
@@ -15,4 +15,5 @@ namespace engine
   {
     return Application::s_context->window->getHeight();
   }
-}
+
+} // engine

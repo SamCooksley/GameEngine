@@ -2,8 +2,8 @@
 
 #include "Bounds.h"
 
-namespace engine
-{
+namespace engine {
+
   Bounds::Bounds()
   { }
 
@@ -78,4 +78,5 @@ namespace engine
       glm::max(xmin, xmax) + glm::max(ymin, ymax) + glm::max(zmin, zmax) + trs[3]
     );
   }
-}
+
+} // engine

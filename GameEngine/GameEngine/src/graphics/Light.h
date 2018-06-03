@@ -3,10 +3,9 @@
 
 #include "core\Types.h"
 
-namespace engine
-{
-  namespace graphics
-  {
+namespace engine {
+namespace graphics {
+
     enum class LightType : int
     {
       None = -1,
@@ -17,7 +16,7 @@ namespace engine
 
     struct Light
     {
-    public:
+     public:
       LightType type;
       glm::vec3 position;
       glm::vec3 direction;
@@ -29,7 +28,7 @@ namespace engine
       float cutoff;
       float outerCutoff;
     };
-  }
-}
+
+} } // engine::graphics
 
 #endif //_ENGINE_GRAPHICS_LIGHT_H_

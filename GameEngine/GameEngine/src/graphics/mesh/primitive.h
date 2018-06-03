@@ -3,22 +3,18 @@
 
 #include "../Mesh.h"
 
-namespace engine
-{
-  namespace graphics
-  {
-    namespace mesh
-    {
-      class Primitive
-      {
-      public:
-        const std::shared_ptr<Mesh> & getMesh() const;
+namespace engine {
+namespace graphics {
+namespace mesh {
 
-      protected:
-        std::shared_ptr<Mesh> m_mesh;
-      };
-    }
-  }
-}
+  class Primitive
+  {
+   public:
+    const std::shared_ptr<Mesh> & getMesh() const;
+   protected:
+    std::shared_ptr<Mesh> m_mesh;  
+  };
+    
+} } } // engine::graphics::mesh
 
 #endif //_ENGINE_GRAPHICS_MESH_PRIMITIVE_H_

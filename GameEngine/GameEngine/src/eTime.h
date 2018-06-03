@@ -1,15 +1,16 @@
 #ifndef _ENGINE_TIME_H_
 #define _ENGINE_TIME_H_
 
-namespace engine
-{
+namespace engine {
+
   class Time
   {
-  public:
+   public:
     Time() = delete;
 
     static float getDeltaTime();
   };
-}
+
+} // engine
 
 #endif //_ENGINE_TIME_H_

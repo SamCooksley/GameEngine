@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#include "mesh_skybox.h"
+#include "skybox.h"
 
 namespace engine
 {

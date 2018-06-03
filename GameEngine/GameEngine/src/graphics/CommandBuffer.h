@@ -4,7 +4,7 @@
 #include "Mesh.h"
 #include "Material.h"
 
-#include "Graphics_Camera.h"
+#include "Camera.h"
 
 namespace engine
 {

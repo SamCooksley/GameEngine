@@ -8,6 +8,8 @@
 
 #include "Screen.h"
 
+#include "Application.h"
+
 namespace engine
 {
   Camera::Camera()
@@ -24,15 +26,15 @@ namespace engine
 
     if (!m_renderer)
     {
-      m_renderer = Graphics::getDefaultRenderer();
+      m_renderer = Graphics::getContext().defaultRenderer;
     }
 
-    Graphics::AddCamera(Camera::getShared());
+    AddCamera(Camera::getShared());
   }
 
   void Camera::OnDestroy()
   {
-    Graphics::RemoveCamera(Camera::getShared());
+    RemoveCamera();
   }
 
   graphics::Camera Camera::getCamera() const
@@ -154,5 +156,37 @@ namespace engine
 
     setAspect(static_cast<float>(width) / static_cast<float>(height));
     GLCALL(glViewport(0, 0, width, height));
+  }
+
+  void Camera::AddCamera(const std::shared_ptr<Camera> & _camera)
+  {
+    if (!_camera) { return; }
+
+    auto & cameras = Application::s_context->cameras;
+
+    for (auto & cam : cameras)
+    {
+      if (cam.lock() == _camera)
+      {
+        return;
+      }
+    }
+
+    cameras.push_back(_camera);
+  }
+
+  void Camera::RemoveCamera()
+  {
+    auto & cameras = Application::s_context->cameras;
+
+    for (size_t i = 0; i < cameras.size();)
+    {
+      if (cameras[i].expired() || 
+          cameras[i].lock().get() == this)
+      {
+        cameras.erase(std::begin(cameras) + i);
+      }
+      else { ++i; }
+    }
   }
 }

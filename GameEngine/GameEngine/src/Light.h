@@ -3,7 +3,7 @@
 
 #include "Component.h"
 
-#include "graphics\Graphics_Light.h"
+#include "graphics\Light.h"
 
 namespace engine
 {

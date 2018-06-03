@@ -19,7 +19,9 @@ int main(int _argc, char** _argv)
   catch (std::exception & _e)
   {
     engine::debug::LogError(_e.what());
+
     std::cin.get();
   }
+
   return 0;
 }

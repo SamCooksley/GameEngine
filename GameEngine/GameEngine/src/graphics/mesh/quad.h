@@ -1,7 +1,7 @@
 #ifndef _ENGINE_GRAPHICS_MESH_QUAD_H_
 #define _ENGINE_GRAPHICS_MESH_QUAD_H_
 
-#include "mesh_primitive.h"
+#include "primitive.h"
 
 namespace engine
 {

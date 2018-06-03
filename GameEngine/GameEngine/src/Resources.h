@@ -14,6 +14,8 @@ namespace engine
 
     template <class T>
     static std::shared_ptr<T> Load(const std::string & _path);    
+
+    static void Clear();
   };
 }
 

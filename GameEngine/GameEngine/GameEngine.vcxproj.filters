@@ -156,9 +156,6 @@
     <ClCompile Include="src\Camera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\graphics\Graphics_Camera.cpp">
-      <Filter>Source Files\graphics</Filter>
-    </ClCompile>
     <ClCompile Include="src\CameraMovement.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -222,15 +219,6 @@
     <ClCompile Include="src\graphics\RenderBuffer.cpp">
       <Filter>Source Files\graphics</Filter>
     </ClCompile>
-    <ClCompile Include="src\graphics\mesh\mesh_skybox.cpp">
-      <Filter>Source Files\graphics\mesh</Filter>
-    </ClCompile>
-    <ClCompile Include="src\graphics\mesh\mesh_primitive.cpp">
-      <Filter>Source Files\graphics\mesh</Filter>
-    </ClCompile>
-    <ClCompile Include="src\graphics\mesh\mesh_quad.cpp">
-      <Filter>Source Files\graphics\mesh</Filter>
-    </ClCompile>
     <ClCompile Include="src\graphics\BufferLayout.cpp">
       <Filter>Source Files\graphics</Filter>
     </ClCompile>
@@ -257,6 +245,24 @@
     </ClCompile>
     <ClCompile Include="src\Bounds.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\graphics\Context.cpp">
+      <Filter>Source Files\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\core\Context.cpp">
+      <Filter>Source Files\core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\graphics\mesh\primitive.cpp">
+      <Filter>Source Files\graphics\mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="src\graphics\mesh\quad.cpp">
+      <Filter>Source Files\graphics\mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="src\graphics\mesh\skybox.cpp">
+      <Filter>Source Files\graphics\mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="src\graphics\Camera.cpp">
+      <Filter>Source Files\graphics</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -377,9 +383,6 @@
     <ClInclude Include="src\Camera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\graphics\Graphics_Camera.h">
-      <Filter>Header Files\graphics</Filter>
-    </ClInclude>
     <ClInclude Include="src\CameraMovement.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -406,9 +409,6 @@
     </ClInclude>
     <ClInclude Include="src\Light.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\graphics\Graphics_Light.h">
-      <Filter>Header Files\graphics</Filter>
     </ClInclude>
     <ClInclude Include="src\utilities\MeshProcessor.h">
       <Filter>Header Files\utilities</Filter>
@@ -446,15 +446,6 @@
     <ClInclude Include="src\graphics\RenderBuffer.h">
       <Filter>Header Files\graphics</Filter>
     </ClInclude>
-    <ClInclude Include="src\graphics\mesh\mesh_skybox.h">
-      <Filter>Header Files\graphics\mesh</Filter>
-    </ClInclude>
-    <ClInclude Include="src\graphics\mesh\mesh_primitive.h">
-      <Filter>Header Files\graphics\mesh</Filter>
-    </ClInclude>
-    <ClInclude Include="src\graphics\mesh\mesh_quad.h">
-      <Filter>Header Files\graphics\mesh</Filter>
-    </ClInclude>
     <ClInclude Include="src\graphics\BufferLayout.h">
       <Filter>Header Files\graphics</Filter>
     </ClInclude>
@@ -484,6 +475,24 @@
     </ClInclude>
     <ClInclude Include="src\Bounds.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\graphics\Context.h">
+      <Filter>Header Files\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\graphics\mesh\primitive.h">
+      <Filter>Header Files\graphics\mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="src\graphics\mesh\quad.h">
+      <Filter>Header Files\graphics\mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="src\graphics\mesh\skybox.h">
+      <Filter>Header Files\graphics\mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="src\graphics\Camera.h">
+      <Filter>Header Files\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\graphics\Light.h">
+      <Filter>Header Files\graphics</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

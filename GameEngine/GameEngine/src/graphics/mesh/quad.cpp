@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#include "mesh_quad.h"
+#include "quad.h"
 
 namespace engine
 {

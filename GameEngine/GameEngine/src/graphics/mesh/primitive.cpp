@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#include "mesh_primitive.h"
+#include "primitive.h"
 
 namespace engine
 {

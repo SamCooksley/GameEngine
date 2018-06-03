@@ -142,7 +142,7 @@ namespace engine
       static const std::array<std::string, COUNT> s_names;
     };
 
-    class GLData
+    class GLData : public NonCopyable
     {
     public:
       GLData();

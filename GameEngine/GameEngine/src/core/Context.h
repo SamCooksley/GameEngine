@@ -11,6 +11,8 @@
 
 #include "utilities\Timer.h"
 
+#include "Camera.h"
+
 #include "Asset.h"
 
 namespace engine
@@ -47,9 +49,13 @@ namespace engine
       std::shared_ptr<Scene> scene;
       std::shared_ptr<Scene> nextScene;
 
-      graphics::Context graphics;
+      std::unique_ptr<graphics::Context> graphics;
+
+      std::vector<std::weak_ptr<Camera>> cameras;
     };
   }
+
+  void Destroy(std::unique_ptr<core::Context> & _context);
 }
 
 #endif //_ENGINE_CORE_CONTEXT_H_

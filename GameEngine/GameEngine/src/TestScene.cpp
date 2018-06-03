@@ -11,7 +11,7 @@
 
 #include "LoadObjects.h"
 
-#include "graphics\mesh\mesh_quad.h"
+#include "graphics\mesh\quad.h"
 
 namespace engine
 {
@@ -53,7 +53,7 @@ namespace engine
     material->setTexture("normal", graphics::Texture2D::Load("resources/textures/stone_wall_2/normal.jpg"));
     material->setTexture("specular", graphics::Texture2D::Load("resources/textures/stone_wall_2/specular.jpg"));
     material->setTexture("displacement", graphics::Texture2D::Load("resources/textures/stone_wall_2/displacement.jpg"));
-    material->setUniform("displacementScale", 0.1f);
+    material->setUniform("displacementScale", 0.2f);
     go = GameObject::Instantiate();
 
     mr = go->AddComponent<MeshRenderer>();
@@ -96,9 +96,6 @@ namespace engine
 
     go->getComponent<Transform>()->setPosition(glm::vec3(0.5f, 1.f, -2.f)).setRotation(glm::quat(glm::radians(glm::vec3(90.f, 0.f, 0.f))));
 
-    
-
-
     go = GameObject::Instantiate();
 
     auto light = go->AddComponent<Light>();
@@ -111,7 +108,7 @@ namespace engine
     mr = go->AddComponent<MeshRenderer>();
     mr->setMesh(mesh);
 
-    auto sponza = Load("resources/sponza/sponza.obj");
-    sponza->getComponent<Transform>()->setLocalScale(glm::vec3(0.01f));
+    //auto sponza = Load("resources/sponza/sponza.obj");
+    //sponza->getComponent<Transform>()->setLocalScale(glm::vec3(0.01f));
   }
 }

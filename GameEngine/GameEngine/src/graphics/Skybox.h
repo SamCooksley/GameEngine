@@ -4,9 +4,9 @@
 #include "Mesh.h"
 #include "Material.h"
 
-#include "Graphics_Camera.h"
+#include "Camera.h"
 
-#include "mesh\mesh_skybox.h"
+#include "mesh\skybox.h"
 
 namespace engine
 {

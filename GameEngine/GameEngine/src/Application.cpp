@@ -37,7 +37,7 @@ namespace engine
     s_context->glfwContext.reset(new core::glfw());
 
     s_context->window.reset(new graphics::Window("Engine", 640, 480));
-    s_context->window->setVsync(false);
+    s_context->window->setVsync(true);
 
     s_context->targetFrameTime = 1.f / 60.f;
     s_context->maxUpdatesPerFrame = 5;
@@ -55,49 +55,49 @@ namespace engine
     debug::Log("OpenGL version: " + std::string(reinterpret_cast<const char*>(glGetString(GL_VERSION))));
     debug::Log("GLSL version: " + std::string(reinterpret_cast<const char*>(glGetString(GL_SHADING_LANGUAGE_VERSION))));
  
-    s_context->graphics.glData = std::make_unique<graphics::GLData>();
+    s_context->graphics = std::make_unique<graphics::Context>();
 
     //uniform buffers
     {
       auto camera = std::make_unique<graphics::CameraBuffer>();
-      s_context->graphics.uniformBuffers.Add(std::move(camera));
+      s_context->graphics->uniformBuffers.Add(std::move(camera));
 
       auto lights = std::make_unique<graphics::LightBuffer>();
-      s_context->graphics.uniformBuffers.Add(std::move(lights));
+      s_context->graphics->uniformBuffers.Add(std::move(lights));
     }
-    s_context->graphics.errorShader = Resources::Load<graphics::Shader>("resources/shaders/error.shader");
+    s_context->graphics->errorShader = Resources::Load<graphics::Shader>("resources/shaders/error.shader");
 
 
-    s_context->graphics.defaultRenderer = std::make_shared<graphics::DefaultRenderer>();
-    s_context->graphics.defaultRenderer->setAmbient(glm::vec3(0.1f));
+    s_context->graphics->defaultRenderer = std::make_shared<graphics::DefaultRenderer>();
+    s_context->graphics->defaultRenderer->setAmbient(glm::vec3(0.1f));
 
     
     auto defaultShader = Resources::Load<graphics::Shader>("resources/shaders/default.shader");
-    s_context->graphics.defaultMaterial = graphics::Material::Create(defaultShader);
+    s_context->graphics->defaultMaterial = graphics::Material::Create(defaultShader);
    
     auto texture = Resources::Load<graphics::Texture2D>("resources/textures/bricks/diffuse.png");
     auto diffuse = texture;
     //texture = Resources::Load<graphics::Texture2D>("resources/textures/bricks/diffuse.png");
-    s_context->graphics.defaultMaterial->setTexture("diffuse", texture);
+    s_context->graphics->defaultMaterial->setTexture("diffuse", texture);
 
     texture = Resources::Load<graphics::Texture2D>("resources/textures/bricks/normal.png");
-    s_context->graphics.defaultMaterial->setTexture("normal", texture);
+    s_context->graphics->defaultMaterial->setTexture("normal", texture);
 
     //texture = Resources::Load<graphics::Texture2D>("resources/textures/bricks/roughness.jpg");
     texture = Resources::Load<graphics::Texture2D>("resources/textures/bricks/specular.png");
-    s_context->graphics.defaultMaterial->setTexture("specular", texture);
+    s_context->graphics->defaultMaterial->setTexture("specular", texture);
 
     //texture = Resources::Load<graphics::Texture2D>("resources/textures/bricks/displacement.png");
     //texture = Resources::Load<graphics::Texture2D>("resources/textures/bricks/displacement.png");
     texture = graphics::Texture2D::Create(64, 64, glm::vec4(0.f));
-    s_context->graphics.defaultMaterial->setTexture("displacement", texture);
+    s_context->graphics->defaultMaterial->setTexture("displacement", texture);
 
     texture = graphics::Texture2D::Create(64, 64, glm::vec4(1.f));
-    s_context->graphics.defaultMaterial->setTexture("opacity", texture);
+    s_context->graphics->defaultMaterial->setTexture("opacity", texture);
 
-    s_context->graphics.defaultMaterial->setUniform("displacementScale", 0.01f);
-
-    s_context->graphics.defaultMaterial->setUniform("shininess", 5.f);
+    s_context->graphics->defaultMaterial->setUniform("displacementScale", 0.01f);
+        
+    s_context->graphics->defaultMaterial->setUniform("shininess", 5.f);
     
     auto skyboxShader = Resources::Load<graphics::Shader>("resources/shaders/skybox.shader");
     auto skyboxMaterial = graphics::Material::Create(skyboxShader);
@@ -113,7 +113,7 @@ namespace engine
 
     //auto inverseCube = Resources::Load<graphics::Mesh>("resources/models/skybox.obj");
     auto skybox = std::make_shared<graphics::Skybox>(skyboxMaterial);
-    s_context->graphics.defaultRenderer->setSkybox(skybox);
+    s_context->graphics->defaultRenderer->setSkybox(skybox);
   }
 
   void Application::Loop()
@@ -129,7 +129,14 @@ namespace engine
 
   void Application::Exit()
   {
-    s_context.release();
+    //destroy scene
+    s_context->nextScene = nullptr;
+    ChangeScene();
+
+    Resources::Clear();
+
+    Destroy(s_context->graphics);
+    Destroy(s_context);
   }
 
   void Application::Quit()
@@ -144,6 +151,7 @@ namespace engine
       //utilities::Sleep(uint((s_context->targetFrameTime - s_context->deltaTime) * 1000.0f));
     }
     //s_context->totalDeltaTime += s_context->frameTime.getSeconds();
+    s_context->deltaTime = s_context->frameTime.getSeconds();
     s_context->frameTime.Reset();
 
     if (s_context->nextScene)
@@ -151,7 +159,7 @@ namespace engine
       ChangeScene();
     }
 
-    s_context->deltaTime = s_context->targetFrameTime;
+    //s_context->deltaTime = s_context->targetFrameTime;
     
     /*int count = 0;
     while (s_context->totalDeltaTime >= s_context->targetFrameTime)
@@ -187,20 +195,15 @@ namespace engine
   {
     GLCALL(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
 
-    if (s_context->graphics.cameras.empty())
+    if (s_context->cameras.empty())
     {
       debug::LogError("Camera Error: no cameras in scene");
     }
 
-    for (auto & cam : s_context->graphics.cameras)
+    for (auto & cam : s_context->cameras)
     {
       auto camera = cam.lock();
-      if (!camera)
-      {
-        debug::LogError("Camera Error: destroyed camera in camera list");
-        Graphics::RemoveCamera(nullptr);
-        continue;
-      }
+      assert(camera);
 
       if (!camera->getEnabled())
       {
@@ -229,6 +232,9 @@ namespace engine
     s_context->scene = std::move(s_context->nextScene);
     s_context->nextScene = nullptr;
 
-    s_context->scene->Init();
+    if (s_context->scene)
+    {
+      s_context->scene->Init();
+    }
   }
 }

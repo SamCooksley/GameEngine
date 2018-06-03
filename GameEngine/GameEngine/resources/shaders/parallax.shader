@@ -1,7 +1,7 @@
 vec2 ParallaxMapping(const vec2 _texCoords, const vec3 _viewDir, const float _scale, const sampler2D _parallax)
 { 
-    const float minLayers = 8.0;
-	const float maxLayers = 32.0;
+    const float minLayers = 64.0;
+	const float maxLayers = 256.0;
 	float t = clamp(abs(dot(vec3(0.0, 0.0, 1.0), _viewDir)), 0.0, 1.0);
 	float layerCount = mix(maxLayers, minLayers, t);  
     

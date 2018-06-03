@@ -1,12 +1,11 @@
 #ifndef _ENGINE_GRAPHICS_RENDERER_H_
 #define _ENGINE_GRAPHICS_RENDERER_H_
 
-#include "Graphics_Camera.h"
+#include "Camera.h"
+#include "Light.h"
 
 #include "Mesh.h"
 #include "Material.h"
-
-#include "Graphics_Light.h"
 
 namespace engine
 {

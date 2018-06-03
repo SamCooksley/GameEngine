@@ -1,7 +1,7 @@
 #ifndef _ENGINE_GRAPHICS_LIGHTBUFFER_H_
 #define _ENGINE_GRAPHICS_LIGHTBUFFER_H_
 
-#include "Graphics_Light.h"
+#include "Light.h"
 
 #include "UniformBuffer.h"
 

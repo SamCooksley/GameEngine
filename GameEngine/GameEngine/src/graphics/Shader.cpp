@@ -577,6 +577,8 @@ namespace engine
 
     void Shader::AddShader(const std::shared_ptr<Shader> & _shader)
     {
+      if (!_shader) { return; }
+
       auto & shaders = Graphics::getContext().shaders;
 
       for (size_t i = 0u; i < shaders.size(); ++i)
@@ -598,7 +600,6 @@ namespace engine
         if (shaders[i].expired() ||
             shaders[i].lock().get() == this)
         {
-          debug::Log("Delete");
           shaders.erase(shaders.begin() + i);
         }
         else { ++i; }

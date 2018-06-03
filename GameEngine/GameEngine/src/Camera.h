@@ -3,7 +3,7 @@
 
 #include "Component.h"
 
-#include "graphics\Graphics_Camera.h"
+#include "graphics\Camera.h"
 
 #include "graphics\BaseRenderer.h"
 
@@ -50,6 +50,9 @@ namespace engine
     void UpdateProjection();
 
     void SetupRender();
+
+    static void AddCamera(const std::shared_ptr<Camera> & _camera);
+    void RemoveCamera();
 
     CameraType m_type;
 

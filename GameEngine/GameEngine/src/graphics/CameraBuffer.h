@@ -1,7 +1,7 @@
 #ifndef _ENGINE_GRAPHICS_CAMERABUFFER_H_
 #define _ENGINE_GRAPHICS_CAMERABUFFER_H_
 
-#include "Graphics_Camera.h"
+#include "Camera.h"
 
 #include "UniformBuffer.h"
 

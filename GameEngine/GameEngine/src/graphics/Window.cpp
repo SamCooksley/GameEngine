@@ -45,7 +45,6 @@ namespace engine
 
     Window::~Window()
     {
-      debug::Log("Destroy");
       glfwDestroyWindow(m_window);
       m_window = nullptr;
       m_width = m_height = 0;

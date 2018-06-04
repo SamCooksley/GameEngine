@@ -18,6 +18,8 @@ namespace graphics {
   
     void Bind() const;
     void Unbind() const;
+
+    void Resize(uint _width, uint _height);
   
    private:
     GLuint m_rb;

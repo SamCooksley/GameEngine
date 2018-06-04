@@ -1,3 +1,5 @@
+#queue deferred
+
 #shader vertex
 #version 430 core
 
@@ -25,7 +27,7 @@ uniform mat4 model;
 
 void main()
 {
-	vec4 world = model * vec4(in_position, 1.0);
+    vec4 world = model * vec4(in_position, 1.0);
 	vs_out.position_world = world.xyz;
 	gl_Position = camera.vp * world;
 	vs_out.texCoords = in_texCoords;
@@ -60,11 +62,11 @@ in VS_OUT
 	vec3 view_position_tan;
 } fs_in;
 
-layout (location = 0) out vec4 out_frag;
+layout (location = 0) out vec4 out_position;
+layout (location = 1) out vec4 out_normal;
+layout (location = 2) out vec4 out_colour;
 
-#include "lights.shader"
 #include "parallax.shader"
-
 #include "camera.shader"
 
 uniform sampler2D diffuse;
@@ -78,41 +80,24 @@ uniform float shininess = 2;
 
 void main()
 {
-	vec3 viewDir_world = normalize(camera.position_world - fs_in.position_world);
-
-	vec3 viewDir_tan = -normalize(fs_in.view_position_tan - fs_in.position_tan);
-
+    vec3 viewDir_tan = -normalize(fs_in.view_position_tan - fs_in.position_tan);
 	vec2 texCoords = ParallaxMapping(fs_in.texCoords, viewDir_tan, displacementScale, displacement);
 
-
-	if (texCoords.x < 0.0 || texCoords.x > 1.0 ||
-	texCoords.y < 0.0 || texCoords.y > 1.0)
-	{
-		//discard;
-	}
-
-	if (texture(opacity, texCoords).r < 0.1)
+    if (texture(opacity, texCoords).r < 0.1)
 	{
 		discard;
 	}
 
-	Surface surf;
-	surf.position = fs_in.position_world;
+    out_position.xyz = fs_in.position_world;
+    out_position.w = 0.0;
 
-	surf.normal = texture(normal, texCoords).rgb;
-	surf.normal = surf.normal * 2.0 - 1.0;
-	surf.normal = normalize(fs_in.tbn * surf.normal);
+    vec3 norm = texture(normal, texCoords).rgb;
+	norm = norm * 2.0 - 1.0;
+	norm = normalize(fs_in.tbn * norm);
 
-	surf.colour = texture(diffuse, texCoords).rgb;
-	surf.specular = texture(specular, texCoords).r;
-	surf.shininess = shininess;
+    out_normal.xyz = norm;
+    out_normal.w = texture(specular, texCoords).r;
 
-	vec3 total = lights.ambient * surf.colour;
-
-	for (int i = 0; i < MAX_LIGHTS; ++i)
-	{
-		total += CalculateLight(lights.light[i], surf, viewDir_world);
-	}
-
-	out_frag = vec4(total, 1.0);
+    out_colour.rgb = texture(diffuse, texCoords).rgb;
+    out_colour.a = shininess;
 }

@@ -149,12 +149,14 @@ namespace engine {
 
   void Camera::SetupRender()
   {
-    uint width, height;
-    width = Screen::getWidth();
-    height = Screen::getHeight();
+    auto fb = Graphics::getContext().activeFrameBuffer.lock();
+
+    uint width = fb->getWidth();
+    uint height = fb->getHeight();
 
     setAspect(static_cast<float>(width) / static_cast<float>(height));
-    GLCALL(glViewport(0, 0, width, height));
+
+    m_renderer->Resize(width, height);
   }
 
   void Camera::AddCamera(const std::shared_ptr<Camera> & _camera)

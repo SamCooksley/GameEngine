@@ -29,4 +29,14 @@ namespace graphics {
     GLCALL(glBindRenderbuffer(GL_RENDERBUFFER, 0));
   }
 
+  void RenderBuffer::Resize(uint _width, uint _height)
+  {
+    if (_width == m_width && _height == m_height) { return; }
+
+    m_width = _width;
+    m_height = _height;
+
+    GLCALL(glRenderbufferStorage(GL_RENDERBUFFER, TextureFormatToOpenGL(m_format), m_width, m_height));
+  }
+
 } } // engine::graphics

@@ -18,6 +18,8 @@ namespace graphics {
     virtual void Bind(GLenum _unit) const = 0;
     virtual void Unbind(GLenum _unit) const = 0;
   
+    virtual void Resize(uint _width, uint _height) = 0;
+
    protected:
     Texture(TextureType _type);
   

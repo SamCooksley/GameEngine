@@ -25,6 +25,8 @@ namespace graphics {
     void Bind(GLenum _unit) const override;
     void Unbind(GLenum _uint) const override;
   
+    void Resize(uint _width, uint _height) override;
+
     void setWrap(TextureWrap _wrap);
     void setFilter(TextureFilter _filter);
   
@@ -38,6 +40,9 @@ namespace graphics {
    private:
     uint m_width, m_height;
   
+    TextureFormat m_format;
+    TextureDataType m_dataType;
+
     TextureWrap m_wrap;
     TextureFilter m_filter;
   };

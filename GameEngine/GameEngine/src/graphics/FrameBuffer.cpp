@@ -3,6 +3,7 @@
 #include "FrameBuffer.h"
 
 #include "Graphics.h"
+#include "Screen.h"
 
 namespace engine {
 namespace graphics {
@@ -37,15 +38,67 @@ namespace graphics {
   
     return FrameBufferAttachment::COLOUR;
   }
-  
-  FrameBuffer::FrameBuffer(uint _width, uint _height) :
+
+  GLenum FrameBufferBindToOpenGL(FrameBufferBind _bind)
+  {
+    return static_cast<GLenum>(_bind);
+  }
+
+  void FrameBuffer::BindDefault(FrameBufferBind _bind)
+  {
+    Graphics::getContext().defaultFrameBuffer->Bind(_bind);
+  }
+
+  void FrameBuffer::Blit(
+    int _srcX0, int _srcY0, int _srcX1, int _srcY1,
+    int _dstX0, int _dstY0, int _dstX1, int _dstY1,
+    GLenum _mask,
+    TextureFilter _filter
+  )
+  {
+    GLCALL(glBlitFramebuffer(_srcX0, _srcY0, _srcX1, _srcY1, _dstX0, _dstY0, _dstX1, _dstY1, _mask, TextureFilterToOpenGL(_filter)));
+  }
+
+  std::shared_ptr<FrameBuffer> FrameBuffer::Create(uint _width, uint _height)
+  {
+    class enable_fb : public FrameBuffer 
+    { 
+     public: 
+      enable_fb(uint _width, uint _height) : FrameBuffer(_width, _height) { } 
+    };
+    auto fb = std::make_shared<enable_fb>(_width, _height);
+    fb->Bind();
+    return fb;
+  }
+
+  std::shared_ptr<FrameBuffer> FrameBuffer::CreateDefault(uint _width, uint _height)
+  {
+    class enable_fb : public FrameBuffer
+    {
+     public:
+      enable_fb(uint _width, uint _height) : FrameBuffer(_width, _height, true) { }
+    };
+    auto fb = std::make_shared<enable_fb>(_width, _height);
+    fb->Bind();
+    return fb;
+  }
+
+  FrameBuffer::FrameBuffer(uint _width, uint _height, bool _default) :
     m_fbo(0),
     m_clearColour(0.f, 0.f, 0.f, 1.f),
     m_clearFlags(0),
     m_width(_width), m_height(_height),
     m_colourAttachmentCount(0)
   {
-    GLCALL(glGenFramebuffers(1, &m_fbo));
+    if (!_default)
+    {
+      GLCALL(glGenFramebuffers(1, &m_fbo));
+    }
+    else
+    {
+      assert(!Graphics::getContext().defaultFrameBuffer && "Default framebuffer already exists");
+      m_clearFlags = BufferBit::COLOUR | BufferBit::DEPTH;
+    }
   }
   
   FrameBuffer::~FrameBuffer()
@@ -53,15 +106,18 @@ namespace graphics {
     GLCALL(glDeleteFramebuffers(1, &m_fbo));
   }
   
-  void FrameBuffer::Bind()
+  void FrameBuffer::Bind(FrameBufferBind _bind)
   {
-    GLCALL(glBindFramebuffer(GL_FRAMEBUFFER, m_fbo));
+    GLCALL(glBindFramebuffer(FrameBufferBindToOpenGL(_bind), m_fbo));
     GLCALL(glViewport(0, 0, m_width, m_height));
+
+    Graphics::getContext().activeFrameBuffer = shared_from_this();
   }
   
   void FrameBuffer::Unbind()
   {
     GLCALL(glBindFramebuffer(GL_FRAMEBUFFER, 0));
+    Graphics::getContext().activeFrameBuffer = Graphics::getContext().defaultFrameBuffer;
   }
   
   void FrameBuffer::Clear()
@@ -69,9 +125,45 @@ namespace graphics {
     GLCALL(glClearColor(m_clearColour.r, m_clearColour.g, m_clearColour.b, m_clearColour.a));
     GLCALL(glClear(m_clearFlags));
   }
+
+  void FrameBuffer::Resize(uint _width, uint _height)
+  {
+    if (_width == m_width && _height == _height) { return; }
+
+    m_width = _width;
+    m_height = _height;
+
+    for (auto & tex : m_textures)
+    {
+      tex->Bind(0);
+      tex->Resize(m_width, m_height);
+    }
+
+    for (auto & rb : m_renderBuffers)
+    {
+      rb->Bind();
+      rb->Resize(m_width, m_height);
+    }
+  }
+
+  void FrameBuffer::RenderToNDC() const
+  {
+    Graphics::getContext().screenQuad->Render();
+  }
+
+  void FrameBuffer::Blit(FrameBuffer & _dst, GLenum _mask, TextureFilter _filter)
+  {
+    Blit(
+      0, 0, this->getWidth(), this->getHeight(),
+      0, 0, _dst.getWidth(), _dst.getHeight(), 
+      _mask, _filter
+    );
+  }
   
   std::shared_ptr<Texture2D> FrameBuffer::AddTexture(FrameBufferAttachment _attachment, TextureFormat _format, TextureDataType _type)
   {
+    assert(m_fbo != 0 && "Cannot attach items to default framebuffer");
+
     auto texture = Texture2D::Create(m_width, m_height, _format, _type);
     texture->setFilter(TextureFilter::LINEAR);
     texture->setWrap(TextureWrap::CLAMP_TO_EDGE);
@@ -91,11 +183,13 @@ namespace graphics {
   
     m_textures.push_back(texture);
   
-    return std::move(texture);
+    return texture;
   }
   
   std::shared_ptr<TextureCube> FrameBuffer::AddCubeMap(FrameBufferAttachment _attachment, TextureFormat _format, TextureDataType _type)
   {
+    assert(m_fbo != 0 && "Cannot attach items to default framebuffer");
+
     auto cube = std::make_shared<TextureCube>(m_width, m_height, _format, _type);
     cube->setFilter(TextureFilter::LINEAR);
   
@@ -113,11 +207,13 @@ namespace graphics {
   
     m_textures.push_back(cube);
   
-    return std::move(cube);
+    return cube;
   }
   
   bool FrameBuffer::AddRenderBuffer(FrameBufferAttachment _attachment, TextureFormat _format)
   {
+    assert(m_fbo != 0 && "Cannot attach items to default framebuffer");
+
     auto renderBuffer = std::make_unique<RenderBuffer>(m_width, m_height, _format);
   
     GLCALL(glFramebufferRenderbuffer(
@@ -158,19 +254,19 @@ namespace graphics {
   
       GLCALL(glDrawBuffers(buffers.size(), &buffers[0]));
   
-      m_clearFlags |= GL_COLOR_BUFFER_BIT;
+      m_clearFlags |= BufferBit::COLOUR;
     }
     else if (_attachment == FrameBufferAttachment::DEPTH)
     {
-      m_clearFlags |= GL_DEPTH_BUFFER_BIT;
+      m_clearFlags |= BufferBit::DEPTH;
     }
     else if (_attachment == FrameBufferAttachment::STENCIL)
     {
-      m_clearFlags |= GL_STENCIL_BUFFER_BIT;
+      m_clearFlags |= BufferBit::STENCIL;
     }
     else if (_attachment == FrameBufferAttachment::DEPTH_STENCIL)
     {
-      m_clearFlags |= GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT;
+      m_clearFlags |= BufferBit::DEPTH | BufferBit::STENCIL;
     }
   
     return Check();

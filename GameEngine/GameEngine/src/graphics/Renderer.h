@@ -35,6 +35,8 @@ namespace graphics {
     virtual void Add(const Light & _light);
   
     virtual void Render() = 0;
+
+    virtual void Resize(uint _width, uint _height);
   
    protected:
     Renderer(RenderFlags::Type _flags);

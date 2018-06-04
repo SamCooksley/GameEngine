@@ -27,4 +27,7 @@ namespace graphics {
   void Renderer::Add(const Light & _light)
   { }
 
+  void Renderer::Resize(uint _width, uint _height)
+  { }
+
 } } // engine::graphics

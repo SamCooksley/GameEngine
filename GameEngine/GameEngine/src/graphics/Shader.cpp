@@ -85,7 +85,7 @@ namespace graphics {
     catch (std::exception & _e)
     {
       debug::LogError(_e.what());
-      return Graphics::getErrorShader();
+      return Graphics::getContext().errorShader;
     }
   
     return shader;

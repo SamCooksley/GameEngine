@@ -17,6 +17,8 @@ namespace engine {
   
     static void window_size_callback(GLFWwindow * _window, int _width, int _height);
     static void window_close_callback(GLFWwindow * _window);
+
+    static void framebuffer_size_callback(GLFWwindow * _window, int _width, int _height);
   
     static void error_callback(int _error, const char * _description);
   

@@ -19,6 +19,8 @@
 
 #include "utilities\System.h"
 
+#include "graphics\mesh\quad.h"
+
 namespace engine {
 
   std::unique_ptr<Context> Application::s_context;
@@ -65,6 +67,10 @@ namespace engine {
       auto lights = std::make_unique<graphics::LightBuffer>();
       s_context->graphics->uniformBuffers.Add(std::move(lights));
     }
+
+    s_context->graphics->defaultFrameBuffer = graphics::FrameBuffer::CreateDefault(640, 480);
+    s_context->graphics->screenQuad = graphics::mesh::Quad().getMesh();
+    
     s_context->graphics->errorShader = Resources::Load<graphics::Shader>("resources/shaders/error.shader");
 
 
@@ -72,7 +78,7 @@ namespace engine {
     s_context->graphics->defaultRenderer->setAmbient(glm::vec3(0.1f));
 
     
-    auto defaultShader = Resources::Load<graphics::Shader>("resources/shaders/default.shader");
+    auto defaultShader = Resources::Load<graphics::Shader>("resources/shaders/gbuffer.shader");
     s_context->graphics->defaultMaterial = graphics::Material::Create(defaultShader);
    
     auto texture = Resources::Load<graphics::Texture2D>("resources/textures/bricks/diffuse.png");
@@ -192,7 +198,8 @@ namespace engine {
 
   void Application::Render()
   {
-    GLCALL(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
+    graphics::FrameBuffer::BindDefault();
+    s_context->graphics->defaultFrameBuffer->Clear();
 
     if (s_context->cameras.empty())
     {

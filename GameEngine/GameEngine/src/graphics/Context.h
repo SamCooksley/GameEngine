@@ -4,6 +4,7 @@
 #include "UniformBuffers.h"
 #include "Material.h"
 #include "BaseRenderer.h"
+#include "FrameBuffer.h"
 
 namespace engine {
 namespace graphics {
@@ -13,6 +14,8 @@ namespace graphics {
   public:
     UniformBuffers uniformBuffers;
     GLData glData;
+
+    std::shared_ptr<FrameBuffer> defaultFrameBuffer;
 
     std::vector<std::weak_ptr<Shader>> shaders;
     std::shared_ptr<Shader> errorShader;
@@ -24,6 +27,7 @@ namespace graphics {
     std::shared_ptr<Mesh> screenQuad;
 
     std::weak_ptr<Shader> activeShader;
+    std::weak_ptr<FrameBuffer> activeFrameBuffer;
   };
 } // graphics
 

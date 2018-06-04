@@ -24,8 +24,11 @@ namespace graphics {
     cube->m_width = images[0].width;
     cube->m_height = images[0].height;
     
+    cube->m_format = TextureFormat::RGBA8;
+    cube->m_dataType = TextureDataType::FLOAT;
+
     cube->setName(file::getFilenameWithoutExtension(_paths[0]));
-  
+
     cube->setFilter(TextureFilter::LINEAR);
   
     for (size_t i = 0; i < images.size(); ++i)
@@ -33,7 +36,7 @@ namespace graphics {
       const file::ImageData & image = images[i];
       GLCALL(glTexImage2D(
         GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0,
-        GL_RGBA,
+        GL_RGBA8,
         image.width, image.height,
         0, GL_RGBA, GL_UNSIGNED_BYTE,
         &image.pixels[0]
@@ -57,6 +60,12 @@ namespace graphics {
   TextureCube::TextureCube(uint _width, uint _height, TextureFormat _format, TextureDataType _type) :
     TextureCube()
   {
+    m_width = _width;
+    m_height = _height;
+
+    m_format = _format;
+    m_dataType = _type;
+
     for (size_t i = 0u; i < 6u; ++i)
     {
       GLCALL(glTexImage2D(
@@ -73,6 +82,12 @@ namespace graphics {
   TextureCube::TextureCube(uint _width, uint _height, const glm::vec4 & _colour) :
     TextureCube()
   {
+    m_width = _width;
+    m_height = _height;
+
+    m_format = TextureFormat::RGBA8;
+    m_dataType = TextureDataType::FLOAT;
+
     std::vector<float> pixels(_width * _height * 4);
   
     for (size_t i = 0; i < pixels.size(); i += 4)
@@ -84,7 +99,7 @@ namespace graphics {
     {
       GLCALL(glTexImage2D(
         GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0,
-        GL_RGBA,
+        GL_RGBA8,
         _width, _height, 0,
         GL_RGBA, GL_FLOAT,
         &pixels[0]
@@ -107,6 +122,26 @@ namespace graphics {
   {
     GLCALL(glActiveTexture(GL_TEXTURE0 + _unit));
     GLCALL(glBindTexture(GL_TEXTURE_CUBE_MAP, 0));
+  }
+
+  void TextureCube::Resize(uint _width, uint _height)
+  {
+    if (_width == m_width && _height == m_height) { return; }
+
+    m_width = _width;
+    m_height = _height;
+
+    for (size_t i = 0u; i < 6u; ++i)
+    {
+      GLCALL(glTexImage2D(
+        GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0,
+        TextureFormatToOpenGL(m_format),
+        m_width, m_height, 0,
+        TextureBaseFormatToOpenGL(TextureFormatBase(m_format)),
+        TextureDataTypeToOpenGL(m_dataType),
+        nullptr
+      ));
+    }
   }
   
   void TextureCube::setFilter(TextureFilter _filter)

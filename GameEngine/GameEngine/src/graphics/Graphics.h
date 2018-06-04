@@ -1,7 +1,7 @@
 #ifndef _ENGINE_GRAPHICS_H_
 #define _ENGINE_GRAPHICS_H_
 
-#include "graphics\Context.h"
+#include "Context.h"
 
 namespace engine {
 
@@ -10,7 +10,9 @@ namespace engine {
     friend class graphics::Shader;
     friend class graphics::Material;
     friend class graphics::UniformBuffers;
-    friend class Camera;
+    friend class graphics::FrameBuffer;
+
+    friend class glfw;
 
    public:
     Graphics() = delete;
@@ -26,9 +28,6 @@ namespace engine {
     static graphics::UniformBuffer * getUniformBuffer(const String & _name);
 
     static graphics::GLData & GL();
-
-   private:
-    static std::shared_ptr<graphics::Shader> getErrorShader();
 
     static graphics::Context & getContext();
   };

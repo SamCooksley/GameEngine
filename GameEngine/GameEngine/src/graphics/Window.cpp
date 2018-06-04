@@ -39,6 +39,8 @@ namespace graphics {
   
     glfwSetWindowSizeCallback(m_window, glfw::window_size_callback);
     glfwSetWindowCloseCallback(m_window, glfw::window_close_callback);
+
+    glfwSetFramebufferSizeCallback(m_window, glfw::framebuffer_size_callback);
   }
   
   Window::~Window()

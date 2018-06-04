@@ -2,51 +2,59 @@
 
 #include "glfw.h"
 
+#include "graphics\Graphics.h"
+
 #include "glfw\glfw3.h"
 
 #include "debug\Debug.h"
 #include "Input.h"
 
+
 namespace engine {
   
-  void glfw::key_callback(GLFWwindow* _window, int _key, int _scancode, int _action, int _mods)
+  void glfw::key_callback(GLFWwindow * _window, int _key, int _scancode, int _action, int _mods)
   {
     switch (_action)
     {
-    case GLFW_PRESS: { Input::PressKey(_key);   break; }
-    case GLFW_RELEASE: { Input::ReleaseKey(_key); break; }
+      case GLFW_PRESS:   { Input::PressKey(_key);   break; }
+      case GLFW_RELEASE: { Input::ReleaseKey(_key); break; }
     }
   }
   
-  void glfw::mouse_button_callback(GLFWwindow* _window, int _button, int _action, int _mods)
+  void glfw::mouse_button_callback(GLFWwindow * _window, int _button, int _action, int _mods)
   {
     switch (_action)
     {
-    case GLFW_PRESS: { Input::PressButton(_button);   break; }
-    case GLFW_RELEASE: { Input::ReleaseButton(_button); break; }
+      case GLFW_PRESS:   { Input::PressButton(_button);   break; }
+      case GLFW_RELEASE: { Input::ReleaseButton(_button); break; }
     }
   }
   
-  void glfw::mouse_position_callback(GLFWwindow* _window, double _x, double _y)
+  void glfw::mouse_position_callback(GLFWwindow * _window, double _x, double _y)
   {
     Input::setMousePosition(static_cast<float>(_x), static_cast<float>(_y));
   }
   
-  void glfw::window_size_callback(GLFWwindow* _window, int _width, int _height)
+  void glfw::window_size_callback(GLFWwindow * _window, int _width, int _height)
   {
-    graphics::Window* window = static_cast<graphics::Window*>(glfwGetWindowUserPointer(_window));
+    graphics::Window * window = static_cast<graphics::Window *>(glfwGetWindowUserPointer(_window));
   
     window->m_width = _width;
     window->m_height = _height;
   }
   
-  void glfw::window_close_callback(GLFWwindow* _window)
+  void glfw::window_close_callback(GLFWwindow * _window)
   {
-    graphics::Window* window = static_cast<graphics::Window*>(glfwGetWindowUserPointer(_window));
+    graphics::Window * window = static_cast<graphics::Window *>(glfwGetWindowUserPointer(_window));
     window->Close();
   }
+
+  void glfw::framebuffer_size_callback(GLFWwindow * _window, int _width, int _height)
+  {
+    Graphics::getContext().defaultFrameBuffer->Resize(_width, _height);
+  }
   
-  void glfw::error_callback(int _error, const char* _description)
+  void glfw::error_callback(int _error, const char * _description)
   {
     debug::LogError("GLFW error: " + std::to_string(_error) + " - " + _description);
   }

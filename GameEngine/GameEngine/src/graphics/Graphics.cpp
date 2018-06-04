@@ -21,11 +21,6 @@ namespace engine {
     return getContext().glData;
   }
 
-  std::shared_ptr<graphics::Shader> Graphics::getErrorShader()
-  {
-    return getContext().errorShader;
-  }
-
   graphics::Context & Graphics::getContext()
   {
     assert(Application::s_context && Application::s_context->graphics);

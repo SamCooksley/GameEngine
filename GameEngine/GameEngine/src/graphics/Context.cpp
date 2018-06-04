@@ -8,6 +8,7 @@ namespace engine {
   {
     if (!_context) { return; }
 
+    _context->defaultFrameBuffer = nullptr;
     _context->errorShader = nullptr;
     _context->defaultMaterial = nullptr;
     _context->defaultRenderer = nullptr;

@@ -19,6 +19,9 @@ namespace graphics {
     auto texture = Create();
     texture->m_width = _width;
     texture->m_height = _height;
+
+    texture->m_format = _format;
+    texture->m_dataType = _type;
   
     GLCALL(
       glTexImage2D(
@@ -49,8 +52,11 @@ namespace graphics {
     auto texture = Create();
     texture->m_width = _width;
     texture->m_height = _height;
-  
-    GLCALL(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, _width, _height, 0, GL_RGBA, GL_FLOAT, &pixels[0]));
+
+    texture->m_format = TextureFormat::RGBA8;
+    texture->m_dataType = TextureDataType::FLOAT;
+
+    GLCALL(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, _width, _height, 0, GL_RGBA, GL_FLOAT, &pixels[0]));
   
     texture->setWrap(TextureWrap::CLAMP_TO_EDGE);
     texture->setFilter(TextureFilter::NEAREST);
@@ -112,6 +118,25 @@ namespace graphics {
   {
     GLCALL(glActiveTexture(GL_TEXTURE0 + _unit));
     GLCALL(glBindTexture(GL_TEXTURE_2D, 0));
+  }
+
+  void Texture2D::Resize(uint _width, uint _height)
+  {
+    if (_width == m_width && _height == m_height) { return; }
+
+    m_width = _width;
+    m_height = _height;
+
+    GLCALL(
+      glTexImage2D(
+        GL_TEXTURE_2D, 0,
+        TextureFormatToOpenGL(m_format),
+        m_width, m_height, 0,
+        TextureBaseFormatToOpenGL(TextureFormatBase(m_format)),
+        TextureDataTypeToOpenGL(m_dataType),
+        nullptr
+      )
+    );
   }
   
   void Texture2D::setWrap(TextureWrap _wrap)

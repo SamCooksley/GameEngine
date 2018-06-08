@@ -187,6 +187,7 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)graphics\</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)graphics\</XMLDocumentationFileName>
     </ClCompile>
+    <ClCompile Include="src\graphics\Lights.cpp" />
     <ClCompile Include="src\graphics\Material.cpp">
       <AssemblerListingLocation Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)graphics\</AssemblerListingLocation>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)graphics\</ObjectFileName>
@@ -291,6 +292,8 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)graphics\</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)graphics\</XMLDocumentationFileName>
     </ClCompile>
+    <ClCompile Include="src\graphics\ShadowMapping.cpp" />
+    <ClCompile Include="src\graphics\ShadowRenderer.cpp" />
     <ClCompile Include="src\graphics\Skybox.cpp">
       <AssemblerListingLocation Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)graphics\</AssemblerListingLocation>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)graphics\</ObjectFileName>
@@ -487,10 +490,10 @@
     <ClInclude Include="src\graphics\Camera.h" />
     <ClInclude Include="src\graphics\DefaultRenderer.h" />
     <ClInclude Include="src\graphics\Graphics.h" />
-    <ClInclude Include="src\graphics\Light.h" />
     <ClInclude Include="src\graphics\IndexBuffer.h" />
     <ClInclude Include="src\graphics\Indices.h" />
     <ClInclude Include="src\graphics\LightBuffer.h" />
+    <ClInclude Include="src\graphics\Lights.h" />
     <ClInclude Include="src\graphics\Material.h" />
     <ClInclude Include="src\graphics\Mesh.h" />
     <ClInclude Include="src\graphics\MeshData.h" />
@@ -504,6 +507,8 @@
     <ClInclude Include="src\graphics\Shader.h" />
     <ClInclude Include="src\graphics\ShaderType.h" />
     <ClInclude Include="src\graphics\ShaderUniform.h" />
+    <ClInclude Include="src\graphics\ShadowMapping.h" />
+    <ClInclude Include="src\graphics\ShadowRenderer.h" />
     <ClInclude Include="src\graphics\Skybox.h" />
     <ClInclude Include="src\graphics\Texture.h" />
     <ClInclude Include="src\graphics\Texture2D.h" />

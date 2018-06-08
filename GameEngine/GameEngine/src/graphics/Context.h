@@ -22,8 +22,6 @@ namespace graphics {
 
     std::shared_ptr<Material> defaultMaterial;
 
-    std::shared_ptr<BaseRenderer> defaultRenderer;
-
     std::shared_ptr<Mesh> screenQuad;
 
     std::weak_ptr<Shader> activeShader;

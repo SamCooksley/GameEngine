@@ -51,7 +51,7 @@ namespace engine {
 
     void SetupRender();
 
-    static void AddCamera(const std::shared_ptr<Camera> & _camera);
+    void AddCamera();
     void RemoveCamera();
 
    private:
@@ -70,7 +70,7 @@ namespace engine {
 
     glm::mat4 m_projection;
 
-    std::shared_ptr<graphics::BaseRenderer> m_renderer;
+    std::unique_ptr<graphics::BaseRenderer> m_renderer;
 
     ENGINE_SETUPSHARED(Camera);
   };

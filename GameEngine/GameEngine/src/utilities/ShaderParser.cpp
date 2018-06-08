@@ -200,6 +200,8 @@ namespace file {
   
     if (!file.is_open())
     {
+      debug::Log(getName());
+      debug::Log(path);
       throw std::runtime_error("Failed to open file");
     }
     m_currentFile = path;

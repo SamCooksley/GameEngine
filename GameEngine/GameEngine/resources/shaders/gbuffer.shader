@@ -21,7 +21,7 @@ out VS_OUT
 	vec3 view_position_tan;
 } vs_out;
 
-#include "camera.shader"
+#include "common/camera.shader"
 
 uniform mat4 model;
 
@@ -66,8 +66,8 @@ layout (location = 0) out vec4 out_position;
 layout (location = 1) out vec4 out_normal;
 layout (location = 2) out vec4 out_colour;
 
-#include "parallax.shader"
-#include "camera.shader"
+#include "common/parallax.shader"
+#include "common/camera.shader"
 
 uniform sampler2D diffuse;
 uniform sampler2D normal;
@@ -80,7 +80,7 @@ uniform float shininess = 2;
 
 void main()
 {
-    vec3 viewDir_tan = -normalize(fs_in.view_position_tan - fs_in.position_tan);
+    vec3 viewDir_tan = normalize(fs_in.view_position_tan - fs_in.position_tan);
 	vec2 texCoords = ParallaxMapping(fs_in.texCoords, viewDir_tan, displacementScale, displacement);
 
     if (texture(opacity, texCoords).r < 0.1)

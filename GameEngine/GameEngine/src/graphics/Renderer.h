@@ -2,7 +2,7 @@
 #define _ENGINE_GRAPHICS_RENDERER_H_
 
 #include "Camera.h"
-#include "Light.h"
+#include "Lights.h"
 
 #include "Mesh.h"
 #include "Material.h"
@@ -32,7 +32,9 @@ namespace graphics {
       const glm::mat4 & _transform
     );
   
-    virtual void Add(const Light & _light);
+    virtual void Add(const DirectionalLight & _directional);
+    virtual void Add(const PointLight & _point);
+    virtual void Add(const SpotLight & _spot);
   
     virtual void Render() = 0;
 

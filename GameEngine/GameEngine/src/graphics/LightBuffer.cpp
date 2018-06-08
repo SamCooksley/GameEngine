@@ -5,65 +5,103 @@
 namespace engine {
 namespace graphics {
 
-  const String LightBuffer::name = "Lights";
+  const String LightBuffer::NAME = "Lights";
+
+  const uint LightBuffer::MAX_DIRECTIONAL = 5u;
+  const uint LightBuffer::MAX_POINT = 10u;
+  const uint LightBuffer::MAX_SPOT = 5u;
+
+  const uint LightBuffer::NUMDIR_OFFSET = 0u;
+  const uint LightBuffer::NUMPOINT_OFFSET = 4u;
+  const uint LightBuffer::NUMSPOT_OFFSET = 8u;
+
+  const uint LightBuffer::AMBIENT_OFFSET = 16u;
   
-  const uint LightBuffer::max_lights = 10;
-  
-  const uint LightBuffer::type_offset        = 0;
-  const uint LightBuffer::position_offset    = 32;
-  const uint LightBuffer::direction_offset   = 48;
-  const uint LightBuffer::colour_offset      = 64;
-  const uint LightBuffer::linear_offset      = 4;
-  const uint LightBuffer::quadratic_offset   = 8;
-  const uint LightBuffer::cutoff_offset      = 12;
-  const uint LightBuffer::outercutoff_offset = 16;
-  
-  const uint LightBuffer::light_size = 80;
-  
-  const uint LightBuffer::lights_size = LightBuffer::light_size * LightBuffer::max_lights;
-  
-  const uint LightBuffer::ambient_offset = LightBuffer::lights_size;
-  
-  const uint LightBuffer::size = LightBuffer::lights_size + sizeof(glm::vec4);
-  
+  const uint LightBuffer::DIRECTIONAL_OFFSET = 32u;
+
+  const uint LightBuffer::Directional::COLOUR_OFFSET = 0u;
+  const uint LightBuffer::Directional::DIRECTION_OFFSET = 16u;
+  const uint LightBuffer::Directional::SIZE = 32u;
+
+  const uint LightBuffer::POINT_OFFSET = LightBuffer::DIRECTIONAL_OFFSET + LightBuffer::Directional::SIZE * LightBuffer::MAX_DIRECTIONAL;
+
+  const uint LightBuffer::Point::COLOUR_OFFSET = 0u;
+  const uint LightBuffer::Point::POSITION_OFFSET = 16u;
+  const uint LightBuffer::Point::LINEAR_OFFSET = 32u;
+  const uint LightBuffer::Point::QUADRATIC_OFFSET = 36u;
+  const uint LightBuffer::Point::SIZE = 48u;
+
+  const uint LightBuffer::SPOT_OFFSET = LightBuffer::POINT_OFFSET + LightBuffer::Point::SIZE * LightBuffer::MAX_POINT;
+
+  const uint LightBuffer::Spot::COLOUR_OFFSET = 0u;
+  const uint LightBuffer::Spot::POSITION_OFFSET = 16u;
+  const uint LightBuffer::Spot::DIRECTION_OFFSET = 32u;
+  const uint LightBuffer::Spot::CUTOFF_OFFSET = 48u;
+  const uint LightBuffer::Spot::OUTERCUTOFF_OFFSET = 52u;
+  const uint LightBuffer::Spot::LINEAR_OFFSET = 64u;
+  const uint LightBuffer::Spot::QUADRATIC_OFFSET = 68u;
+  const uint LightBuffer::Spot::SIZE = 80u;
+
+  const uint LightBuffer::SIZE = LightBuffer::SPOT_OFFSET + LightBuffer::Spot::SIZE * LightBuffer::MAX_SPOT;
+
   LightBuffer::LightBuffer() :
-    UniformBuffer(LightBuffer::name)
+    UniformBuffer(LightBuffer::NAME)
   {
-    Reserve(LightBuffer::size);
+    Reserve(LightBuffer::SIZE);
   }
   
   LightBuffer::~LightBuffer()
   { }
-  
-  void LightBuffer::setLight(const Light & _light, uint _num)
+
+  void LightBuffer::setLights(const Lights & _lights)
   {
-    assert(_num < max_lights);
-  
-    std::vector<byte> data(LightBuffer::light_size);
-  
-    memcpy(&data[LightBuffer::type_offset],        &_light.type,                     sizeof(LightType));
-    memcpy(&data[LightBuffer::position_offset],    glm::value_ptr(_light.position),  sizeof(glm::vec3));
-    memcpy(&data[LightBuffer::direction_offset],   glm::value_ptr(_light.direction), sizeof(glm::vec3));
-    memcpy(&data[LightBuffer::colour_offset],      glm::value_ptr(_light.colour),    sizeof(glm::vec3));
-    memcpy(&data[LightBuffer::linear_offset],      &_light.linear,                   sizeof(float));
-    memcpy(&data[LightBuffer::quadratic_offset],   &_light.quadratic,                sizeof(float));
-    memcpy(&data[LightBuffer::cutoff_offset],      &_light.cutoff,                   sizeof(float));
-    memcpy(&data[LightBuffer::outercutoff_offset], &_light.outerCutoff,              sizeof(float));
-  
-    setData(&data[0], LightBuffer::light_size, LightBuffer::light_size * _num);
-  }
-  
-  void LightBuffer::ClearLight(uint _num)
-  {
-    assert(_num < max_lights);
-  
-    constexpr LightType type = LightType::None;
-    setData(&type, sizeof(LightType), LightBuffer::light_size * _num + LightBuffer::type_offset);
-  }
-  
-  void LightBuffer::setAmbient(const glm::vec3 & _ambient)
-  {
-    setData(glm::value_ptr(_ambient), sizeof(glm::vec3), LightBuffer::ambient_offset);
+    uint numDir = std::min(_lights.directional.size(), LightBuffer::MAX_DIRECTIONAL);
+    uint numPoint = std::min(_lights.point.size(), LightBuffer::MAX_POINT);
+    uint numSpot = std::min(_lights.spot.size(), LightBuffer::MAX_SPOT);
+
+    std::vector<byte> data(LightBuffer::SIZE);
+
+    memcpy(&data[LightBuffer::NUMDIR_OFFSET],   &numDir,   sizeof(int));
+    memcpy(&data[LightBuffer::NUMPOINT_OFFSET], &numPoint, sizeof(int));
+    memcpy(&data[LightBuffer::NUMSPOT_OFFSET],  &numSpot,  sizeof(int));
+
+    memcpy(&data[LightBuffer::AMBIENT_OFFSET], glm::value_ptr(_lights.ambient), sizeof(glm::vec3));
+
+    for (int i = 0; i < numDir; ++i)
+    {
+      const DirectionalLight & dir = _lights.directional[i];
+      uint offset = LightBuffer::DIRECTIONAL_OFFSET + LightBuffer::Directional::SIZE * i;
+
+      memcpy(&data[offset + LightBuffer::Directional::COLOUR_OFFSET],    glm::value_ptr(dir.colour),    sizeof(glm::vec3));
+      memcpy(&data[offset + LightBuffer::Directional::DIRECTION_OFFSET], glm::value_ptr(dir.direction), sizeof(glm::vec3));
+    }
+
+    for (int i = 0; i < numPoint; ++i)
+    {
+      const PointLight & point = _lights.point[i];
+      uint offset = LightBuffer::POINT_OFFSET + LightBuffer::Point::SIZE * i;
+      
+      memcpy(&data[offset + LightBuffer::Point::COLOUR_OFFSET],    glm::value_ptr(point.colour),   sizeof(glm::vec3));
+      memcpy(&data[offset + LightBuffer::Point::POSITION_OFFSET],  glm::value_ptr(point.position), sizeof(glm::vec3));
+      memcpy(&data[offset + LightBuffer::Point::LINEAR_OFFSET],    &point.atten.linear,            sizeof(float));
+      memcpy(&data[offset + LightBuffer::Point::QUADRATIC_OFFSET], &point.atten.quadratic,         sizeof(float));
+    }
+
+    for (int i = 0; i < numSpot; ++i)
+    {
+      const SpotLight & spot = _lights.spot[i];
+      uint offset = LightBuffer::SPOT_OFFSET + LightBuffer::Spot::SIZE * i;
+
+      memcpy(&data[offset + LightBuffer::Spot::COLOUR_OFFSET],      glm::value_ptr(spot.colour),    sizeof(glm::vec3));
+      memcpy(&data[offset + LightBuffer::Spot::POSITION_OFFSET],    glm::value_ptr(spot.position),  sizeof(glm::vec3));
+      memcpy(&data[offset + LightBuffer::Spot::DIRECTION_OFFSET],   glm::value_ptr(spot.direction), sizeof(glm::vec3));
+      memcpy(&data[offset + LightBuffer::Spot::CUTOFF_OFFSET],      &spot.cutoff,                   sizeof(float));
+      memcpy(&data[offset + LightBuffer::Spot::OUTERCUTOFF_OFFSET], &spot.outerCutoff,              sizeof(float));
+      memcpy(&data[offset + LightBuffer::Spot::LINEAR_OFFSET],      &spot.atten.linear,             sizeof(float));
+      memcpy(&data[offset + LightBuffer::Spot::QUADRATIC_OFFSET],   &spot.atten.quadratic,          sizeof(float));
+    }
+
+    setData(data.data(), data.size());
   }
 
 } } // engine::graphics

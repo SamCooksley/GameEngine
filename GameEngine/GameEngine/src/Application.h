@@ -16,6 +16,7 @@ namespace engine {
     friend class Screen;
     friend class Graphics;
     friend class Camera;
+    friend class Light;
 
    public:
     Application() = delete;

@@ -46,6 +46,9 @@ namespace graphics {
     void setView(const glm::mat4 & _view);
     void setProjection(const glm::mat4 & _projection);
   
+    template <typename T>
+    void setUniform(const String & _name, const T & _value);
+
     RenderQueue::Queue getRenderQueue() const;
   
    protected:

@@ -12,25 +12,22 @@ vec2 ParallaxMapping(const vec2 _texCoords, const vec3 _viewDir, const float _sc
     vec2 deltaTexCoords = P / layerCount;
 
     vec2  texCoords = _texCoords;
-	float currentMapDepth = texture(_parallax, texCoords).r;
-	float prevMapDepth = currentMapDepth;
+	float currentMapDepth = 1.0 - texture(_parallax, texCoords).r;
   
 	while(currentDepth < currentMapDepth)
 	{
 	    texCoords -= deltaTexCoords;
-		prevMapDepth = currentMapDepth;
-	    currentMapDepth = texture(_parallax, texCoords).r;  
+	    currentMapDepth = 1.0 - texture(_parallax, texCoords).r;  
 	    currentDepth += layerDepth;  
 	}
 
 	vec2 prevTexCoords = texCoords + deltaTexCoords;
-	
+
 	float afterDepth  = currentMapDepth - currentDepth;
-	float beforeDepth = prevMapDepth - currentDepth + layerDepth;
+	float beforeDepth = texture(_parallax, prevTexCoords).r - currentDepth + layerDepth;
 
 	float weight = afterDepth / (afterDepth - beforeDepth);
-	//texCoords = mix(texCoords, prevTexCoords, weight);
-	texCoords = prevTexCoords * weight + texCoords * (1.0 - weight);
+	texCoords = mix(texCoords, prevTexCoords, weight);
 
 	return texCoords;  
 }  

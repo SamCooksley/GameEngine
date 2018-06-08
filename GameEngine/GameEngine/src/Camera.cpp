@@ -6,8 +6,9 @@
 
 #include "graphics\Graphics.h"
 
-#include "Screen.h"
 #include "Application.h"
+
+#include "graphics\DefaultRenderer.h"
 
 namespace engine {
 
@@ -23,12 +24,9 @@ namespace engine {
 
     setPerspective(60.f, 1.f, .01f, 100.f);
 
-    if (!m_renderer)
-    {
-      m_renderer = Graphics::getContext().defaultRenderer;
-    }
+    m_renderer = std::make_unique<graphics::DefaultRenderer>();
 
-    AddCamera(Camera::getShared());
+    AddCamera();
   }
 
   void Camera::OnDestroy()
@@ -159,21 +157,19 @@ namespace engine {
     m_renderer->Resize(width, height);
   }
 
-  void Camera::AddCamera(const std::shared_ptr<Camera> & _camera)
+  void Camera::AddCamera()
   {
-    if (!_camera) { return; }
-
     auto & cameras = Application::s_context->cameras;
 
     for (auto & cam : cameras)
     {
-      if (cam.lock() == _camera)
+      if (cam.lock().get() == this)
       {
         return;
       }
     }
 
-    cameras.push_back(_camera);
+    cameras.push_back(Camera::getShared());
   }
 
   void Camera::RemoveCamera()

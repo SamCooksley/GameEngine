@@ -73,11 +73,6 @@ namespace engine {
     
     s_context->graphics->errorShader = Resources::Load<graphics::Shader>("resources/shaders/error.shader");
 
-
-    s_context->graphics->defaultRenderer = std::make_shared<graphics::DefaultRenderer>();
-    s_context->graphics->defaultRenderer->setAmbient(glm::vec3(0.1f));
-
-    
     auto defaultShader = Resources::Load<graphics::Shader>("resources/shaders/gbuffer.shader");
     s_context->graphics->defaultMaterial = graphics::Material::Create(defaultShader);
    
@@ -104,21 +99,6 @@ namespace engine {
     s_context->graphics->defaultMaterial->setUniform("displacementScale", 0.01f);
         
     s_context->graphics->defaultMaterial->setUniform("shininess", 5.f);
-    
-    auto skyboxShader = Resources::Load<graphics::Shader>("resources/shaders/skybox.shader");
-    auto skyboxMaterial = graphics::Material::Create(skyboxShader);
-
-    std::array<String, 6> skyboxTexturePaths;
-    for (size_t i = 0; i < 6; ++i)
-    {
-      skyboxTexturePaths[i] = "resources/textures/skybox/skybox" + std::to_string(i + 1) + ".jpg";
-    }
-
-    auto skyboxCube = graphics::TextureCube::Load(skyboxTexturePaths);
-    skyboxMaterial->setTexture("cubemap", skyboxCube); 
-
-    auto skybox = std::make_shared<graphics::Skybox>(skyboxMaterial);
-    s_context->graphics->defaultRenderer->setSkybox(skybox);
   }
 
   void Application::Loop()
@@ -198,6 +178,15 @@ namespace engine {
 
   void Application::Render()
   {
+    for (auto & l : s_context->shadowLights)
+    {
+      auto light = l.lock();
+      assert(light);
+
+      if (!light->getEnabled()) { continue; }
+
+      //TODO: render to shadowbuffer
+    }
     graphics::FrameBuffer::BindDefault();
     s_context->graphics->defaultFrameBuffer->Clear();
 
@@ -211,10 +200,7 @@ namespace engine {
       auto camera = cam.lock();
       assert(camera);
 
-      if (!camera->getEnabled())
-      {
-        continue;
-      }
+      if (!camera->getEnabled()) { continue; }
 
       camera->SetupRender();
 

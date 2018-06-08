@@ -1,7 +1,7 @@
 #ifndef _ENGINE_GRAPHICS_LIGHTBUFFER_H_
 #define _ENGINE_GRAPHICS_LIGHTBUFFER_H_
 
-#include "Light.h"
+#include "Lights.h"
 
 #include "UniformBuffer.h"
 
@@ -11,35 +11,69 @@ namespace graphics {
   class LightBuffer : public UniformBuffer
   {
    public:
-    static const String name; 
+    static const String NAME; 
   
-    static const uint max_lights;
-  
+    static const uint
+      MAX_DIRECTIONAL,
+      MAX_POINT,
+      MAX_SPOT;
+
    private:
     static const uint
-      type_offset,
-      position_offset,
-      direction_offset,
-      colour_offset,
-      linear_offset,
-      quadratic_offset,
-      cutoff_offset,
-      outercutoff_offset,
+      NUMDIR_OFFSET,
+      NUMPOINT_OFFSET,
+      NUMSPOT_OFFSET,
   
-      light_size,
-      lights_size,
-  
-      ambient_offset,
-  
-      size;
+      AMBIENT_OFFSET,
+
+      DIRECTIONAL_OFFSET,
+      POINT_OFFSET,
+      SPOT_OFFSET,
+
+      SIZE;
+
+    struct Directional
+    {
+      static const uint
+        COLOUR_OFFSET,
+        DIRECTION_OFFSET,
+        
+        SIZE;
+    };
+
+    struct Point
+    {
+      static const uint
+        COLOUR_OFFSET,
+        POSITION_OFFSET,
+
+        LINEAR_OFFSET,
+        QUADRATIC_OFFSET,
+
+        SIZE;
+    };
+
+    struct Spot
+    {
+      static const uint
+        COLOUR_OFFSET,
+        POSITION_OFFSET,
+        DIRECTION_OFFSET,
+
+        CUTOFF_OFFSET,
+        OUTERCUTOFF_OFFSET,
+
+        LINEAR_OFFSET,
+        QUADRATIC_OFFSET,
+
+        SIZE;
+    };
   
    public:
     LightBuffer();
     ~LightBuffer();
   
-    void setLight(const Light & _light, uint _num);
-    void ClearLight(uint _num);
-    void setAmbient(const glm::vec3 & _ambient);
+    void setLights(const Lights & _lights);
   };
 
 } } // engine::graphics

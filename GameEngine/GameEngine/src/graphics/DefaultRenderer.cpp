@@ -6,13 +6,36 @@
 #include "LightBuffer.h"
 #include "CameraBuffer.h"
 
+#include "Lights.h"
+
 namespace engine {
 namespace graphics {
 
-  DefaultRenderer::DefaultRenderer(const std::shared_ptr<Material> & _deferred) :
-    BaseRenderer(RenderFlags::None),
-    m_deferredMat(_deferred)
-  { }
+  DefaultRenderer::DefaultRenderer() :
+    BaseRenderer(RenderFlags::None)
+  { 
+    m_deferredAmbient = Resources::Load<Shader>("resources/shaders/deferred/ambient.shader");
+    m_deferredAmbient->Bind();
+    m_deferredAmbient->setUniform("colour", 2);
+
+    m_deferredDirectional = Resources::Load<Shader>("resources/shaders/deferred/directional.shader");
+    m_deferredDirectional->Bind();
+    m_deferredDirectional->setUniform("position", 0);
+    m_deferredDirectional->setUniform("normal", 1);
+    m_deferredDirectional->setUniform("colour", 2);
+
+    m_deferredPoint = Resources::Load<Shader>("resources/shaders/deferred/point.shader");
+    m_deferredPoint->Bind();
+    m_deferredPoint->setUniform("position", 0);
+    m_deferredPoint->setUniform("normal", 1);
+    m_deferredPoint->setUniform("colour", 2);
+
+    m_deferredSpot = Resources::Load<Shader>("resources/shaders/deferred/spot.shader");
+    m_deferredSpot->Bind();
+    m_deferredSpot->setUniform("position", 0);
+    m_deferredSpot->setUniform("normal", 1);
+    m_deferredSpot->setUniform("colour", 2);
+  }
   
   DefaultRenderer::~DefaultRenderer()
   { }
@@ -29,29 +52,8 @@ namespace graphics {
     auto lightBuffer = Graphics::getUniformBuffer<LightBuffer>();
     if (lightBuffer != nullptr)
     {
-      size_t i = 0u;
-  
-      size_t size = m_lights.size();
-      if (size > LightBuffer::max_lights)
-      {
-        debug::LogWarning("Maximum amount of lights reached.");
-  
-        size = LightBuffer::max_lights;
-      }
-  
       lightBuffer->Bind();
-  
-      for (; i < size; ++i)
-      {
-        lightBuffer->setLight(m_lights[i], i);
-      }
-  
-      for (; i < LightBuffer::max_lights; ++i)
-      {
-        lightBuffer->ClearLight(i);
-      }
-  
-      lightBuffer->setAmbient(m_ambient);
+      lightBuffer->setLights(m_lights);
     }
   
     std::shared_ptr<Material> prevMat;
@@ -82,10 +84,61 @@ namespace graphics {
 
       fbTarget->Bind();
 
-      m_deferredMat->Bind();
+      m_position->Bind(0);
+      m_normal->Bind(1);
+      m_colour->Bind(2);
+
+      m_deferredAmbient->Bind();
+      m_deferredAmbient->setUniform("light", m_lights.ambient);
 
       fbTarget->RenderToNDC();
 
+      if (!m_lights.directional.empty())
+      {
+        m_deferredDirectional->Bind();
+
+        for (auto & dir : m_lights.directional)
+        {
+          m_deferredDirectional->setUniform("light.colour", dir.colour);
+          m_deferredDirectional->setUniform("light.direction", dir.direction);
+
+          fbTarget->RenderToNDC();
+        }
+      }
+      
+      if (!m_lights.point.empty())
+      {
+        m_deferredPoint->Bind();
+
+        for (auto & point : m_lights.point)
+        {
+          m_deferredPoint->setUniform("light.colour", point.colour);
+          m_deferredPoint->setUniform("light.position", point.position);
+          m_deferredPoint->setUniform("light.atten.linear", point.atten.linear);
+          m_deferredPoint->setUniform("light.atten.quadratic", point.atten.quadratic);
+
+          fbTarget->RenderToNDC();
+        }
+      }
+
+      if (!m_lights.spot.empty())
+      {
+        m_deferredSpot->Bind();
+
+        for (auto & spot : m_lights.spot)
+        {
+          m_deferredSpot->setUniform("light.colour", spot.colour);
+          m_deferredSpot->setUniform("light.position", spot.position);
+          m_deferredSpot->setUniform("light.direction", spot.direction);
+          m_deferredSpot->setUniform("light.cutoff", spot.cutoff);
+          m_deferredSpot->setUniform("light.outerCutoff", spot.outerCutoff);
+          m_deferredSpot->setUniform("light.atten.linear", spot.atten.linear);
+          m_deferredSpot->setUniform("light.atten.quadratic", spot.atten.quadratic);
+
+          fbTarget->RenderToNDC();
+        }
+      }
+      
       m_gBuffer->Bind(FrameBufferBind::READ);
       fbTarget->Bind(FrameBufferBind::WRITE);
       m_gBuffer->Blit(*fbTarget, BufferBit::DEPTH);
@@ -153,17 +206,28 @@ namespace graphics {
   {
     m_gBuffer = FrameBuffer::Create(_width, _height);
   
-    auto position = m_gBuffer->AddTexture(FrameBufferAttachment::COLOUR, TextureFormat::RGBA16F, TextureDataType::FLOAT);
-    auto normal = m_gBuffer->AddTexture(FrameBufferAttachment::COLOUR, TextureFormat::RGBA16F, TextureDataType::FLOAT);
-    auto colour = m_gBuffer->AddTexture(FrameBufferAttachment::COLOUR, TextureFormat::RGBA16F, TextureDataType::FLOAT);
+    m_position = m_gBuffer->AddTexture(FrameBufferAttachment::COLOUR, TextureFormat::RGBA16F, TextureDataType::FLOAT);
+    m_normal = m_gBuffer->AddTexture(FrameBufferAttachment::COLOUR, TextureFormat::RGBA16F, TextureDataType::FLOAT);
+    m_colour = m_gBuffer->AddTexture(FrameBufferAttachment::COLOUR, TextureFormat::RGBA16F, TextureDataType::FLOAT);
     m_gBuffer->AddRenderBuffer(FrameBufferAttachment::DEPTH, TextureFormat::DEPTH_COMPONENT24);
   
-    if (m_deferredMat)
-    {
-      m_deferredMat->setTexture("position", position);
-      m_deferredMat->setTexture("normal", normal);
-      m_deferredMat->setTexture("colour", colour);
-    }
+    /*
+    m_deferredAmbient->setTexture("position", position);
+    m_deferredAmbient->setTexture("normal", normal);
+    m_deferredAmbient->setTexture("colour", colour);
+
+    m_deferredDirectional->setTexture("position", position);
+    m_deferredDirectional->setTexture("normal", normal);
+    m_deferredDirectional->setTexture("colour", colour);
+
+    m_deferredPoint->setTexture("position", position);
+    m_deferredPoint->setTexture("normal", normal);
+    m_deferredPoint->setTexture("colour", colour);
+
+    m_deferredSpot->setTexture("position", position);
+    m_deferredSpot->setTexture("normal", normal);
+    m_deferredSpot->setTexture("colour", colour);
+    */
   }
 
 } } // engine::graphics

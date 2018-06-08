@@ -23,8 +23,10 @@ namespace graphics {
       const glm::mat4 & _transform
     ) override;
   
-    virtual void Add(const Light & _light) override;
-  
+    virtual void Add(const DirectionalLight & _directional) override;
+    virtual void Add(const PointLight & _point) override;
+    virtual void Add(const SpotLight & _spot) override;
+
     virtual void End();
   
     virtual void Reset();
@@ -37,8 +39,7 @@ namespace graphics {
   
    protected:
     CommandBuffer m_commands;
-    std::vector<Light> m_lights;
-    glm::vec3 m_ambient;
+    Lights m_lights;
     Camera m_camera;
   
     std::shared_ptr<Skybox> m_skybox;

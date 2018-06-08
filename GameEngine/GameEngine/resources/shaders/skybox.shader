@@ -10,7 +10,7 @@ out VS_OUT
     vec3 texCoords;
 } vs_out;
 
-#include "camera.shader"
+#include "common/camera.shader"
 
 void main()
 {

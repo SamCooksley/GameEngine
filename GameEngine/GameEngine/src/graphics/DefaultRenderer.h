@@ -13,9 +13,7 @@ namespace graphics {
   class DefaultRenderer : public BaseRenderer
   {
   public:
-    DefaultRenderer(
-      const std::shared_ptr<Material> & _deferred = Material::Create(Resources::Load<Shader>("resources/shaders/deferred_lighting.shader"))
-    );
+    DefaultRenderer();
     ~DefaultRenderer();
   
     void Render() override;
@@ -26,8 +24,15 @@ namespace graphics {
     void CreateGBuffer(uint _width, uint _height);
   
     std::shared_ptr<FrameBuffer> m_gBuffer;
-  
-    std::shared_ptr<Material> m_deferredMat;
+
+    std::shared_ptr<Texture2D> m_position;
+    std::shared_ptr<Texture2D> m_normal;
+    std::shared_ptr<Texture2D> m_colour;
+
+    std::shared_ptr<Shader> m_deferredAmbient;
+    std::shared_ptr<Shader> m_deferredDirectional;
+    std::shared_ptr<Shader> m_deferredPoint;
+    std::shared_ptr<Shader> m_deferredSpot;
   };
 
 } } // engine::graphics

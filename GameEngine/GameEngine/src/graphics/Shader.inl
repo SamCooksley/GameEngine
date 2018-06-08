@@ -1,6 +1,18 @@
 namespace engine {
 namespace graphics {
     
+  template <typename T> 
+  void Shader::setUniform(const String & _name, const T & _value)
+  {
+    ShaderUniform uniform;
+    if (!getUniform(_name, &uniform))
+    {
+      return;
+    }
+
+    setUniform(uniform.location, _value);
+  }
+
   template <typename T>
   void Shader::RetreiveUniformValue(const ShaderUniform & _uniform, std::vector<byte> & _dest) const
   {

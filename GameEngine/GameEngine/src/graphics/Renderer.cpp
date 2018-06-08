@@ -24,7 +24,13 @@ namespace graphics {
   )
   { }
   
-  void Renderer::Add(const Light & _light)
+  void Renderer::Add(const DirectionalLight & _directional)
+  { }
+
+  void Renderer::Add(const PointLight & _point)
+  { }
+
+  void Renderer::Add(const SpotLight & _spot)
   { }
 
   void Renderer::Resize(uint _width, uint _height)

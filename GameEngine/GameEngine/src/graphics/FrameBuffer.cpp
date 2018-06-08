@@ -108,10 +108,13 @@ namespace graphics {
   
   void FrameBuffer::Bind(FrameBufferBind _bind)
   {
-    GLCALL(glBindFramebuffer(FrameBufferBindToOpenGL(_bind), m_fbo));
-    GLCALL(glViewport(0, 0, m_width, m_height));
+    if (Graphics::getContext().activeFrameBuffer.lock().get() != this)
+    {
+      GLCALL(glBindFramebuffer(FrameBufferBindToOpenGL(_bind), m_fbo));
+      GLCALL(glViewport(0, 0, m_width, m_height));
 
-    Graphics::getContext().activeFrameBuffer = shared_from_this();
+      Graphics::getContext().activeFrameBuffer = shared_from_this();
+    }
   }
   
   void FrameBuffer::Unbind()

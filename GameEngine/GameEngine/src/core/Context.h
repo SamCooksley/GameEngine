@@ -10,6 +10,8 @@
 #include "Asset.h"
 
 #include "Camera.h"
+#include "Light.h"
+
 #include "graphics\Graphics.h"
 #include "graphics\Window.h"
 
@@ -48,6 +50,7 @@ namespace engine {
     std::unique_ptr<graphics::Context> graphics;
   
     std::vector<std::weak_ptr<Camera>> cameras;
+    std::vector<std::weak_ptr<Light>> shadowLights;
   };
   
   void Destroy(std::unique_ptr<Context> & _context);

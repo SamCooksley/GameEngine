@@ -51,6 +51,7 @@ namespace graphics {
       return _lhs.material->getShader() < _rhs.material->getShader();
     };
   
+    //not accurate (not per triangle) but performs some bias towards closer objects.
     auto sortTrans = [&_camera](const Command & _lhs, const Command & _rhs) -> bool
     {
       return

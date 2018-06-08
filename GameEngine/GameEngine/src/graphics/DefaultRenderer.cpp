@@ -23,6 +23,7 @@ namespace graphics {
     m_deferredDirectional->setUniform("position", 0);
     m_deferredDirectional->setUniform("normal", 1);
     m_deferredDirectional->setUniform("colour", 2);
+    m_deferredDirectional->setUniform("shadowMap", 3);
 
     m_deferredPoint = Resources::Load<Shader>("resources/shaders/deferred/point.shader");
     m_deferredPoint->Bind();
@@ -101,6 +102,18 @@ namespace graphics {
         {
           m_deferredDirectional->setUniform("light.colour", dir.colour);
           m_deferredDirectional->setUniform("light.direction", dir.direction);
+
+          if (dir.shadowMap)
+          {
+            m_deferredDirectional->setUniform("shadow", 1);
+            m_deferredDirectional->setUniform("lightSpace", dir.lightSpace);
+            m_deferredDirectional->setUniform("shadowOrigin", dir.position);
+            dir.shadowMap->Bind(3);
+          }
+          else
+          {
+            m_deferredDirectional->setUniform("shadow", 0);
+          }
 
           fbTarget->RenderToNDC();
         }

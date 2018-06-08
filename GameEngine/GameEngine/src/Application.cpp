@@ -76,24 +76,18 @@ namespace engine {
     auto defaultShader = Resources::Load<graphics::Shader>("resources/shaders/gbuffer.shader");
     s_context->graphics->defaultMaterial = graphics::Material::Create(defaultShader);
    
-    auto texture = Resources::Load<graphics::Texture2D>("resources/textures/bricks/diffuse.png");
-    auto diffuse = texture;
-    //texture = Resources::Load<graphics::Texture2D>("resources/textures/bricks/diffuse.png");
+    auto texture = graphics::Texture2D::Create(1, 1, glm::vec4(0.9f));
     s_context->graphics->defaultMaterial->setTexture("diffuse", texture);
 
-    texture = Resources::Load<graphics::Texture2D>("resources/textures/bricks/normal.png");
+    texture = graphics::Texture2D::Create(1, 1, glm::vec4(.5f, .5f, 1.f, 1.f));
     s_context->graphics->defaultMaterial->setTexture("normal", texture);
 
-    //texture = Resources::Load<graphics::Texture2D>("resources/textures/bricks/roughness.jpg");
-    texture = Resources::Load<graphics::Texture2D>("resources/textures/bricks/specular.png");
+    texture = graphics::Texture2D::Create(1, 1, glm::vec4(1.f));
     s_context->graphics->defaultMaterial->setTexture("specular", texture);
-
-    //texture = Resources::Load<graphics::Texture2D>("resources/textures/bricks/displacement.png");
-    //texture = Resources::Load<graphics::Texture2D>("resources/textures/bricks/displacement.png");
-    texture = graphics::Texture2D::Create(64, 64, glm::vec4(0.f));
+    texture = graphics::Texture2D::Create(1, 1, glm::vec4(1.f));
     s_context->graphics->defaultMaterial->setTexture("displacement", texture);
 
-    texture = graphics::Texture2D::Create(64, 64, glm::vec4(1.f));
+    texture = graphics::Texture2D::Create(1, 1, glm::vec4(1.f));
     s_context->graphics->defaultMaterial->setTexture("opacity", texture);
 
     s_context->graphics->defaultMaterial->setUniform("displacementScale", 0.01f);
@@ -185,8 +179,21 @@ namespace engine {
 
       if (!light->getEnabled()) { continue; }
 
+      light->SetupShadowPass();
+      auto shadow = light->getShadow();
+      auto renderer = shadow->getRenderer();
+
       //TODO: render to shadowbuffer
+      if (s_context->scene)
+      {
+        s_context->scene->Render(*renderer);
+      }
+
+      renderer->End();
+
+      renderer->Render();
     }
+
     graphics::FrameBuffer::BindDefault();
     s_context->graphics->defaultFrameBuffer->Clear();
 

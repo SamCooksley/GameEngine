@@ -3,6 +3,9 @@
 
 #include "core\Types.h"
 
+#include "Texture2D.h"
+#include "TextureCube.h"
+
 namespace engine {
 namespace graphics {
 
@@ -20,6 +23,10 @@ namespace graphics {
   {
     glm::vec3 colour;
     glm::vec3 direction;
+
+    glm::vec3 position;
+    glm::mat4 lightSpace;
+    std::shared_ptr<Texture2D> shadowMap;
   };
 
   struct PointLight

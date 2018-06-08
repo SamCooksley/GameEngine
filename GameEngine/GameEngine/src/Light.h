@@ -3,6 +3,8 @@
 
 #include "Component.h"
 
+#include "graphics\ShadowMapping.h"
+
 namespace engine {
 
   enum class LightType
@@ -28,6 +30,11 @@ namespace engine {
 
     void setShadows(bool _castShadows);
 
+    //TODO: tmp
+    graphics::ShadowMapping * getShadow();
+
+    void SetupShadowPass();
+
    protected:
     void OnAwake() override;
     void OnRender(graphics::Renderer & _renderer) override;
@@ -46,6 +53,8 @@ namespace engine {
     float m_outerCuttofAngle;
 
     graphics::Attenutation m_attenuation;
+
+    std::unique_ptr<graphics::ShadowMapping> m_shadows;
 
     ENGINE_SETUPSHARED(Light);
   };

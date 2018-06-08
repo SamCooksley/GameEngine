@@ -18,13 +18,13 @@ namespace graphics {
       utilities::MeshProcessor processor;
       
       auto data = parser.getMesh();
-  
+ 
       processor.CalculateTangents(
         data.indices,
         data.positions, data.uvs, data.normals,
         &data.tangents, &data.bitangents
       );
-  
+
       mesh = std::make_shared<Mesh>(data);
     }
     catch (std::exception & _e)

@@ -30,8 +30,8 @@ namespace engine {
     camera->AddComponent<CameraMovement>();
 
     auto mesh = Resources::Load<graphics::Mesh>("resources/models/cube.obj");
-
-    auto material = graphics::Material::Create(Resources::Load<graphics::Shader>("resources/shaders/default.shader"));
+    
+    auto material = graphics::Material::Create(Graphics::getContext().defaultMaterial); //graphics::Material::Create(Resources::Load<graphics::Shader>("resources/shaders/default.shader"));
 
     material->setTexture("diffuse", graphics::Texture2D::Load("resources/textures/stone_wall/diffuse.jpg"));
     material->setTexture("normal", graphics::Texture2D::Load("resources/textures/stone_wall/normal.jpg"));
@@ -39,6 +39,7 @@ namespace engine {
     material->setTexture("displacement", graphics::Texture2D::Load("resources/textures/stone_wall/displacement.jpg"));
     material->setTexture("opacity", graphics::Texture2D::Create(64, 64, glm::vec4(1.0f)));
     material->setUniform("displacementScale", 0.02f);
+    
     auto go = GameObject::Instantiate();
 
     auto mr = go->AddComponent<MeshRenderer>();
@@ -97,26 +98,32 @@ namespace engine {
 
     go->getComponent<Transform>()->setPosition(glm::vec3(0.5f, 1.f, -2.f)).setRotation(glm::quat(glm::radians(glm::vec3(90.f, 0.f, 0.f))));
 
+    go = GameObject::Instantiate();
+
+    mr = go->AddComponent<MeshRenderer>();
+    mr->setMesh(quad);
+
+    go->getComponent<Transform>()->setPosition(glm::vec3(0, -.5f, 0)).setLocalScale(glm::vec3(10.f, 1.f, 10.f));
    
     go = GameObject::Instantiate();
 
     auto light = go->AddComponent<Light>();
-    light->setColour(glm::vec3(.0f, .5f, .0f) * 0.5f);
-    light->setPoint(0.f, 0.f);
-    //light->setDirectional();
+    light->setColour(glm::vec3(.6f, .5f, .5f) * 0.5f);
+    light->setDirectional();
+    light->setShadows(true);
     
     mr = go->AddComponent<MeshRenderer>();
     mr->setMesh(mesh);
 
-    go->getComponent<Transform>()->setPosition(glm::vec3(0.f, 5.f, 0.f)).setRotation(glm::quat(glm::vec3(-45.f, 0.f, 45.f))).setLocalScale(glm::vec3(0.1f));
+    go->getComponent<Transform>()->setPosition(glm::vec3(0.f, 3.f, 2.f)).setRotation(glm::quat(glm::radians(glm::vec3(-30.f, 30.f, 0.f)))).setLocalScale(glm::vec3(0.1f));
 
     go = GameObject::Instantiate();
     light = go->AddComponent<Light>();
     light->setColour(glm::vec3(.5f, .0f, .0f) * 1.5f);
-    light->setPoint(0.f, 0.f);
+    light->setPoint(0.f, 5.f);
     //light->setDirectional();
 
-    go->getComponent<Transform>()->setPosition(glm::vec3(0.f, -2.f, -7.f)).setRotation(glm::quat(glm::vec3(-45.f, 0.f, 45.f))).setLocalScale(glm::vec3(0.1f));
+    go->getComponent<Transform>()->setPosition(glm::vec3(0.f, -0.f, -7.f)).setRotation(glm::quat(glm::vec3(-45.f, 0.f, 45.f))).setLocalScale(glm::vec3(0.1f));
 
 
     mr = go->AddComponent<MeshRenderer>();

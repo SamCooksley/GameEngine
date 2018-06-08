@@ -13,11 +13,16 @@ namespace graphics {
     ShadowMapping(uint _width, uint _height, TextureFormat _format = TextureFormat::DEPTH_COMPONENT32F);
     ~ShadowMapping();
 
+    const glm::mat4 & getLightSpace() const;
+
     const std::shared_ptr<Texture2D> & getShadowMap() const;
 
-    void Setup();
+    ShadowRenderer * getRenderer();
+
+    void Setup(const Camera & _camera);
 
   private:
+    glm::mat4 m_lightSpace;
     std::unique_ptr<ShadowRenderer> m_renderer;
     std::shared_ptr<FrameBuffer> m_frameBuffer;
     std::shared_ptr<Texture2D> m_shadowMap;

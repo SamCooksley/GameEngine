@@ -34,7 +34,7 @@ namespace engine {
     glm::vec3 pos; glm::quat rot;
     transform->get(&pos, &rot, nullptr);
 
-    glm::mat4 trs = Transform::getTransform(pos, rot, glm::vec3(1.0f));
+    glm::mat4 trs = Transform::getTransform(pos, rot, glm::vec3(1.f));
     glm::vec3 dir = Transform::getForward(trs);
 
     switch (m_type)
@@ -44,6 +44,13 @@ namespace engine {
         graphics::DirectionalLight light;
         light.colour = m_colour * m_intensity;
         light.direction = dir;
+
+        if (m_shadows)
+        {
+          light.lightSpace = m_shadows->getLightSpace();
+          light.shadowMap = m_shadows->getShadowMap();
+        }
+
         _renderer.Add(light);
         break;
       }
@@ -106,12 +113,36 @@ namespace engine {
   {
     if (_castShadows)
     {
+      //TODO: create shadow;
+      m_shadows = std::make_unique<graphics::ShadowMapping>(2048, 2048);
       AddShadow();
     }
     else
     {
       RemoveShadow();
     }
+  }
+
+  graphics::ShadowMapping * Light::getShadow()
+  {
+    return m_shadows.get();
+  }
+
+  void Light::SetupShadowPass()
+  {
+    auto trs = getGameObject()->getComponent<Transform>();
+    assert(trs);
+
+    glm::mat4 proj = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, 0.0f, 100.0f);
+
+    glm::vec3 pos; glm::quat rot;
+    trs->get(&pos, &rot, nullptr);
+    glm::mat4 view = Transform::getTransform(pos, rot, glm::vec3(1.f));
+    view = glm::inverse(view);
+
+    graphics::Camera cam(proj, view, pos);
+
+    m_shadows->Setup(cam);
   }
 
   void Light::AddShadow()

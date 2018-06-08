@@ -5,7 +5,7 @@
 
 #include "CommandBuffer.h"
 
-#include "Resources.h"
+#include "Camera.h"
 
 namespace engine {
 namespace graphics {
@@ -21,6 +21,8 @@ namespace graphics {
   public:
     ShadowCommandBuffer() = default;
     ~ShadowCommandBuffer() = default;
+
+    void Start(const Camera & _camera);
 
     void Add(
       const std::shared_ptr<Mesh> & _mesh,
@@ -39,8 +41,7 @@ namespace graphics {
   {
    public:
     ShadowRenderer(
-      const std::shared_ptr<Material> & _material 
-                      = Material::Create(Resources::Load<Shader>("resources/shaders/shadow.shader"))
+      const std::shared_ptr<Shader> & _shader = Shader::Load("resources/shaders/shadow.shader")
     );
     ~ShadowRenderer();
 
@@ -61,7 +62,7 @@ namespace graphics {
   private:
     ShadowCommandBuffer m_commands;
     Camera m_camera;
-    std::shared_ptr<Material> m_material;
+    std::shared_ptr<Shader> m_shader;
   };
 
 } } // engine::grahics

@@ -25,11 +25,11 @@ namespace graphics {
     return m_commands;
   }
 
-  ShadowRenderer::ShadowRenderer(const std::shared_ptr<Material> & _material) :
+  ShadowRenderer::ShadowRenderer(const std::shared_ptr<Shader> & _shader) :
     Renderer(RenderFlags::Shadow),
-    m_material(_material)
+    m_shader(_shader)
   {
-    assert(_material);
+    assert(m_shader);
   }
 
   ShadowRenderer::~ShadowRenderer()
@@ -48,6 +48,8 @@ namespace graphics {
     const glm::mat4 & _transform
   )
   {
+    Renderer::Add(_mesh, _material, _transform);
+
     m_commands.Add(_mesh, _transform);
   }
 
@@ -56,15 +58,14 @@ namespace graphics {
 
   void ShadowRenderer::Render()
   {
-    m_material->Bind();
-    auto shader = m_material->getShader();
-    shader->setProjection(m_camera.projection);
-    shader->setView(m_camera.view);
+    m_shader->Bind();
+    m_shader->setProjection(m_camera.projection);
+    m_shader->setView(m_camera.view);
     
     auto & commands = m_commands.getCommands();
     for (auto & command : commands)
     {
-      shader->setModel(command.transform);
+      m_shader->setModel(command.transform);
       command.mesh->Render();
     }
   }

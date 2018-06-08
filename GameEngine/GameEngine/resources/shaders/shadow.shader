@@ -1,4 +1,4 @@
-#cull front
+#cull none
 
 #shader vertex
 #version 430 core

@@ -18,7 +18,7 @@ namespace graphics {
       OpenGLToTextureTypeSampler(_type);
       return true;
     }
-    catch (std::invalid_argument&)
+    catch (const std::invalid_argument&)
     {
       return false;
     }
@@ -31,7 +31,7 @@ namespace graphics {
       OpenGLToType(_type);
       return true;
     }
-    catch (std::invalid_argument&)
+    catch (const std::invalid_argument&)
     { }
   
     return IsSupportedSamplerUniformType(_type);
@@ -82,7 +82,7 @@ namespace graphics {
   
       Shader::AddShader(shader);
     }
-    catch (std::exception & _e)
+    catch (const std::exception & _e)
     {
       debug::LogError(_e.what());
       shader = Graphics::getContext().errorShader;

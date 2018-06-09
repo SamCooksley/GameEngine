@@ -67,7 +67,7 @@ namespace graphics {
 
     memcpy(&data[LightBuffer::AMBIENT_OFFSET], glm::value_ptr(_lights.ambient), sizeof(glm::vec3));
 
-    for (int i = 0; i < numDir; ++i)
+    for (uint i = 0; i < numDir; ++i)
     {
       const DirectionalLight & dir = _lights.directional[i];
       uint offset = LightBuffer::DIRECTIONAL_OFFSET + LightBuffer::Directional::SIZE * i;
@@ -76,7 +76,7 @@ namespace graphics {
       memcpy(&data[offset + LightBuffer::Directional::DIRECTION_OFFSET], glm::value_ptr(dir.direction), sizeof(glm::vec3));
     }
 
-    for (int i = 0; i < numPoint; ++i)
+    for (uint i = 0; i < numPoint; ++i)
     {
       const PointLight & point = _lights.point[i];
       uint offset = LightBuffer::POINT_OFFSET + LightBuffer::Point::SIZE * i;
@@ -87,7 +87,7 @@ namespace graphics {
       memcpy(&data[offset + LightBuffer::Point::QUADRATIC_OFFSET], &point.atten.quadratic,         sizeof(float));
     }
 
-    for (int i = 0; i < numSpot; ++i)
+    for (uint i = 0; i < numSpot; ++i)
     {
       const SpotLight & spot = _lights.spot[i];
       uint offset = LightBuffer::SPOT_OFFSET + LightBuffer::Spot::SIZE * i;

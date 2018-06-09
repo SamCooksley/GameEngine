@@ -15,7 +15,7 @@ namespace graphics {
 
     const glm::mat4 & getLightSpace() const;
 
-    const std::shared_ptr<Texture2D> & getShadowMap() const;
+    const std::shared_ptr<Shadow2D> & getShadowMap() const;
 
     ShadowRenderer * getRenderer();
 
@@ -25,7 +25,7 @@ namespace graphics {
     glm::mat4 m_lightSpace;
     std::unique_ptr<ShadowRenderer> m_renderer;
     std::shared_ptr<FrameBuffer> m_frameBuffer;
-    std::shared_ptr<Texture2D> m_shadowMap;
+    std::shared_ptr<Shadow2D> m_shadowMap;
   };
 
 } } // engine::graphics

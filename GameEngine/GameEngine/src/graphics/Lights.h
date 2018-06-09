@@ -3,15 +3,10 @@
 
 #include "core\Types.h"
 
-#include "Texture2D.h"
-#include "TextureCube.h"
+#include "Shadow2D.h"
 
 namespace engine {
 namespace graphics {
-
-  constexpr uint MAX_DIRECTIONAL_LIGHTS = 5u;
-  constexpr uint MAX_POINT_LIGHTS = 10u;
-  constexpr uint MAX_SPOT_LIGHTS = 5u;
 
   struct Attenutation
   {
@@ -26,7 +21,7 @@ namespace graphics {
 
     glm::vec3 position;
     glm::mat4 lightSpace;
-    std::shared_ptr<Texture2D> shadowMap;
+    std::shared_ptr<Shadow2D> shadowMap;
   };
 
   struct PointLight

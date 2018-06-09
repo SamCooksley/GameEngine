@@ -61,10 +61,10 @@ namespace graphics {
 
   std::shared_ptr<FrameBuffer> FrameBuffer::Create(uint _width, uint _height)
   {
-    class enable_fb : public FrameBuffer 
+    struct enable_fb : public FrameBuffer 
     { 
-     public: 
-      enable_fb(uint _width, uint _height) : FrameBuffer(_width, _height) { } 
+      enable_fb(uint _width, uint _height) : FrameBuffer(_width, _height, false) 
+      { } 
     };
     auto fb = std::make_shared<enable_fb>(_width, _height);
     fb->Bind();
@@ -73,10 +73,10 @@ namespace graphics {
 
   std::shared_ptr<FrameBuffer> FrameBuffer::CreateDefault(uint _width, uint _height)
   {
-    class enable_fb : public FrameBuffer
+    struct enable_fb : public FrameBuffer
     {
-     public:
-      enable_fb(uint _width, uint _height) : FrameBuffer(_width, _height, true) { }
+      enable_fb(uint _width, uint _height) : FrameBuffer(_width, _height, true) 
+      { }
     };
     auto fb = std::make_shared<enable_fb>(_width, _height);
     fb->Bind();
@@ -211,6 +211,30 @@ namespace graphics {
     m_textures.push_back(cube);
   
     return cube;
+  }
+
+  std::shared_ptr<Shadow2D> FrameBuffer::AddShadow2D(TextureFormat _format)
+  {
+    assert(m_fbo != 0 && "Cannot attach items to default framebuffer");
+
+    auto texture = Shadow2D::Create(m_width, m_height, _format);
+
+    GLCALL(glFramebufferTexture2D(
+      GL_FRAMEBUFFER,
+      FrameBufferAttachmentToOpenGL(FrameBufferAttachment::DEPTH, m_colourAttachmentCount),
+      GL_TEXTURE_2D,
+      texture->m_id,
+      0
+    ));
+
+    if (!Attach(FrameBufferAttachment::DEPTH))
+    {
+      return nullptr;
+    }
+
+    m_textures.push_back(texture);
+
+    return texture;
   }
   
   bool FrameBuffer::AddRenderBuffer(FrameBufferAttachment _attachment, TextureFormat _format)

@@ -16,12 +16,16 @@ uniform sampler2D colour;
 
 #include "..\common\camera.shader"
 #include "..\lighting\lighting.shader"
+
+#define SHADOW_PCF
+//#define SHADOW_POISSON_SAMPLE
+
 #include "..\lighting\shadows.shader"
 
 uniform DirectionalLight light;
 
 uniform int shadow = 0; 
-uniform sampler2D shadowMap;
+uniform sampler2DShadow shadowMap;
 uniform mat4 lightSpace;
 uniform vec3 shadowOrigin;
 
@@ -43,8 +47,7 @@ void main()
     vec3 colour = CalculateLight(light, surf, viewDir_world);
     if (shadow > 0)
     {
-        vec3 lightDir = normalize(shadowOrigin - surf.position);
-        colour *= ShadowCalculation(lightSpace * vec4(surf.position, 1.0), surf.normal, lightDir, shadowMap);
+        colour *= ShadowCalculation(lightSpace * vec4(surf.position, 1.0), light.direction, surf.position, surf.normal, shadowMap);
     }
 
     out_colour = vec4(colour, 1.0);

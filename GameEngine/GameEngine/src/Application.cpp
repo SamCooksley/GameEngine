@@ -183,7 +183,6 @@ namespace engine {
       auto shadow = light->getShadow();
       auto renderer = shadow->getRenderer();
 
-      //TODO: render to shadowbuffer
       if (s_context->scene)
       {
         s_context->scene->Render(*renderer);

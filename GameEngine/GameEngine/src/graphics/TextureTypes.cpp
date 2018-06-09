@@ -7,7 +7,16 @@ namespace graphics {
 
   GLenum TextureTypeToOpenGL(TextureType _type)
   {
-    return static_cast<GLenum>(_type);
+    switch (_type)
+    {
+      case TextureType::TEXTURE_2D:   { return GL_TEXTURE_2D;       }
+      case TextureType::TEXTURE_CUBE: { return GL_TEXTURE_CUBE_MAP; }
+      case TextureType::SHADOW_2D:    { return GL_TEXTURE_2D;       }
+      default:
+      {
+        throw std::invalid_argument("Invalid texture type");
+      }
+    }
   }
   
   TextureType OpenGLToTextureType(GLenum _type)
@@ -28,8 +37,9 @@ namespace graphics {
     //map specific values as the enum values are opengl textures, not samplers.
     switch (_type)
     {
-      case TextureType::TEXTURE_2D:   { return GL_SAMPLER_2D;   }
-      case TextureType::TEXTURE_CUBE: { return GL_SAMPLER_CUBE; }
+      case TextureType::TEXTURE_2D:   { return GL_SAMPLER_2D;        }
+      case TextureType::TEXTURE_CUBE: { return GL_SAMPLER_CUBE;      }
+      case TextureType::SHADOW_2D:    { return GL_SAMPLER_2D_SHADOW; }
       default: 
       { 
         throw std::invalid_argument("Invalid texture type");
@@ -41,8 +51,9 @@ namespace graphics {
   {
     switch (_type)
     {
-      case GL_SAMPLER_2D:   { return TextureType::TEXTURE_2D;   }
-      case GL_SAMPLER_CUBE: { return TextureType::TEXTURE_CUBE; }
+      case GL_SAMPLER_2D:        { return TextureType::TEXTURE_2D;   }
+      case GL_SAMPLER_CUBE:      { return TextureType::TEXTURE_CUBE; }
+      case GL_SAMPLER_2D_SHADOW: { return TextureType::SHADOW_2D;    }
       default:
       { 
         throw std::invalid_argument("Invalid sampler type");

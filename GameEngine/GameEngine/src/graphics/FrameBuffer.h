@@ -3,6 +3,7 @@
 
 #include "Texture2D.h"
 #include "TextureCube.h"
+#include "Shadow2D.h"
 
 #include "RenderBuffer.h"
 
@@ -69,6 +70,8 @@ namespace graphics {
     
     std::shared_ptr<TextureCube> AddCubeMap(FrameBufferAttachment _attachment, TextureFormat _format, TextureDataType _type);
   
+    std::shared_ptr<Shadow2D> AddShadow2D(TextureFormat _format);
+
     bool AddRenderBuffer(FrameBufferAttachment _attachment, TextureFormat _format);
 
     uint getWidth() const;

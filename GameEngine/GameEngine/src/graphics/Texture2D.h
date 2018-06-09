@@ -11,7 +11,7 @@ namespace graphics {
    public:
     static const TextureType type = TextureType::TEXTURE_2D;
   
-    static std::shared_ptr<Texture2D> Create(uint _width, uint _height, TextureFormat _format, TextureDataType _type);
+    static std::shared_ptr<Texture2D> Create(uint _width, uint _height, TextureFormat _format, TextureDataType _type);    
     static std::shared_ptr<Texture2D> Create(uint _width, uint _height, const glm::vec4 & _colour);
   
     static std::shared_ptr<Texture2D> Load(const String & _path, bool _mipmaps = true);

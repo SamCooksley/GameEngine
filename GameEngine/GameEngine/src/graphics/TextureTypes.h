@@ -8,8 +8,9 @@ namespace graphics {
 
   enum class TextureType : GLenum
   {
-    TEXTURE_2D = GL_TEXTURE_2D,
-    TEXTURE_CUBE = GL_TEXTURE_CUBE_MAP
+    TEXTURE_2D,
+    TEXTURE_CUBE,
+    SHADOW_2D
   };
   
   GLenum TextureTypeToOpenGL(TextureType _type);

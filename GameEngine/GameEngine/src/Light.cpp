@@ -114,11 +114,12 @@ namespace engine {
     if (_castShadows)
     {
       //TODO: create shadow;
-      m_shadows = std::make_unique<graphics::ShadowMapping>(2048, 2048);
+      m_shadows = std::make_unique<graphics::ShadowMapping>(1024, 1024);
       AddShadow();
     }
     else
     {
+      m_shadows.reset();
       RemoveShadow();
     }
   }
@@ -133,7 +134,7 @@ namespace engine {
     auto trs = getGameObject()->getComponent<Transform>();
     assert(trs);
 
-    glm::mat4 proj = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, 0.0f, 100.0f);
+    glm::mat4 proj = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, 0.0f, 25.0f);
 
     glm::vec3 pos; glm::quat rot;
     trs->get(&pos, &rot, nullptr);

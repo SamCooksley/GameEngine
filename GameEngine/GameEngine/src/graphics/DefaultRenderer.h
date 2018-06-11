@@ -7,12 +7,14 @@
 
 #include "Resources.h"
 
+#include "ShadowRenderer.h"
+
 namespace engine {
 namespace graphics {
 
   class DefaultRenderer : public BaseRenderer
   {
-  public:
+   public:
     DefaultRenderer();
     ~DefaultRenderer();
   
@@ -20,7 +22,7 @@ namespace graphics {
 
     void Resize(uint _width, uint _height) override;
   
-  private:
+   private:
     void CreateGBuffer(uint _width, uint _height);
   
     std::shared_ptr<FrameBuffer> m_gBuffer;

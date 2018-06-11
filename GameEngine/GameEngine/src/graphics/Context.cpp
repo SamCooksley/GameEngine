@@ -10,6 +10,7 @@ namespace engine {
 
     _context->defaultFrameBuffer = nullptr;
     _context->errorShader = nullptr;
+    _context->depthShader = nullptr;
     _context->defaultMaterial = nullptr;
     _context->screenQuad = nullptr;
 

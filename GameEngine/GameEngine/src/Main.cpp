@@ -14,7 +14,6 @@ int main(int _argc, char** _argv)
     engine::Scene::SetScene<engine::TestScene>();
 
     engine::Application::Loop();
-    engine::Application::Exit();
   }
   catch (std::exception & _e)
   {
@@ -22,6 +21,8 @@ int main(int _argc, char** _argv)
 
     std::cin.get();
   }
+
+  engine::Application::Exit();
 
   return 0;
 }

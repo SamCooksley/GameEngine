@@ -26,7 +26,7 @@ namespace engine {
     Scene::Init();
 
     auto camera = GameObject::Instantiate();
-    camera->AddComponent<Camera>()->setPerspective(60.f, 1.0f, 0.01f, 10000.0f);
+    camera->AddComponent<Camera>()->setPerspective(60.f, 0.01f, 100.0f);
     camera->AddComponent<CameraMovement>();
 
     auto mesh = Resources::Load<graphics::Mesh>("resources/models/cube.obj");
@@ -56,6 +56,7 @@ namespace engine {
     material->setTexture("specular", graphics::Texture2D::Load("resources/textures/stone_wall_2/specular.jpg"));
     material->setTexture("displacement", graphics::Texture2D::Load("resources/textures/stone_wall_2/displacement.jpg"));
     material->setUniform("displacementScale", 0.2f);
+    
     go = GameObject::Instantiate();
 
     mr = go->AddComponent<MeshRenderer>();

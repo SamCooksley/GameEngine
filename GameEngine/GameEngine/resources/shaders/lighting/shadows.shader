@@ -84,11 +84,11 @@ float ShadowCalculation(const vec4 _lightPos, const vec3 _lightDir, const vec3 _
 {
 	vec3 coords = _lightPos.xyz / _lightPos.w;
 	coords = coords * 0.5 + 0.5;
+  coords.z -= 0.0002 + 0.01 * (1.0 - abs(dot(_normal, _lightDir))); 
   
   float shadow = 0.0;
 
 #ifdef SHADOW_PCF
-  coords.z -= 0.0002 + 0.01 * (1.0 - abs(dot(_normal, _lightDir))); 
 
 #ifdef SHADOW_POISSON_SAMPLE
 
@@ -121,7 +121,6 @@ float ShadowCalculation(const vec4 _lightPos, const vec3 _lightDir, const vec3 _
 
 #else
 
-  coords.z -= 0.0001 + 0.0025 * (1.0 - abs(dot(_normal, _lightDir)));  
   shadow = texture(_shadowMap, coords);
 
 #endif

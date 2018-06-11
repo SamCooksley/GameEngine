@@ -15,8 +15,8 @@ namespace graphics {
    public:  
     virtual ~Texture();
   
-    virtual void Bind(GLenum _unit) const = 0;
-    virtual void Unbind(GLenum _unit) const = 0;
+    virtual void Bind(uint _unit) const = 0;
+    virtual void Unbind(uint _unit) const = 0;
   
     virtual void Resize(uint _width, uint _height) = 0;
 

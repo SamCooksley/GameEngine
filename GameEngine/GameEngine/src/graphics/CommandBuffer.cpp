@@ -14,7 +14,8 @@ namespace graphics {
   void CommandBuffer::Add(
     const std::shared_ptr<Mesh> & _mesh,
     const std::shared_ptr<Material> & _material,
-    const glm::mat4 & _transform
+    const glm::mat4 & _transform,
+    bool _castShadows
   )
   {
     assert(_mesh && _material);
@@ -28,9 +29,15 @@ namespace graphics {
       case RenderQueue::TRANSPARENT: { buffer = &m_transparent; break; }
     }
   
-    assert(buffer != nullptr);
-  
-    buffer->push_back({ _mesh, _material, _transform });
+    if (buffer != nullptr)
+    {
+      buffer->push_back({ _mesh, _material, _transform });
+    }
+
+    if (_castShadows)
+    {
+      m_shadowCommands.Add(_mesh, _transform);
+    }
   }
   
   void CommandBuffer::Clear()
@@ -38,6 +45,7 @@ namespace graphics {
     m_deferred.clear();
     m_forward.clear();
     m_transparent.clear();
+    m_shadowCommands.Clear();
   }
   
   void CommandBuffer::Sort(const Camera & _camera)
@@ -52,6 +60,7 @@ namespace graphics {
     };
   
     //not accurate (not per triangle) but performs some bias towards closer objects.
+    //also slow, need to cache distances.
     auto sortTrans = [&_camera](const Command & _lhs, const Command & _rhs) -> bool
     {
       return
@@ -77,6 +86,16 @@ namespace graphics {
   const std::vector<Command> & CommandBuffer::getTransparentCommands() const
   {
     return m_transparent;
+  }
+
+  const Lights & CommandBuffer::getLights() const
+  {
+    return m_lights;
+  }
+
+  const ShadowCommandBuffer & CommandBuffer::getShadowCommands() const
+  {
+    return m_shadowCommands;
   }
 
 } } // engine::graphics

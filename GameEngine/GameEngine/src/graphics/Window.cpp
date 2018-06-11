@@ -46,8 +46,6 @@ namespace graphics {
   Window::~Window()
   {
     glfwDestroyWindow(m_window);
-    m_window = nullptr;
-    m_width = m_height = 0;
   }
   
   void Window::Present()

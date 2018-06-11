@@ -112,13 +112,13 @@ namespace graphics {
     GLCALL(glDeleteTextures(1, &m_id));
   }
   
-  void TextureCube::Bind(GLenum _unit) const
+  void TextureCube::Bind(uint _unit) const
   {
     GLCALL(glActiveTexture(GL_TEXTURE0 + _unit));
     GLCALL(glBindTexture(GL_TEXTURE_CUBE_MAP, m_id));
   }
   
-  void TextureCube::Unbind(GLenum _unit) const
+  void TextureCube::Unbind(uint _unit) const
   {
     GLCALL(glActiveTexture(GL_TEXTURE0 + _unit));
     GLCALL(glBindTexture(GL_TEXTURE_CUBE_MAP, 0));

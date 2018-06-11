@@ -40,7 +40,7 @@ namespace graphics {
   class FrameBuffer : public std::enable_shared_from_this<FrameBuffer>
   {
    public:
-    static void BindDefault(FrameBufferBind _bind = FrameBufferBind::FULL);
+    static FrameBuffer & BindDefault(FrameBufferBind _bind = FrameBufferBind::FULL);
 
     static void Blit(
       int _srcX0, int _srcY0, int _srcX1, int _srcY1,
@@ -74,6 +74,10 @@ namespace graphics {
 
     bool AddRenderBuffer(FrameBufferAttachment _attachment, TextureFormat _format);
 
+    const std::shared_ptr<Texture2D> & getTexture(size_t _i);
+    const std::shared_ptr<TextureCube> & getCubeMap(size_t _i);
+    const std::shared_ptr<Shadow2D> & getShadow2D();
+
     uint getWidth() const;
     uint getHeight() const;
   
@@ -95,7 +99,10 @@ namespace graphics {
   
     uint m_colourAttachmentCount;
   
-    std::vector<std::shared_ptr<Texture>> m_textures;
+    std::vector<std::shared_ptr<Texture2D>> m_textures;
+    std::vector<std::shared_ptr<TextureCube>> m_cubeMaps;
+    std::shared_ptr<Shadow2D> m_shadow;
+
     std::vector<std::unique_ptr<RenderBuffer>> m_renderBuffers;
   };
   

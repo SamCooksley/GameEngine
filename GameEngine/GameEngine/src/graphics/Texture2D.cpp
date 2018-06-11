@@ -108,13 +108,13 @@ namespace graphics {
     GLCALL(glDeleteTextures(1, &m_id));
   }
   
-  void Texture2D::Bind(GLenum _unit) const
+  void Texture2D::Bind(uint _unit) const
   {
     GLCALL(glActiveTexture(GL_TEXTURE0 + _unit));
     GLCALL(glBindTexture(GL_TEXTURE_2D, m_id));
   }
   
-  void Texture2D::Unbind(GLenum _unit) const
+  void Texture2D::Unbind(uint _unit) const
   {
     GLCALL(glActiveTexture(GL_TEXTURE0 + _unit));
     GLCALL(glBindTexture(GL_TEXTURE_2D, 0));

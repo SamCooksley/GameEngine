@@ -48,9 +48,11 @@ namespace engine {
     std::shared_ptr<Scene> nextScene;
   
     std::unique_ptr<graphics::Context> graphics;
+
+    std::unique_ptr<graphics::BaseRenderer> renderer;
   
-    std::vector<std::weak_ptr<Camera>> cameras;
-    std::vector<std::weak_ptr<Light>> shadowLights;
+    std::shared_ptr<Camera> camera;
+    std::vector<std::shared_ptr<Light>> directionalShadows;
   };
   
   void Destroy(std::unique_ptr<Context> & _context);

@@ -58,6 +58,7 @@ namespace engine {
     debug::Log("GLSL version: " + String(reinterpret_cast<const char*>(glGetString(GL_SHADING_LANGUAGE_VERSION))));
  
     s_context->graphics = std::make_unique<graphics::Context>();
+    s_context->graphics->defaultFrameBuffer = graphics::FrameBuffer::CreateDefault(640, 480);
 
     //uniform buffers
     {
@@ -68,10 +69,14 @@ namespace engine {
       s_context->graphics->uniformBuffers.Add(std::move(lights));
     }
 
-    s_context->graphics->defaultFrameBuffer = graphics::FrameBuffer::CreateDefault(640, 480);
+    s_context->renderer = std::make_unique<graphics::DefaultRenderer>();
+
+    
     s_context->graphics->screenQuad = graphics::mesh::Quad().getMesh();
     
     s_context->graphics->errorShader = Resources::Load<graphics::Shader>("resources/shaders/error.shader");
+
+    s_context->graphics->depthShader = Resources::Load<graphics::Shader>("resources/shaders/depth.shader");
 
     auto defaultShader = Resources::Load<graphics::Shader>("resources/shaders/gbuffer.shader");
     s_context->graphics->defaultMaterial = graphics::Material::Create(defaultShader);
@@ -113,6 +118,8 @@ namespace engine {
     ChangeScene();
 
     Resources::Clear();
+
+    s_context->renderer = nullptr;
 
     Destroy(s_context->graphics);
     Destroy(s_context);
@@ -172,56 +179,42 @@ namespace engine {
 
   void Application::Render()
   {
-    for (auto & l : s_context->shadowLights)
+    assert(s_context->camera && "No camera in scene");
+    Camera & camera = *s_context->camera;
+
+    assert(s_context->renderer && "No renderer");
+    graphics::BaseRenderer & renderer = *s_context->renderer;
+    renderer.Reset();
+
+    auto & target = camera.getRenderTarget();
+
+    uint width = target.getWidth();
+    uint height = target.getHeight();
+    renderer.Resize(width, height);
+
+    float aspect = static_cast<float>(width) / static_cast<float>(height);
+    auto cam = camera.getCamera(aspect);
+
+    if (s_context->scene)
     {
-      auto light = l.lock();
-      assert(light);
-
-      if (!light->getEnabled()) { continue; }
-
-      light->SetupShadowPass();
-      auto shadow = light->getShadow();
-      auto renderer = shadow->getRenderer();
-
-      if (s_context->scene)
-      {
-        s_context->scene->Render(*renderer);
-      }
-
-      renderer->End();
-
-      renderer->Render();
+      s_context->scene->Render(renderer);
     }
 
-    graphics::FrameBuffer::BindDefault();
-    s_context->graphics->defaultFrameBuffer->Clear();
-
-    if (s_context->cameras.empty())
+    for (auto & light : s_context->directionalShadows)
     {
-      debug::LogError("Camera Error: no cameras in scene");
+      light->GenerateShadowMap(renderer.getCommands().getShadowCommands());
     }
 
-    for (auto & cam : s_context->cameras)
-    {
-      auto camera = cam.lock();
-      assert(camera);
+    target.Bind();
+    target.Clear();
 
-      if (!camera->getEnabled()) { continue; }
+    
+    renderer.setCamera(cam);
 
-      camera->SetupRender();
+    renderer.End();
 
-      camera->m_renderer->Start(camera->getCamera());
-
-      if (s_context->scene)
-      {
-        s_context->scene->Render(*camera->m_renderer);
-      }
-
-      camera->m_renderer->End();
-
-      camera->m_renderer->Render();
-    }
-
+    renderer.Render();
+    
     s_context->window->Present();
   }
 

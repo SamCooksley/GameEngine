@@ -3,12 +3,13 @@
 
 #include "Component.h"
 
-#include "graphics\ShadowMapping.h"
+#include "graphics\ShadowMap.h"
 
 namespace engine {
 
   enum class LightType
   {
+    NONE,
     DIRECTIONAL,
     POINT,
     SPOT
@@ -16,6 +17,8 @@ namespace engine {
 
   class Light : public Component
   {
+    friend class Application;
+
    public:
     Light();
     ~Light();
@@ -30,18 +33,22 @@ namespace engine {
 
     void setShadows(bool _castShadows);
 
-    //TODO: tmp
-    graphics::ShadowMapping * getShadow();
-
-    void SetupShadowPass();
+    void GenerateShadowMap(const graphics::ShadowCommandBuffer & _occluders);
 
    protected:
     void OnAwake() override;
+    void OnDestroy() override;
     void OnRender(graphics::Renderer & _renderer) override;
 
    private:
+    graphics::ShadowRenderer * SetupShadowPass();
+
+    void UpdateShadow();
+
     void AddShadow();
     void RemoveShadow();
+
+    std::vector<std::shared_ptr<Light>> * getShadowList(LightType _type);
 
    private:
     LightType m_type;
@@ -54,7 +61,9 @@ namespace engine {
 
     graphics::Attenutation m_attenuation;
 
-    std::unique_ptr<graphics::ShadowMapping> m_shadows;
+    bool m_castShadows;
+    LightType m_shadowList;
+    std::unique_ptr<graphics::ShadowMap> m_shadows;
 
     ENGINE_SETUPSHARED(Light);
   };

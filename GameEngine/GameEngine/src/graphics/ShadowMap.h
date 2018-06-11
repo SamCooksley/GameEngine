@@ -1,5 +1,5 @@
-#ifndef _ENGINE_GRAPHICS_SHADOWMAPPING_H_
-#define _ENGINE_GRAPHICS_SHADOWMAPPING_H_
+#ifndef _ENGINE_GRAPHICS_SHADOWMAP_H_
+#define _ENGINE_GRAPHICS_SHADOWMAP_H_
 
 #include "ShadowRenderer.h"
 #include "FrameBuffer.h"
@@ -7,23 +7,25 @@
 namespace engine { 
 namespace graphics {
  
-  class ShadowMapping
+  class ShadowMap
   {
   public:
-    ShadowMapping(uint _width, uint _height, TextureFormat _format = TextureFormat::DEPTH_COMPONENT32F);
-    ~ShadowMapping();
+    ShadowMap(
+      uint _width, uint _height,
+      TextureFormat _format = TextureFormat::DEPTH_COMPONENT32F, 
+      const std::shared_ptr<Shader> & _depth = nullptr
+    );
+    ~ShadowMap();
 
     const glm::mat4 & getLightSpace() const;
 
     const std::shared_ptr<Shadow2D> & getShadowMap() const;
 
-    ShadowRenderer * getRenderer();
-
-    void Setup(const Camera & _camera);
+    void GenerateShadowMap(const Camera & _camera, const ShadowCommandBuffer & _occluders);
 
   private:
     glm::mat4 m_lightSpace;
-    std::unique_ptr<ShadowRenderer> m_renderer;
+    std::shared_ptr<Shader> m_depth;
     std::shared_ptr<FrameBuffer> m_frameBuffer;
     std::shared_ptr<Shadow2D> m_shadowMap;
   };

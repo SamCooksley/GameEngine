@@ -6,6 +6,10 @@
 
 #include "Camera.h"
 
+#include "ShadowCommandBuffer.h"
+
+#include "Lights.h"
+
 namespace engine {
 namespace graphics {
 
@@ -25,8 +29,9 @@ namespace graphics {
   
     void Add(
       const std::shared_ptr<Mesh> & _mesh,
-      const std::shared_ptr<Material> & _material, 
-      const glm::mat4 & _transform
+      const std::shared_ptr<Material> & _material,
+      const glm::mat4 & _transform,
+      bool _castShadows = true
     );
   
     void Clear();
@@ -36,11 +41,19 @@ namespace graphics {
     const std::vector<Command> & getDeferredCommands() const;
     const std::vector<Command> & getForwardCommands() const;
     const std::vector<Command> & getTransparentCommands() const;
+
+    const Lights & getLights() const;
+
+    const ShadowCommandBuffer & getShadowCommands() const;
   
    private:
     std::vector<Command> m_deferred;
     std::vector<Command> m_forward;
     std::vector<Command> m_transparent;
+
+    Lights m_lights;
+
+    ShadowCommandBuffer m_shadowCommands;
   };
   
 } } // engine::graphics

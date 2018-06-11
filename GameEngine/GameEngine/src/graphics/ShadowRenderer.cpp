@@ -5,26 +5,6 @@
 namespace engine {
 namespace graphics {
 
-  void ShadowCommandBuffer::Add(
-    const std::shared_ptr<Mesh> & _mesh,
-    const glm::mat4 & _transform
-  )
-  {
-    assert(_mesh);
-
-    m_commands.push_back({ _mesh, _transform });
-  }
-
-  void ShadowCommandBuffer::Clear()
-  {
-    m_commands.clear();
-  }
-
-  const std::vector<ShadowCommand> & ShadowCommandBuffer::getCommands() const
-  {
-    return m_commands;
-  }
-
   ShadowRenderer::ShadowRenderer(const std::shared_ptr<Shader> & _shader) :
     Renderer(RenderFlags::Shadow),
     m_shader(_shader)

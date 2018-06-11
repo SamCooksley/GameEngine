@@ -24,6 +24,11 @@ namespace engine {
     m_intensity = 1.0f;
   }
 
+  void Light::OnDestroy()
+  {
+    RemoveShadow();
+  }
+
   void Light::OnRender(graphics::Renderer & _renderer)
   {
     Component::OnRender(_renderer);
@@ -88,6 +93,8 @@ namespace engine {
   void Light::setDirectional()
   {
     m_type = LightType::DIRECTIONAL;
+
+    UpdateShadow();
   }
 
   void Light::setPoint(float _linear, float _quadratic)
@@ -96,6 +103,8 @@ namespace engine {
 
     m_attenuation.linear = _linear;
     m_attenuation.quadratic = _quadratic;
+
+    UpdateShadow();
   }
 
   void Light::setSpot(float _cutoff, float _outerCutoff, float _linear, float _quadratic)
@@ -107,6 +116,8 @@ namespace engine {
 
     m_attenuation.linear = _linear;
     m_attenuation.quadratic = _quadratic;
+
+    UpdateShadow();
   }
 
   void Light::setShadows(bool _castShadows)
@@ -114,22 +125,36 @@ namespace engine {
     if (_castShadows)
     {
       //TODO: create shadow;
-      m_shadows = std::make_unique<graphics::ShadowMapping>(1024, 1024);
-      AddShadow();
+      m_shadows = std::make_unique<graphics::ShadowMap>(1024, 1024);
+      m_castShadows = true;
     }
     else
     {
       m_shadows.reset();
-      RemoveShadow();
+      m_castShadows = false;
     }
+
+    UpdateShadow();
   }
 
-  graphics::ShadowMapping * Light::getShadow()
+  void Light::GenerateShadowMap(const graphics::ShadowCommandBuffer & _occluders)
   {
-    return m_shadows.get();
+    auto trs = getGameObject()->getComponent<Transform>();
+    assert(trs);
+
+    glm::mat4 proj = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, 0.0f, 25.0f);
+
+    glm::vec3 pos; glm::quat rot;
+    trs->get(&pos, &rot, nullptr);
+    glm::mat4 view = Transform::getTransform(pos, rot, glm::vec3(1.f));
+    view = glm::inverse(view);
+
+    graphics::Camera camera(proj, view, pos);
+
+    m_shadows->GenerateShadowMap(camera, _occluders);
   }
 
-  void Light::SetupShadowPass()
+  graphics::ShadowRenderer * Light::SetupShadowPass()
   {
     auto trs = getGameObject()->getComponent<Transform>();
     assert(trs);
@@ -143,37 +168,67 @@ namespace engine {
 
     graphics::Camera cam(proj, view, pos);
 
-    m_shadows->Setup(cam);
+    //m_shadows->Setup(cam);
+
+    return nullptr;// m_shadows->getRenderer();
+  }
+
+  void Light::UpdateShadow()
+  {
+    if (m_castShadows)
+    {
+      AddShadow();
+    }
+    else
+    {
+      RemoveShadow();
+    }
   }
 
   void Light::AddShadow()
   {
-    auto & lights = Application::s_context->shadowLights;
+    if (m_type == m_shadowList) { return; }
 
-    for (auto & light : lights)
-    {
-      if (light.lock().get() == this)
-      {
-        return;
-      }
-    }
+    RemoveShadow();
 
-    lights.push_back(Light::getShared());
+    auto * lights = getShadowList(m_type);
+    if (lights == nullptr) { return; }
+
+    lights->push_back(Light::getShared());
+    m_shadowList = m_type;
   }
 
   void Light::RemoveShadow()
   {
-    auto & lights = Application::s_context->shadowLights;
+    auto * lights = getShadowList(m_shadowList);
+    if (lights == nullptr) { return; }
 
-    for (size_t i = 0u; i < lights.size();)
+    for (size_t i = 0u; i < lights->size();)
     {
-      if (lights[i].expired() ||
-        lights[i].lock().get() == this)
+      if ((*lights)[i].get() == this)
       {
-        lights.erase(lights.begin() + i);
+        lights->erase(lights->begin() + i);
       }
       else { ++i; }
     }
+
+    m_shadowList = LightType::NONE;
+  }
+
+  std::vector<std::shared_ptr<Light>> * Light::getShadowList(LightType _type)
+  {
+    std::vector<std::shared_ptr<Light>> * list = nullptr;
+
+    switch (_type)
+    {
+      case engine::LightType::DIRECTIONAL:
+      {
+        list = &Application::s_context->directionalShadows;
+        break;
+      }
+    }
+
+    return list;
   }
 
 } // engine

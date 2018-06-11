@@ -292,7 +292,8 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)graphics\</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)graphics\</XMLDocumentationFileName>
     </ClCompile>
-    <ClCompile Include="src\graphics\ShadowMapping.cpp" />
+    <ClCompile Include="src\graphics\ShadowCommandBuffer.cpp" />
+    <ClCompile Include="src\graphics\ShadowMap.cpp" />
     <ClCompile Include="src\graphics\ShadowRenderer.cpp" />
     <ClCompile Include="src\graphics\Skybox.cpp">
       <AssemblerListingLocation Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)graphics\</AssemblerListingLocation>
@@ -508,7 +509,8 @@
     <ClInclude Include="src\graphics\Shader.h" />
     <ClInclude Include="src\graphics\ShaderType.h" />
     <ClInclude Include="src\graphics\ShaderUniform.h" />
-    <ClInclude Include="src\graphics\ShadowMapping.h" />
+    <ClInclude Include="src\graphics\ShadowCommandBuffer.h" />
+    <ClInclude Include="src\graphics\ShadowMap.h" />
     <ClInclude Include="src\graphics\ShadowRenderer.h" />
     <ClInclude Include="src\graphics\Skybox.h" />
     <ClInclude Include="src\graphics\Texture.h" />

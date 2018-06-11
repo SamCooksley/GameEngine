@@ -44,9 +44,10 @@ namespace graphics {
     return static_cast<GLenum>(_bind);
   }
 
-  void FrameBuffer::BindDefault(FrameBufferBind _bind)
+  FrameBuffer & FrameBuffer::BindDefault(FrameBufferBind _bind)
   {
     Graphics::getContext().defaultFrameBuffer->Bind(_bind);
+    return *Graphics::getContext().defaultFrameBuffer;
   }
 
   void FrameBuffer::Blit(
@@ -131,7 +132,7 @@ namespace graphics {
 
   void FrameBuffer::Resize(uint _width, uint _height)
   {
-    if (_width == m_width && _height == _height) { return; }
+    if (_width == m_width && _height == m_height) { return; }
 
     m_width = _width;
     m_height = _height;
@@ -208,7 +209,7 @@ namespace graphics {
       return nullptr;
     }
   
-    m_textures.push_back(cube);
+    m_cubeMaps.push_back(cube);
   
     return cube;
   }
@@ -216,6 +217,7 @@ namespace graphics {
   std::shared_ptr<Shadow2D> FrameBuffer::AddShadow2D(TextureFormat _format)
   {
     assert(m_fbo != 0 && "Cannot attach items to default framebuffer");
+    assert(!m_shadow && "FrameBuffer already has a shadow texture");
 
     auto texture = Shadow2D::Create(m_width, m_height, _format);
 
@@ -232,7 +234,7 @@ namespace graphics {
       return nullptr;
     }
 
-    m_textures.push_back(texture);
+    m_shadow = texture;
 
     return texture;
   }
@@ -311,6 +313,21 @@ namespace graphics {
     return status == GL_FRAMEBUFFER_COMPLETE;
   }
   
+  const std::shared_ptr<Texture2D> & FrameBuffer::getTexture(size_t _i)
+  {
+    return m_textures.at(_i);
+  }
+
+  const std::shared_ptr<TextureCube> & FrameBuffer::getCubeMap(size_t _i)
+  {
+    return m_cubeMaps.at(_i);
+  }
+
+  const std::shared_ptr<Shadow2D> & FrameBuffer::getShadow2D()
+  {
+    return m_shadow;
+  }
+
   uint FrameBuffer::getWidth() const
   {
     return m_width;

@@ -17,8 +17,8 @@ namespace graphics {
   
     ~TextureCube();
   
-    void Bind(GLenum _unit) const override;
-    void Unbind(GLenum _unit) const override;
+    void Bind(uint _unit) const override;
+    void Unbind(uint _unit) const override;
   
     void Resize(uint _width, uint _height) override;
 

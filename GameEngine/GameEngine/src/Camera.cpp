@@ -22,168 +22,108 @@ namespace engine {
   {
     Component::OnAwake();
 
-    setPerspective(60.f, 1.f, .01f, 100.f);
+    m_target = Graphics::getContext().defaultFrameBuffer;
 
-    m_renderer = std::make_unique<graphics::DefaultRenderer>();
+    setPerspective(60.f, .01f, 100.f);
 
-    AddCamera();
+    assert(!Application::s_context->camera && "Only one camera supported");
+    setAsMainCamera();
   }
 
   void Camera::OnDestroy()
   {
-    RemoveCamera();
+    RemoveAsMainCamera();
   }
 
-  graphics::Camera Camera::getCamera() const
+  graphics::Camera Camera::getCamera(float _aspect) const
   {
     auto transform = getGameObject()->getComponent<Transform>();
-    
-    glm::mat4 view(1.f);
-    glm::vec3 pos(0.f);
+    assert(transform);
 
-    if (transform)
+    glm::mat4 proj(1.0f);
+
+    switch (m_type)
     {
-      //remove scale from the transform by recreating the matrix.
-      glm::quat rot;
-      transform->get(&pos, &rot, nullptr);
-      view = Transform::getTransform(pos, rot, glm::vec3(1.f));
-      view = glm::inverse(view);
-    }
-    else
-    {
-      debug::LogError("Camera Error: " + getGameObject()->getName() + " missing transform component.");
+      case CameraType::PERSPECTIVE:
+      {
+        proj = glm::perspective(m_fov, _aspect, m_near, m_far);
+        break;
+      }
+      case CameraType::ORTHOGRAPHIC:
+      {
+        float x = m_size * _aspect;
+        proj = glm::ortho(-x, x, -m_size, m_size, m_near, m_far);
+        break;
+      }
     }
 
-    return graphics::Camera(m_projection, view, pos);
+    glm::vec3 pos; glm::quat rot;
+    transform->get(&pos, &rot, nullptr);
+    glm::mat4 view = Transform::getTransform(pos, rot, glm::vec3(1.f));
+    view = glm::inverse(view);
+
+    return graphics::Camera(proj, view, pos);
   }
 
   void Camera::setPerspective(float _fov)
   {
-    setPerspective(_fov, m_aspect, m_near, m_far);
+    setPerspective(_fov, m_near, m_far);
   }
 
-  void Camera::setPerspective(float _fov, float _aspect)
-  {
-    setPerspective(_fov, _aspect, m_near, m_far);
-  }
-
-  void Camera::setPerspective(float _fov, float _aspect, float _near, float _far)
+  void Camera::setPerspective(float _fov, float _near, float _far)
   {
     m_type = CameraType::PERSPECTIVE;
 
     m_fov = _fov;
-    m_aspect = _aspect;
     m_near = _near;
     m_far = _far;
-
-    UpdateProjection();
   }
 
   void Camera::setOrthographic(float _size)
   {
-    setOrthographic(_size, m_aspect, m_near, m_far);
+    setOrthographic(_size, m_near, m_far);
   }
 
-  void Camera::setOrthographic(float _size, float _aspect)
-  {
-    setOrthographic(_size, _aspect, m_near, m_far);
-  }
-
-  void Camera::setOrthographic(float _size, float _aspect, float _near, float _far)
+  void Camera::setOrthographic(float _size, float _near, float _far)
   {
     m_type = CameraType::ORTHOGRAPHIC;
 
     m_size = _size;
-    m_aspect = _aspect;
     m_near = _near;
     m_far = _far;
-
-    UpdateProjection();
   }
 
   void Camera::setFOV(float _fov)
   {
     m_fov = _fov;
-    UpdateProjection();
   }
 
   void Camera::setSize(float _size)
   {
     m_size = _size;
-    UpdateProjection();
-  }
-
-  void Camera::setAspect(float _aspect)
-  {
-    m_aspect = _aspect;
-    UpdateProjection();
   }
 
   void Camera::setZClipping(float _near, float _far)
   {
     m_near = _near;
     m_far = _far;
-
-    UpdateProjection();
   }
 
-  void Camera::UpdateProjection()
+  graphics::FrameBuffer & Camera::getRenderTarget()
   {
-    switch (m_type)
+    return *m_target;
+  }
+
+  void Camera::setAsMainCamera()
+  {
+    Application::s_context->camera = Camera::getShared();
+  }
+
+  void Camera::RemoveAsMainCamera()
+  {
+    if (Application::s_context->camera.get() == this)
     {
-      case CameraType::PERSPECTIVE:
-      {
-        m_projection = glm::perspective(m_fov, m_aspect, m_near, m_far);
-        break;
-      }
-      case CameraType::ORTHOGRAPHIC:
-      {
-        float x = m_size * m_aspect;
-        m_projection = glm::ortho(-x, x, -m_size, m_size, m_near, m_far);
-        break;
-      }
-    }
-  }
-
-  void Camera::SetupRender()
-  {
-    auto fb = Graphics::getContext().activeFrameBuffer.lock();
-
-    uint width = fb->getWidth();
-    uint height = fb->getHeight();
-
-    setAspect(static_cast<float>(width) / static_cast<float>(height));
-
-    m_renderer->Resize(width, height);
-  }
-
-  void Camera::AddCamera()
-  {
-    auto & cameras = Application::s_context->cameras;
-
-    for (auto & cam : cameras)
-    {
-      if (cam.lock().get() == this)
-      {
-        return;
-      }
-    }
-
-    cameras.push_back(Camera::getShared());
-  }
-
-  void Camera::RemoveCamera()
-  {
-    auto & cameras = Application::s_context->cameras;
-
-    for (size_t i = 0; i < cameras.size();)
-    {
-      if (cameras[i].expired() || 
-          cameras[i].lock().get() == this)
-      {
-        cameras.erase(std::begin(cameras) + i);
-      }
-      else { ++i; }
+      Application::s_context->camera = nullptr;
     }
   }
 

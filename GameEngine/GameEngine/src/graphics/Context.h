@@ -20,6 +20,8 @@ namespace graphics {
     std::vector<std::weak_ptr<Shader>> shaders;
     std::shared_ptr<Shader> errorShader;
 
+    std::shared_ptr<Shader> depthShader;
+
     std::shared_ptr<Material> defaultMaterial;
 
     std::shared_ptr<Mesh> screenQuad;

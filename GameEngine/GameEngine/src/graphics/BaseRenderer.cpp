@@ -31,13 +31,6 @@ namespace graphics {
   BaseRenderer::~BaseRenderer()
   { }
   
-  void BaseRenderer::Start(const Camera & _camera)
-  {
-    Reset();
-  
-    m_camera = _camera;
-  }
-  
   void BaseRenderer::Add(
     const std::shared_ptr<Mesh> & _mesh,
     const std::shared_ptr<Material> & _material,
@@ -69,6 +62,11 @@ namespace graphics {
 
     m_lights.spot.push_back(_spot);
   }
+
+  void BaseRenderer::setCamera(const Camera & _camera)
+  {
+    m_camera = _camera;
+  }
   
   void BaseRenderer::End()
   {
@@ -91,6 +89,11 @@ namespace graphics {
   void BaseRenderer::setAmbient(const glm::vec3 & _ambient)
   {
     m_lights.ambient = _ambient;
+  }
+
+  const CommandBuffer & BaseRenderer::getCommands() const
+  {
+    return m_commands;
   }
 
 } } // engine::graphics

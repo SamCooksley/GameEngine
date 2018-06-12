@@ -50,10 +50,9 @@ namespace engine {
         light.colour = m_colour * m_intensity;
         light.direction = dir;
 
-        if (m_shadows)
+        if (m_shadow)
         {
-          light.lightSpace = m_shadows->getLightSpace();
-          light.shadowMap = m_shadows->getShadowMap();
+          light.shadowMap = m_shadow;
         }
 
         _renderer.Add(light);
@@ -124,53 +123,41 @@ namespace engine {
   {
     if (_castShadows)
     {
-      //TODO: create shadow;
-      m_shadows = std::make_unique<graphics::ShadowMap>(1024, 1024);
+      m_shadowRenderer = std::make_shared<graphics::ShadowRenderer>();
+      m_shadow = std::make_shared<graphics::DirectionalShadowMap>();
+      m_frameBuffer = graphics::FrameBuffer::Create(1024, 1024);
+      m_shadow->shadowMap = m_frameBuffer->AddShadow2D(graphics::TextureFormat::DEPTH_COMPONENT32F);
+      m_frameBuffer->Clear();
+
       m_castShadows = true;
     }
     else
     {
-      m_shadows.reset();
+      
       m_castShadows = false;
     }
 
     UpdateShadow();
   }
 
-  void Light::GenerateShadowMap(const graphics::ShadowCommandBuffer & _occluders)
+  void Light::GenerateShadowMap(const graphics::ShadowCommandBuffer & _occluders, const Camera * _camera)
   {
     auto trs = getGameObject()->getComponent<Transform>();
     assert(trs);
 
-    glm::mat4 proj = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, 0.0f, 25.0f);
+    assert(_camera != nullptr);
 
     glm::vec3 pos; glm::quat rot;
     trs->get(&pos, &rot, nullptr);
     glm::mat4 view = Transform::getTransform(pos, rot, glm::vec3(1.f));
     view = glm::inverse(view);
 
-    graphics::Camera camera(proj, view, pos);
+    m_frameBuffer->Bind();
+    m_frameBuffer->Clear();
 
-    m_shadows->GenerateShadowMap(camera, _occluders);
-  }
-
-  graphics::ShadowRenderer * Light::SetupShadowPass()
-  {
-    auto trs = getGameObject()->getComponent<Transform>();
-    assert(trs);
-
-    glm::mat4 proj = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, 0.0f, 25.0f);
-
-    glm::vec3 pos; glm::quat rot;
-    trs->get(&pos, &rot, nullptr);
-    glm::mat4 view = Transform::getTransform(pos, rot, glm::vec3(1.f));
-    view = glm::inverse(view);
-
-    graphics::Camera cam(proj, view, pos);
-
-    //m_shadows->Setup(cam);
-
-    return nullptr;// m_shadows->getRenderer();
+    auto camera = GenerateDirectionalCamera(*_camera);
+    m_shadowRenderer->Render(camera, _occluders);
+    m_shadow->lightSpace = camera.vp;
   }
 
   void Light::UpdateShadow()
@@ -183,6 +170,48 @@ namespace engine {
     {
       RemoveShadow();
     }
+  }
+
+  graphics::Camera Light::GenerateDirectionalCamera(const Camera & _target)
+  {
+    auto trs = _target.getGameObject()->getComponent<Transform>();
+    assert(trs && "Camera does not have transform component");
+
+    glm::vec3 pos; glm::quat rot;
+    trs->get(&pos, &rot, nullptr);
+    glm::mat4 cam = Transform::getTransform(pos, rot, glm::vec3(1.f));
+
+    trs = getGameObject()->getComponent<Transform>();
+    assert(trs && "Light does not have transform component");
+
+    trs->get(&pos, &rot, nullptr);
+    glm::mat4 view = Transform::getTransform(pos, rot, glm::vec3(1.f));
+    view = glm::inverse(view);
+    
+    float dist[] = { 0.f, 1.f } ;
+    auto points = _target.getFrustumPoints(dist, 2);
+    assert(!points.empty());
+
+    glm::vec4 world = cam * glm::vec4(points[0], 1.f);
+    glm::vec3 local = glm::vec3(view * world);
+    local.z *= -1.f;
+
+    glm::vec3 min(local);
+    glm::vec3 max(local);
+
+    for (size_t i = 1u; i < points.size(); ++i)
+    {
+      world = cam * glm::vec4(points[i], 1.f);
+      local = glm::vec3(view * world);
+      local.z *= -1.f;
+
+      min = glm::min(min, local);
+      max = glm::max(max, local);
+    }
+    
+    glm::mat4 proj = glm::ortho(min.x, max.x, min.y, max.y, min.z, max.z);
+
+    return graphics::Camera(proj, view, pos);
   }
 
   void Light::AddShadow()

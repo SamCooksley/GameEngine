@@ -3,7 +3,7 @@
 
 #include "core\Types.h"
 
-#include "Shadow2D.h"
+#include "ShadowMap.h"
 
 namespace engine {
 namespace graphics {
@@ -19,9 +19,7 @@ namespace graphics {
     glm::vec3 colour;
     glm::vec3 direction;
 
-    glm::vec3 position;
-    glm::mat4 lightSpace;
-    std::shared_ptr<Shadow2D> shadowMap;
+    std::shared_ptr<DirectionalShadowMap> shadowMap;
   };
 
   struct PointLight

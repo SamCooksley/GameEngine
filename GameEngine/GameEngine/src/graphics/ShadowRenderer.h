@@ -10,40 +10,18 @@
 namespace engine {
 namespace graphics {
 
-  /*struct ShadowCommand
-  {
-    std::shared_ptr<Mesh> mesh;
-    glm::mat4 transform;
-  };*/
-
-  
-
-  class ShadowRenderer : public Renderer
+  class ShadowRenderer
   {
    public:
     ShadowRenderer(
-      const std::shared_ptr<Shader> & _shader = Shader::Load("resources/shaders/shadow.shader")
+      const std::shared_ptr<Shader> & _depth = Shader::Load("resources/shaders/depth.shader")
     );
     ~ShadowRenderer();
 
-    void Start(const Camera & _camera);
+    void Render(const Camera & _camera, const ShadowCommandBuffer & _occluders);
 
-    void Add(
-      const std::shared_ptr<Mesh> & _mesh,
-      const std::shared_ptr<Material> & _material,
-      const glm::mat4 & _transform
-    ) override;
-
-    void End();
-
-    void Render() override;
-
-    void Reset();
-
-  private:
-    ShadowCommandBuffer m_commands;
-    Camera m_camera;
-    std::shared_ptr<Shader> m_shader;
+   private:
+    std::shared_ptr<Shader> m_depth;
   };
 
 } } // engine::grahics

@@ -106,9 +106,8 @@ namespace graphics {
           if (dir.shadowMap)
           {
             m_deferredDirectional->setUniform("shadow", 1);
-            m_deferredDirectional->setUniform("lightSpace", dir.lightSpace);
-            m_deferredDirectional->setUniform("shadowOrigin", dir.position);
-            dir.shadowMap->Bind(3);
+            m_deferredDirectional->setUniform("lightSpace", dir.shadowMap->lightSpace);
+            dir.shadowMap->shadowMap->Bind(3);
           }
           else
           {
@@ -200,7 +199,7 @@ namespace graphics {
       shader->setProjection(m_camera.projection);
   
       command.mesh->Render();
-    }      
+    }     
   }
 
   void DefaultRenderer::Resize(uint _width, uint _height)
@@ -223,24 +222,6 @@ namespace graphics {
     m_normal = m_gBuffer->AddTexture(FrameBufferAttachment::COLOUR, TextureFormat::RGBA16F, TextureDataType::FLOAT);
     m_colour = m_gBuffer->AddTexture(FrameBufferAttachment::COLOUR, TextureFormat::RGBA16F, TextureDataType::FLOAT);
     m_gBuffer->AddRenderBuffer(FrameBufferAttachment::DEPTH, TextureFormat::DEPTH_COMPONENT24);
-  
-    /*
-    m_deferredAmbient->setTexture("position", position);
-    m_deferredAmbient->setTexture("normal", normal);
-    m_deferredAmbient->setTexture("colour", colour);
-
-    m_deferredDirectional->setTexture("position", position);
-    m_deferredDirectional->setTexture("normal", normal);
-    m_deferredDirectional->setTexture("colour", colour);
-
-    m_deferredPoint->setTexture("position", position);
-    m_deferredPoint->setTexture("normal", normal);
-    m_deferredPoint->setTexture("colour", colour);
-
-    m_deferredSpot->setTexture("position", position);
-    m_deferredSpot->setTexture("normal", normal);
-    m_deferredSpot->setTexture("colour", colour);
-    */
   }
 
 } } // engine::graphics

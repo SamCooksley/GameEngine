@@ -7,6 +7,7 @@
 namespace engine { 
 namespace graphics {
 
+  /*
   ShadowMap::ShadowMap(
     uint _width, uint _height, 
     TextureFormat _format,
@@ -52,5 +53,6 @@ namespace graphics {
       command.mesh->Render();
     }
   }
+  */
 
 } } // engine::graphics 

@@ -4,6 +4,9 @@
 #include "Component.h"
 
 #include "graphics\ShadowMap.h"
+#include "graphics\ShadowRenderer.h"
+
+#include "Camera.h"
 
 namespace engine {
 
@@ -33,7 +36,7 @@ namespace engine {
 
     void setShadows(bool _castShadows);
 
-    void GenerateShadowMap(const graphics::ShadowCommandBuffer & _occluders);
+    void GenerateShadowMap(const graphics::ShadowCommandBuffer & _occluders, const Camera * _camera);
 
    protected:
     void OnAwake() override;
@@ -41,9 +44,9 @@ namespace engine {
     void OnRender(graphics::Renderer & _renderer) override;
 
    private:
-    graphics::ShadowRenderer * SetupShadowPass();
-
     void UpdateShadow();
+
+    graphics::Camera GenerateDirectionalCamera(const Camera & _target);
 
     void AddShadow();
     void RemoveShadow();
@@ -63,7 +66,11 @@ namespace engine {
 
     bool m_castShadows;
     LightType m_shadowList;
-    std::unique_ptr<graphics::ShadowMap> m_shadows;
+
+    std::shared_ptr<graphics::FrameBuffer> m_frameBuffer;
+    std::shared_ptr<graphics::ShadowRenderer> m_shadowRenderer;
+    //union with other shadow types
+    std::shared_ptr<graphics::DirectionalShadowMap> m_shadow;
 
     ENGINE_SETUPSHARED(Light);
   };

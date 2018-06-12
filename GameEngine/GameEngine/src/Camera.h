@@ -31,12 +31,12 @@ namespace engine {
     void setOrthographic(float _size);
     void setOrthographic(float _size, float _near, float _far);
 
-    void setFOV(float _fov);
-    void setSize(float _size);
-
     void setZClipping(float _near, float _far);
 
     graphics::FrameBuffer & getRenderTarget();
+
+    std::vector<glm::vec3> getFrustumPoints() const;
+    std::vector<glm::vec3> getFrustumPoints(const float * _distances, size_t _size) const;
 
    protected:
     void OnAwake() override;

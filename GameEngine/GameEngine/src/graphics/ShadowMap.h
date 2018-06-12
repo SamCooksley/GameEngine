@@ -1,14 +1,19 @@
 #ifndef _ENGINE_GRAPHICS_SHADOWMAP_H_
 #define _ENGINE_GRAPHICS_SHADOWMAP_H_
 
-#include "ShadowRenderer.h"
-#include "FrameBuffer.h"
+#include "Shadow2D.h"
 
 namespace engine { 
 namespace graphics {
  
-  class ShadowMap
+  struct DirectionalShadowMap
   {
+   public:
+    glm::mat4 lightSpace;
+    std::shared_ptr<Shadow2D> shadowMap;
+  };
+
+  /*
   public:
     ShadowMap(
       uint _width, uint _height,
@@ -29,6 +34,7 @@ namespace graphics {
     std::shared_ptr<FrameBuffer> m_frameBuffer;
     std::shared_ptr<Shadow2D> m_shadowMap;
   };
+  */
 
 } } // engine::graphics
 

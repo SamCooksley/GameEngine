@@ -27,7 +27,6 @@ uniform DirectionalLight light;
 uniform int shadow = 0; 
 uniform sampler2DShadow shadowMap;
 uniform mat4 lightSpace;
-uniform vec3 shadowOrigin;
 
 void main()
 {

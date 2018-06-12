@@ -5,7 +5,7 @@
 
 namespace engine {
 namespace graphics {
-    
+
   struct Camera
   {
    public:
@@ -21,7 +21,7 @@ namespace graphics {
       const glm::mat4 & _vp, 
       const glm::vec3 & _position
     );
-  
+
    public:
     glm::mat4 projection;
     glm::mat4 view;

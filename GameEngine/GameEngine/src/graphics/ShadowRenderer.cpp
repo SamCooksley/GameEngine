@@ -5,54 +5,27 @@
 namespace engine {
 namespace graphics {
 
-  ShadowRenderer::ShadowRenderer(const std::shared_ptr<Shader> & _shader) :
-    Renderer(RenderFlags::Shadow),
-    m_shader(_shader)
+  ShadowRenderer::ShadowRenderer(const std::shared_ptr<Shader> & _depth) :
+    m_depth(_depth)
   {
-    assert(m_shader);
+    assert(m_depth);
   }
 
   ShadowRenderer::~ShadowRenderer()
   { }
 
-  void ShadowRenderer::Start(const Camera & _camera)
+  void ShadowRenderer::Render(const Camera & _camera, const ShadowCommandBuffer & _occluders)
   {
-    Reset();
+    m_depth->Bind();
+    m_depth->setProjection(_camera.projection);
+    m_depth->setView(_camera.view);
 
-    m_camera = _camera;
-  }
-
-  void ShadowRenderer::Add(
-    const std::shared_ptr<Mesh> & _mesh,
-    const std::shared_ptr<Material> & _material,
-    const glm::mat4 & _transform
-  )
-  {
-    Renderer::Add(_mesh, _material, _transform);
-
-    m_commands.Add(_mesh, _transform);
-  }
-
-  void ShadowRenderer::End()
-  { }
-
-  void ShadowRenderer::Render()
-  {
-    m_shader->Bind();
-    m_shader->setProjection(m_camera.projection);
-    m_shader->setView(m_camera.view);
-    
-    auto & commands = m_commands.getCommands();
+    const auto & commands = _occluders.getCommands();
     for (auto & command : commands)
     {
-      m_shader->setModel(command.transform);
+      m_depth->setModel(command.transform);
       command.mesh->Render();
     }
-  }
-
-  void ShadowRenderer::Reset()
-  {
-    m_commands.Clear();
   }
 
 } } // engine::graphics

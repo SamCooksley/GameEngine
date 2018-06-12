@@ -22,6 +22,8 @@ namespace engine {
     setDirectional();
 
     m_intensity = 1.0f;
+
+    m_shadowCascades = 3;
   }
 
   void Light::OnDestroy()
@@ -52,7 +54,7 @@ namespace engine {
 
         if (m_shadow)
         {
-          light.shadowMap = m_shadow;
+          light.shadowMaps = m_shadow;
         }
 
         _renderer.Add(light);
@@ -124,10 +126,18 @@ namespace engine {
     if (_castShadows)
     {
       m_shadowRenderer = std::make_shared<graphics::ShadowRenderer>();
-      m_shadow = std::make_shared<graphics::DirectionalShadowMap>();
-      m_frameBuffer = graphics::FrameBuffer::Create(1024, 1024);
-      m_shadow->shadowMap = m_frameBuffer->AddShadow2D(graphics::TextureFormat::DEPTH_COMPONENT32F);
-      m_frameBuffer->Clear();
+      m_frameBuffer = graphics::FrameBuffer::Create(516, 516);//(2048, 2048);
+      m_shadow = std::make_shared<graphics::CSM>();
+
+      m_shadow->maps.resize(m_shadowCascades);
+
+      for (auto & cascade : m_shadow->maps)
+      {
+        cascade.lightSpace = glm::mat4(1.f);
+        cascade.distance = 0.f;
+        cascade.shadowMap = m_frameBuffer->AddShadow2D(graphics::TextureFormat::DEPTH_COMPONENT32F);
+        m_frameBuffer->Clear();
+      }
 
       m_castShadows = true;
     }
@@ -153,11 +163,19 @@ namespace engine {
     view = glm::inverse(view);
 
     m_frameBuffer->Bind();
-    m_frameBuffer->Clear();
 
-    auto camera = GenerateDirectionalCamera(*_camera);
-    m_shadowRenderer->Render(camera, _occluders);
-    m_shadow->lightSpace = camera.vp;
+    auto camera = GenerateDirectionalCamera(*_camera, m_shadowCascades);
+
+    for (int i = 0u; i < camera.size(); ++i)
+    {
+      m_frameBuffer->Add(m_shadow->maps[i].shadowMap);
+      m_frameBuffer->Clear();
+      
+      m_shadowRenderer->Render(camera[i], _occluders);
+
+      m_shadow->maps[i].lightSpace = camera[i].vp;
+      m_shadow->maps[i].distance = .33333f * (1.f + i) * 10.f;
+    }
   }
 
   void Light::UpdateShadow()
@@ -172,7 +190,7 @@ namespace engine {
     }
   }
 
-  graphics::Camera Light::GenerateDirectionalCamera(const Camera & _target)
+  std::vector<graphics::Camera> Light::GenerateDirectionalCamera(const Camera & _target, size_t _numCascades)
   {
     auto trs = _target.getGameObject()->getComponent<Transform>();
     assert(trs && "Camera does not have transform component");
@@ -187,31 +205,52 @@ namespace engine {
     trs->get(&pos, &rot, nullptr);
     glm::mat4 view = Transform::getTransform(pos, rot, glm::vec3(1.f));
     view = glm::inverse(view);
-    
-    float dist[] = { 0.f, 1.f } ;
-    auto points = _target.getFrustumPoints(dist, 2);
+
+    glm::mat4 mv = view * cam;
+
+    assert(_numCascades > 0 && "Must have atleat one cascade");
+
+    float step = 1.0f / _numCascades;
+    std::vector<float> dist(_numCascades + 1u);
+
+    for (size_t i = 0u; i < dist.size(); ++i)
+    {
+      dist[i] = step * i;
+    }
+
+    auto points = _target.getFrustumPoints(dist.data(), dist.size());
     assert(!points.empty());
 
-    glm::vec4 world = cam * glm::vec4(points[0], 1.f);
-    glm::vec3 local = glm::vec3(view * world);
-    local.z *= -1.f;
-
-    glm::vec3 min(local);
-    glm::vec3 max(local);
-
-    for (size_t i = 1u; i < points.size(); ++i)
+    std::vector<graphics::Camera> cascades;
+    cascades.reserve(_numCascades);
+    
+    for (size_t i = 0u; i < _numCascades; ++i)
     {
-      world = cam * glm::vec4(points[i], 1.f);
-      local = glm::vec3(view * world);
+      size_t start = i * 4u;
+      glm::vec3 local = glm::vec3(mv * glm::vec4(points[start], 1.f));
       local.z *= -1.f;
 
-      min = glm::min(min, local);
-      max = glm::max(max, local);
-    }
-    
-    glm::mat4 proj = glm::ortho(min.x, max.x, min.y, max.y, min.z, max.z);
+      glm::vec3 min(local);
+      glm::vec3 max(local);
 
-    return graphics::Camera(proj, view, pos);
+      for (size_t i = 1u; i < 8u; ++i)
+      {
+        local = glm::vec3(mv * glm::vec4(points[start + i], 1.f));
+        local.z *= -1.f;
+
+        min = glm::min(min, local);
+        max = glm::max(max, local);
+      }
+
+      //padding
+      min -= glm::vec3(5.f);
+      max += glm::vec3(5.f);
+
+      glm::mat4 proj = glm::ortho(min.x, max.x, min.y, max.y, min.z, max.z);
+      cascades.emplace_back(proj, view, pos);
+    }
+
+    return cascades;
   }
 
   void Light::AddShadow()

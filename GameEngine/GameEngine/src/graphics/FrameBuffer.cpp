@@ -217,7 +217,6 @@ namespace graphics {
   std::shared_ptr<Shadow2D> FrameBuffer::AddShadow2D(TextureFormat _format)
   {
     assert(m_fbo != 0 && "Cannot attach items to default framebuffer");
-    assert(!m_shadow && "FrameBuffer already has a shadow texture");
 
     auto texture = Shadow2D::Create(m_width, m_height, _format);
 
@@ -237,6 +236,26 @@ namespace graphics {
     m_shadow = texture;
 
     return texture;
+  }
+
+  std::shared_ptr<Shadow2D> FrameBuffer::Add(const std::shared_ptr<Shadow2D> & _shadow)
+  {
+    GLCALL(glFramebufferTexture2D(
+      GL_FRAMEBUFFER,
+      FrameBufferAttachmentToOpenGL(FrameBufferAttachment::DEPTH, m_colourAttachmentCount),
+      GL_TEXTURE_2D,
+      _shadow->m_id,
+      0
+    ));
+
+    if (!Attach(FrameBufferAttachment::DEPTH))
+    {
+      return nullptr;
+    }
+
+    m_shadow = _shadow;
+
+    return _shadow;
   }
   
   bool FrameBuffer::AddRenderBuffer(FrameBufferAttachment _attachment, TextureFormat _format)

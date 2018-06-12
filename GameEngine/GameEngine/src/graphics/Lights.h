@@ -8,6 +8,8 @@
 namespace engine {
 namespace graphics {
 
+  constexpr size_t MAX_DIRECTIONAL_CASCADES = 3u;
+
   struct Attenutation
   {
     float linear;
@@ -19,7 +21,7 @@ namespace graphics {
     glm::vec3 colour;
     glm::vec3 direction;
 
-    std::shared_ptr<DirectionalShadowMap> shadowMap;
+    std::shared_ptr<CSM> shadowMaps;
   };
 
   struct PointLight

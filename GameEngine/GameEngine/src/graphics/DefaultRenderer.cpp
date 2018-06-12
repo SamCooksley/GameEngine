@@ -15,24 +15,24 @@ namespace graphics {
     BaseRenderer(RenderFlags::None)
   { 
     m_deferredAmbient = Resources::Load<Shader>("resources/shaders/deferred/ambient.shader");
-    m_deferredAmbient->Bind();
     m_deferredAmbient->setUniform("colour", 2);
 
-    m_deferredDirectional = Resources::Load<Shader>("resources/shaders/deferred/directional.shader");
-    m_deferredDirectional->Bind();
+    m_deferredDirectional = Resources::Load<Shader>("resources/shaders/deferred/directional_csm.shader");
     m_deferredDirectional->setUniform("position", 0);
     m_deferredDirectional->setUniform("normal", 1);
     m_deferredDirectional->setUniform("colour", 2);
-    m_deferredDirectional->setUniform("shadowMap", 3);
+    for (int i = 0; i < MAX_DIRECTIONAL_CASCADES; ++i)
+    {
+      std::string name = "shadowMap[" + std::to_string(i) + ']';
+      m_deferredDirectional->setUniform(name, 3 + i);
+    }
 
     m_deferredPoint = Resources::Load<Shader>("resources/shaders/deferred/point.shader");
-    m_deferredPoint->Bind();
     m_deferredPoint->setUniform("position", 0);
     m_deferredPoint->setUniform("normal", 1);
     m_deferredPoint->setUniform("colour", 2);
 
     m_deferredSpot = Resources::Load<Shader>("resources/shaders/deferred/spot.shader");
-    m_deferredSpot->Bind();
     m_deferredSpot->setUniform("position", 0);
     m_deferredSpot->setUniform("normal", 1);
     m_deferredSpot->setUniform("colour", 2);
@@ -103,11 +103,19 @@ namespace graphics {
           m_deferredDirectional->setUniform("light.colour", dir.colour);
           m_deferredDirectional->setUniform("light.direction", dir.direction);
 
-          if (dir.shadowMap)
+          if (dir.shadowMaps)
           {
             m_deferredDirectional->setUniform("shadow", 1);
-            m_deferredDirectional->setUniform("lightSpace", dir.shadowMap->lightSpace);
-            dir.shadowMap->shadowMap->Bind(3);
+            m_deferredDirectional->setUniform<int>("cascadeCount", dir.shadowMaps->maps.size());
+
+            for (int i = 0; i < dir.shadowMaps->maps.size(); ++i)
+            {
+              auto & cascade = dir.shadowMaps->maps[i];
+              std::string arr = '[' + std::to_string(i) + ']';
+              m_deferredDirectional->setUniform("lightSpace" + arr, cascade.lightSpace);
+              m_deferredDirectional->setUniform("distance" + arr, cascade.distance);
+              cascade.shadowMap->Bind(3 + i);
+            }
           }
           else
           {

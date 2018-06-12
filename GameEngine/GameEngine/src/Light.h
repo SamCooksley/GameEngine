@@ -46,7 +46,7 @@ namespace engine {
    private:
     void UpdateShadow();
 
-    graphics::Camera GenerateDirectionalCamera(const Camera & _target);
+    std::vector<graphics::Camera> GenerateDirectionalCamera(const Camera & _target, size_t _numCascades);
 
     void AddShadow();
     void RemoveShadow();
@@ -67,10 +67,12 @@ namespace engine {
     bool m_castShadows;
     LightType m_shadowList;
 
+    int m_shadowCascades;
+
     std::shared_ptr<graphics::FrameBuffer> m_frameBuffer;
     std::shared_ptr<graphics::ShadowRenderer> m_shadowRenderer;
     //union with other shadow types
-    std::shared_ptr<graphics::DirectionalShadowMap> m_shadow;
+    std::shared_ptr<graphics::CSM> m_shadow;
 
     ENGINE_SETUPSHARED(Light);
   };

@@ -9,8 +9,15 @@ namespace graphics {
   struct DirectionalShadowMap
   {
    public:
+    float distance;
     glm::mat4 lightSpace;
     std::shared_ptr<Shadow2D> shadowMap;
+  };
+
+  struct CSM
+  {
+   public:
+    std::vector<DirectionalShadowMap> maps;
   };
 
   /*

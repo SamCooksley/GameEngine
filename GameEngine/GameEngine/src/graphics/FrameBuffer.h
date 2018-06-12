@@ -72,6 +72,8 @@ namespace graphics {
   
     std::shared_ptr<Shadow2D> AddShadow2D(TextureFormat _format);
 
+    std::shared_ptr<Shadow2D> Add(const std::shared_ptr<Shadow2D> & _shadow);
+
     bool AddRenderBuffer(FrameBufferAttachment _attachment, TextureFormat _format);
 
     const std::shared_ptr<Texture2D> & getTexture(size_t _i);

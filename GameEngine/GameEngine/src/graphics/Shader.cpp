@@ -289,26 +289,64 @@ namespace graphics {
   
       bool isSampler = IsSupportedSamplerUniformType(type);
   
-      ShaderUniform uniform;
-      uniform.name = name;
-      uniform.type = isSampler ? Type::INT : OpenGLToType(type);
-      uniform.size = GetTypeSize(uniform.type);
-      uniform.location = loc;
-  
-      uniform.offset = m_uniformSize;
-      m_uniformSize += uniform.size;
-  
-      m_uniforms.add(name, uniform);
-  
-      if (isSampler)
+      bool isArray = size > 1;
+      size_t arrayBracketPos = String::npos;
+      String start;
+      String end;
+      if (isArray)
       {
-        ShaderSampler sampler;
-        sampler.name = name;
-        sampler.type = OpenGLToTextureTypeSampler(type);
-        //should be okay as elements in the uniform list do not get removed. 
-        sampler.uniformIndex = m_uniforms.size() - 1u;
-        
-        m_samplers.add(name, sampler);
+        //size only says the size of the last array. This means that multi-demensional
+        //arrays (or arrays of arrays) are not supported.
+        size_t startEnd = name.find_last_of('[');
+        assert(startEnd != String::npos);
+        start = name.substr(0, startEnd + 1);
+
+        //not really needed as nothing will proceed the closing bracket. If it was a structure
+        //each element would be obtained from glGetActiveUniform.
+        size_t endStart = name.find(']', startEnd);
+        assert(endStart != String::npos);
+        end = name.substr(endStart, name.size() - endStart);
+      }
+
+      for (int elementNo = 0; elementNo < size; ++elementNo)
+      {
+        String elementName;
+
+        if (isArray)
+        {
+          elementName = start + std::to_string(elementNo) + end;
+        }
+        else
+        {
+          elementName = name;
+        }
+
+        loc = getUniformLocation(elementName);
+        //should be guaranteed to be valid value as the first element location is already 
+        //valid.
+        assert(loc >= 0);
+
+        ShaderUniform uniform;
+        uniform.name = elementName;
+        uniform.type = isSampler ? Type::INT : OpenGLToType(type);
+        uniform.size = GetTypeSize(uniform.type);
+        uniform.location = loc;
+
+        uniform.offset = m_uniformSize;
+        m_uniformSize += uniform.size;
+
+        m_uniforms.add(elementName, uniform);
+
+        if (isSampler)
+        {
+          ShaderSampler sampler;
+          sampler.name = elementName;
+          sampler.type = OpenGLToTextureTypeSampler(type);
+          //should be okay as elements in the uniform list do not get removed. 
+          sampler.uniformIndex = m_uniforms.size() - 1u;
+
+          m_samplers.add(elementName, sampler);
+        }
       }
     }
   }

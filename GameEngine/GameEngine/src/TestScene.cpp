@@ -26,7 +26,7 @@ namespace engine {
     Scene::Init();
 
     auto camera = GameObject::Instantiate();
-    camera->AddComponent<Camera>()->setPerspective(60.f, 0.01f, 100.0f);
+    camera->AddComponent<Camera>()->setPerspective(90.f, 0.01f, 10.f);
     camera->AddComponent<CameraMovement>();
 
     auto mesh = Resources::Load<graphics::Mesh>("resources/models/cube.obj");

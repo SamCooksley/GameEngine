@@ -5,7 +5,7 @@
 #include "GameObject.h"
 
 #include "Application.h"
-
+#include "Resources.h"
 namespace engine {
 
   Light::Light()
@@ -24,6 +24,8 @@ namespace engine {
     m_intensity = 1.0f;
 
     m_shadowCascades = 3;
+
+    m_depth = Resources::Load<graphics::Shader>("resources/shaders/depth_csm.shader");
   }
 
   void Light::OnDestroy()
@@ -54,7 +56,7 @@ namespace engine {
 
         if (m_shadow)
         {
-          light.shadowMaps = m_shadow;
+          light.shadow = m_shadow;
         }
 
         _renderer.Add(light);
@@ -126,19 +128,13 @@ namespace engine {
     if (_castShadows)
     {
       m_shadowRenderer = std::make_shared<graphics::ShadowRenderer>();
-      m_frameBuffer = graphics::FrameBuffer::Create(516, 516);//(2048, 2048);
+      m_frameBuffer = graphics::FrameBuffer::Create(1024, 1024);//(2048, 2048);
       m_shadow = std::make_shared<graphics::CSM>();
 
-      m_shadow->maps.resize(m_shadowCascades);
-
-      for (auto & cascade : m_shadow->maps)
-      {
-        cascade.lightSpace = glm::mat4(1.f);
-        cascade.distance = 0.f;
-        cascade.shadowMap = m_frameBuffer->AddShadow2D(graphics::TextureFormat::DEPTH_COMPONENT32F);
-        m_frameBuffer->Clear();
-      }
-
+      m_shadow->distance.resize(m_shadowCascades);
+      m_shadow->lightSpace.resize(m_shadowCascades);
+      m_shadow->shadowMap = std::make_shared<graphics::Shadow2DArray>(1024, 1024, m_shadowCascades, graphics::TextureFormat::DEPTH_COMPONENT32F);
+      m_frameBuffer->setDepth(m_shadow->shadowMap);
       m_castShadows = true;
     }
     else
@@ -162,20 +158,39 @@ namespace engine {
     glm::mat4 view = Transform::getTransform(pos, rot, glm::vec3(1.f));
     view = glm::inverse(view);
 
-    m_frameBuffer->Bind();
-
     auto camera = GenerateDirectionalCamera(*_camera, m_shadowCascades);
 
-    for (int i = 0u; i < camera.size(); ++i)
-    {
-      m_frameBuffer->Add(m_shadow->maps[i].shadowMap);
-      m_frameBuffer->Clear();
-      
-      m_shadowRenderer->Render(camera[i], _occluders);
+    m_frameBuffer->Bind();
+    //m_frameBuffer->setDepth(m_shadow->shadowMap);
+    m_frameBuffer->Clear();
 
-      m_shadow->maps[i].lightSpace = camera[i].vp;
-      m_shadow->maps[i].distance = .33333f * (1.f + i) * 10.f;
+    m_depth->Bind();
+
+    m_depth->setUniform("cascadeCount", m_shadowCascades);
+    for (int i = 0; i < m_shadowCascades; ++i)
+    {
+      m_depth->setUniform("vp[" + std::to_string(i) + ']', camera[i].vp);
     }
+
+    const auto & commands = _occluders.getCommands();
+    for (auto & command : commands)
+    {
+      m_depth->setModel(command.transform);
+      command.mesh->Render();
+    }
+
+    
+    for (int i = 0u; i < m_shadowCascades; ++i)
+    {
+      //m_frameBuffer->setDepth(m_shadow->shadowMap, i);
+      //m_frameBuffer->Clear();
+      
+     // m_shadowRenderer->Render(camera[i], _occluders);
+
+      m_shadow->lightSpace[i] = camera[i].vp;
+      m_shadow->distance[i] = (1.f / m_shadowCascades) * (1.f + i) * 25.f;
+    }
+    
   }
 
   void Light::UpdateShadow()

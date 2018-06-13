@@ -7,6 +7,8 @@ namespace graphics {
     ShaderUniform uniform;
     if (!getUniform(_name, &uniform))
     {
+      debug::Log(_name);
+      assert(false);
       return;
     }
 

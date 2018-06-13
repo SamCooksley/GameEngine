@@ -10,7 +10,8 @@ namespace graphics {
   {
     TEXTURE_2D,
     TEXTURE_CUBE,
-    SHADOW_2D
+    SHADOW_2D,
+    SHADOW_2D_ARRAY
   };
   
   GLenum TextureTypeToOpenGL(TextureType _type);

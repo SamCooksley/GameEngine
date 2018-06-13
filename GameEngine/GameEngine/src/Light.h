@@ -73,6 +73,7 @@ namespace engine {
     std::shared_ptr<graphics::ShadowRenderer> m_shadowRenderer;
     //union with other shadow types
     std::shared_ptr<graphics::CSM> m_shadow;
+    std::shared_ptr<graphics::Shader> m_depth;
 
     ENGINE_SETUPSHARED(Light);
   };

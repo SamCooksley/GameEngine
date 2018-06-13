@@ -251,6 +251,7 @@ namespace graphics {
   
   void Shader::SetupUniforms()
   {
+
     GLint scount;
     GLCALL(glGetProgramiv(m_program, GL_ACTIVE_UNIFORMS, &scount));
   
@@ -262,6 +263,7 @@ namespace graphics {
    
     std::vector<GLchar> nameBuffer(maxLength);
   
+
     for (GLuint i = 0; i < count; ++i)
     {
       GLenum type;
@@ -271,13 +273,14 @@ namespace graphics {
       GLCALL(glGetActiveUniform(m_program, i, maxLength, &length, &size, &type, &nameBuffer[0]));
   
       String name(nameBuffer.begin(), nameBuffer.begin() + length);
-  
+
       if (!IsSupportedUniformType(type))
       {
         debug::LogError("Shader " + getName() + " uniform " + name + " invalid type: " + std::to_string(type));
         continue;
       }
   
+      
       GLint loc = getUniformLocation(name);
       //remove invalid uniforms (uniform buffer objects).
       if (loc < 0) { continue; }  

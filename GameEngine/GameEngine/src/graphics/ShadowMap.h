@@ -2,6 +2,7 @@
 #define _ENGINE_GRAPHICS_SHADOWMAP_H_
 
 #include "Shadow2D.h"
+#include "Shadow2DArray.h"
 
 namespace engine { 
 namespace graphics {
@@ -16,8 +17,10 @@ namespace graphics {
 
   struct CSM
   {
-   public:
-    std::vector<DirectionalShadowMap> maps;
+  public:
+    std::vector<float> distance;
+    std::vector<glm::mat4> lightSpace;
+    std::shared_ptr<Shadow2DArray> shadowMap;
   };
 
   /*

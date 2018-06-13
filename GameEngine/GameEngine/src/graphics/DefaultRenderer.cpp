@@ -21,11 +21,12 @@ namespace graphics {
     m_deferredDirectional->setUniform("position", 0);
     m_deferredDirectional->setUniform("normal", 1);
     m_deferredDirectional->setUniform("colour", 2);
-    for (int i = 0; i < MAX_DIRECTIONAL_CASCADES; ++i)
+    m_deferredDirectional->setUniform("shadowMap", 3);
+    /*for (int i = 0; i < MAX_DIRECTIONAL_CASCADES; ++i)
     {
       std::string name = "shadowMap[" + std::to_string(i) + ']';
       m_deferredDirectional->setUniform(name, 3 + i);
-    }
+    }*/
 
     m_deferredPoint = Resources::Load<Shader>("resources/shaders/deferred/point.shader");
     m_deferredPoint->setUniform("position", 0);
@@ -103,18 +104,21 @@ namespace graphics {
           m_deferredDirectional->setUniform("light.colour", dir.colour);
           m_deferredDirectional->setUniform("light.direction", dir.direction);
 
-          if (dir.shadowMaps)
+          if (dir.shadow)
           {
             m_deferredDirectional->setUniform("shadow", 1);
-            m_deferredDirectional->setUniform<int>("cascadeCount", dir.shadowMaps->maps.size());
 
-            for (int i = 0; i < dir.shadowMaps->maps.size(); ++i)
+            int size = glm::min(dir.shadow->distance.size(), MAX_DIRECTIONAL_CASCADES);
+
+            m_deferredDirectional->setUniform<int>("cascadeCount", size);
+            dir.shadow->shadowMap->Bind(3);
+            for (int i = 0; i < size; ++i)
             {
-              auto & cascade = dir.shadowMaps->maps[i];
+              //auto & cascade = dir.shadow->maps[i];
               std::string arr = '[' + std::to_string(i) + ']';
-              m_deferredDirectional->setUniform("lightSpace" + arr, cascade.lightSpace);
-              m_deferredDirectional->setUniform("distance" + arr, cascade.distance);
-              cascade.shadowMap->Bind(3 + i);
+              m_deferredDirectional->setUniform("lightSpace" + arr, dir.shadow->lightSpace[i]);
+              m_deferredDirectional->setUniform("distance" + arr, dir.shadow->distance[i]);
+              //cascade.shadowMap->Bind(3 + i);
             }
           }
           else

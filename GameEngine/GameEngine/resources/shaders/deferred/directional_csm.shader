@@ -17,7 +17,7 @@ uniform sampler2D colour;
 #include "..\common\camera.shader"
 #include "..\lighting\lighting.shader"
 
-//#define SHADOW_PCF
+#define SHADOW_PCF
 //#define SHADOW_POISSON_SAMPLE
 #define DEBUG_CSM
 
@@ -27,13 +27,13 @@ uniform DirectionalLight light;
 
 uniform int shadow = 0; 
 
-const int MAX_CASCADES = 3;
+const int MAX_CASCADES = 5;
 
-uniform int cascadeCount = 3;
+uniform int cascadeCount;
 
-uniform sampler2DShadow shadowMap[MAX_CASCADES];
+uniform sampler2DArrayShadow shadowMap;
 uniform mat4 lightSpace[MAX_CASCADES];
-uniform float distance[MAX_CASCADES] = { 10, 17, 25 };
+uniform float distance[MAX_CASCADES];
 
 void main()
 {
@@ -69,15 +69,15 @@ void main()
 
         if (index >= 0)
         {
-            colour *= ShadowCalculation(lightSpace[index] * vec4(surf.position, 1.0), light.direction, surf.position, surf.normal, shadowMap[index]);
+            colour *= ShadowCalculation(lightSpace[index] * vec4(surf.position, 1.0), light.direction, surf.position, surf.normal, shadowMap, index);
 
 #ifdef DEBUG_CSM
             const vec3 c[] = {
                 vec3(0.5, 0.0, 0.0),
                 vec3(0.0, 0.5, 0.0),
-                vec3(0.0, 0.0, 0.5)
+                vec3(0.0, 0.0, 0.5),
             };
-            colour += c[index];
+            colour += c[index % 3] * 0.1;
 #endif
         }
     }

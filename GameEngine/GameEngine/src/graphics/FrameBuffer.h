@@ -4,6 +4,7 @@
 #include "Texture2D.h"
 #include "TextureCube.h"
 #include "Shadow2D.h"
+#include "Shadow2DArray.h"
 
 #include "RenderBuffer.h"
 
@@ -73,6 +74,9 @@ namespace graphics {
     std::shared_ptr<Shadow2D> AddShadow2D(TextureFormat _format);
 
     std::shared_ptr<Shadow2D> Add(const std::shared_ptr<Shadow2D> & _shadow);
+
+    void setDepth(const std::shared_ptr<Shadow2DArray> & _shadow);
+    void setDepth(const std::shared_ptr<Shadow2DArray> & _shadow, uint _depth);
 
     bool AddRenderBuffer(FrameBufferAttachment _attachment, TextureFormat _format);
 

@@ -24,7 +24,7 @@ namespace graphics {
    protected:
      Shadow2D();
 
-  private:
+   private:
     uint m_width, m_height;
 
     TextureFormat m_format;

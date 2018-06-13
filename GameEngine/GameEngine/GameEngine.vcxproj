@@ -292,6 +292,7 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)graphics\</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)graphics\</XMLDocumentationFileName>
     </ClCompile>
+    <ClCompile Include="src\graphics\Shadow2DArray.cpp" />
     <ClCompile Include="src\graphics\ShadowCommandBuffer.cpp" />
     <ClCompile Include="src\graphics\ShadowMap.cpp" />
     <ClCompile Include="src\graphics\ShadowRenderer.cpp" />
@@ -509,6 +510,7 @@
     <ClInclude Include="src\graphics\Shader.h" />
     <ClInclude Include="src\graphics\ShaderType.h" />
     <ClInclude Include="src\graphics\ShaderUniform.h" />
+    <ClInclude Include="src\graphics\Shadow2DArray.h" />
     <ClInclude Include="src\graphics\ShadowCommandBuffer.h" />
     <ClInclude Include="src\graphics\ShadowMap.h" />
     <ClInclude Include="src\graphics\ShadowRenderer.h" />

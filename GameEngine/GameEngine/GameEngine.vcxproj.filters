@@ -276,6 +276,9 @@
     <ClCompile Include="src\graphics\ShadowMap.cpp">
       <Filter>Source Files\graphics</Filter>
     </ClCompile>
+    <ClCompile Include="src\graphics\Shadow2DArray.cpp">
+      <Filter>Source Files\graphics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\stdafx.h">
@@ -510,6 +513,9 @@
       <Filter>Header Files\graphics</Filter>
     </ClInclude>
     <ClInclude Include="src\graphics\ShadowMap.h">
+      <Filter>Header Files\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\graphics\Shadow2DArray.h">
       <Filter>Header Files\graphics</Filter>
     </ClInclude>
   </ItemGroup>

@@ -3,6 +3,8 @@
 
 #include "Shadow2D.h"
 #include "Shadow2DArray.h"
+#include "Texture2D.h"
+#include "Texture2DArray.h"
 
 namespace engine { 
 namespace graphics {
@@ -20,7 +22,7 @@ namespace graphics {
   public:
     std::vector<float> distance;
     std::vector<glm::mat4> lightSpace;
-    std::shared_ptr<Shadow2DArray> shadowMap;
+    std::shared_ptr<Texture2DArray> shadowMap;
   };
 
   /*

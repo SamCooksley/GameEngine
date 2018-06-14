@@ -137,10 +137,22 @@ namespace graphics {
     m_width = _width;
     m_height = _height;
 
-    for (auto & tex : m_textures)
+    for (auto & tex : m_colourAttachments)
     {
       tex->Bind(0);
       tex->Resize(m_width, m_height);
+    }
+
+    if (m_depthAttachment)
+    {
+      m_depthAttachment->Bind(0);
+      m_depthAttachment->Resize(m_width, m_height);
+    }
+
+    if (m_stencilAttachment && m_stencilAttachment != m_depthAttachment)
+    {
+      m_stencilAttachment->Bind(0);
+      m_stencilAttachment->Resize(m_width, m_height);
     }
 
     for (auto & rb : m_renderBuffers)
@@ -164,11 +176,11 @@ namespace graphics {
     );
   }
   
-  std::shared_ptr<Texture2D> FrameBuffer::AddTexture(FrameBufferAttachment _attachment, TextureFormat _format, TextureDataType _type)
+  std::shared_ptr<Texture2D> FrameBuffer::AddTexture(FrameBufferAttachment _attachment, TextureFormat _format)
   {
     assert(m_fbo != 0 && "Cannot attach items to default framebuffer");
 
-    auto texture = Texture2D::Create(m_width, m_height, _format, _type);
+    auto texture = Texture2D::Create(m_width, m_height, _format);
     texture->setFilter(TextureFilter::LINEAR);
     texture->setWrap(TextureWrap::CLAMP_TO_EDGE);
   
@@ -180,21 +192,19 @@ namespace graphics {
         0
     ));
   
-    if (!Attach(_attachment))
+    if (!Attach(_attachment, texture))
     {
       return nullptr;
     }
   
-    m_textures.push_back(texture);
-  
     return texture;
   }
   
-  std::shared_ptr<TextureCube> FrameBuffer::AddCubeMap(FrameBufferAttachment _attachment, TextureFormat _format, TextureDataType _type)
+  std::shared_ptr<TextureCube> FrameBuffer::AddCubeMap(FrameBufferAttachment _attachment, TextureFormat _format)
   {
     assert(m_fbo != 0 && "Cannot attach items to default framebuffer");
 
-    auto cube = std::make_shared<TextureCube>(m_width, m_height, _format, _type);
+    auto cube = std::make_shared<TextureCube>(m_width, m_height, _format);
     cube->setFilter(TextureFilter::LINEAR);
   
     GLCALL(glFramebufferTexture(
@@ -204,12 +214,10 @@ namespace graphics {
         0
     ));
   
-    if (!Attach(_attachment))
+    if (!Attach(_attachment, cube))
     {
       return nullptr;
     }
-  
-    m_cubeMaps.push_back(cube);
   
     return cube;
   }
@@ -228,18 +236,18 @@ namespace graphics {
       0
     ));
 
-    if (!Attach(FrameBufferAttachment::DEPTH))
+    if (!Attach(FrameBufferAttachment::DEPTH, texture))
     {
       return nullptr;
     }
-
-    m_shadow = texture;
 
     return texture;
   }
 
   std::shared_ptr<Shadow2D> FrameBuffer::Add(const std::shared_ptr<Shadow2D> & _shadow)
   {
+    assert(m_fbo != 0 && "Cannot attach items to default framebuffer");
+
     GLCALL(glFramebufferTexture2D(
       GL_FRAMEBUFFER,
       GL_DEPTH_ATTACHMENT,
@@ -248,44 +256,72 @@ namespace graphics {
       0
     ));
 
-    if (!Attach(FrameBufferAttachment::DEPTH))
+    if (!Attach(FrameBufferAttachment::DEPTH, _shadow))
     {
       return nullptr;
     }
 
-    m_shadow = _shadow;
-
     return _shadow;
   }
-  
-  void FrameBuffer::setDepth(const std::shared_ptr<Shadow2DArray> & _shadow)
+
+  void FrameBuffer::Add(const std::shared_ptr<Texture2DArray> & _texture, FrameBufferAttachment _attachment)
   {
+    assert(m_fbo != 0 && "Cannot attach items to default framebuffer");
+
+    GLCALL(glFramebufferTexture(
+      GL_FRAMEBUFFER, FrameBufferAttachmentToOpenGL(_attachment, m_colourAttachmentCount), _texture->m_id, 0
+    ));
+
+    if (!Attach(_attachment, _texture))
+    {
+      return;
+    }
+  }
+
+  void FrameBuffer::Add(const std::shared_ptr<Texture2DArray> & _texture, uint _depth, FrameBufferAttachment _attachment)
+  {
+    m_colourAttachmentCount = 0;
+    assert(m_fbo != 0 && "Cannot attach items to default framebuffer");
+    //assert(_depth < _shadow->getCount());
+
+    GLCALL(glFramebufferTextureLayer(
+      GL_FRAMEBUFFER, FrameBufferAttachmentToOpenGL(_attachment, m_colourAttachmentCount), 
+      _texture->m_id, 0, _depth
+    ));
+
+    if (!Attach(_attachment, _texture))
+    {
+      return;
+    }
+  }
+
+  void FrameBuffer::Add(const std::shared_ptr<Shadow2DArray> & _shadow)
+  {
+    assert(m_fbo != 0 && "Cannot attach items to default framebuffer");
+
     GLCALL(glFramebufferTexture(
       GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, _shadow->m_id, 0
     ));
 
-    if (!Attach(FrameBufferAttachment::DEPTH))
+    if (!Attach(FrameBufferAttachment::DEPTH, _shadow))
     {
       return;
     }
-
-    m_shadow = nullptr;
   }
 
   void FrameBuffer::setDepth(const std::shared_ptr<Shadow2DArray> & _shadow, uint _depth)
   {
+    assert(m_fbo != 0 && "Cannot attach items to default framebuffer");
     assert(_depth < _shadow->getCount());
 
     GLCALL(glFramebufferTextureLayer(
       GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, _shadow->m_id, 0, _depth
     ));
 
-    if (!Attach(FrameBufferAttachment::DEPTH))
+    if (!Attach(FrameBufferAttachment::DEPTH, _shadow))
     {
       return;
     }
-
-    m_shadow = nullptr;
   }
   
   bool FrameBuffer::AddRenderBuffer(FrameBufferAttachment _attachment, TextureFormat _format)
@@ -311,7 +347,7 @@ namespace graphics {
     return true;
   }
   
-  bool FrameBuffer::Attach(FrameBufferAttachment _attachment)
+  bool FrameBuffer::Attach(FrameBufferAttachment _attachment, const std::shared_ptr<Texture> & _texture)
   {
     //make the frame buffer clear attachmented types.
     if (_attachment == FrameBufferAttachment::COLOUR)
@@ -319,6 +355,11 @@ namespace graphics {
       if (m_colourAttachmentCount >= Graphics::GL().GetMaxColourAttachments())
       {
         throw std::runtime_error("Maximum colour attachments reached");
+      }
+
+      if (_texture)
+      {
+        m_colourAttachments.push_back(_texture);
       }
   
       ++m_colourAttachmentCount;
@@ -337,14 +378,21 @@ namespace graphics {
     else if (_attachment == FrameBufferAttachment::DEPTH)
     {
       m_clearFlags |= BufferBit::DEPTH;
+
+      m_depthAttachment = _texture;
     }
     else if (_attachment == FrameBufferAttachment::STENCIL)
     {
       m_clearFlags |= BufferBit::STENCIL;
+
+      m_stencilAttachment = _texture;
     }
     else if (_attachment == FrameBufferAttachment::DEPTH_STENCIL)
     {
       m_clearFlags |= BufferBit::DEPTH | BufferBit::STENCIL;
+
+      m_depthAttachment = _texture;
+      m_stencilAttachment = _texture;
     }
   
     return Check();
@@ -361,21 +409,6 @@ namespace graphics {
   
     return status == GL_FRAMEBUFFER_COMPLETE;
   }
-  
-  const std::shared_ptr<Texture2D> & FrameBuffer::getTexture(size_t _i)
-  {
-    return m_textures.at(_i);
-  }
-
-  const std::shared_ptr<TextureCube> & FrameBuffer::getCubeMap(size_t _i)
-  {
-    return m_cubeMaps.at(_i);
-  }
-
-  const std::shared_ptr<Shadow2D> & FrameBuffer::getShadow2D()
-  {
-    return m_shadow;
-  }
 
   uint FrameBuffer::getWidth() const
   {
@@ -385,6 +418,11 @@ namespace graphics {
   uint FrameBuffer::getHeight() const
   {
     return m_height;
+  }
+
+  void FrameBuffer::setClearColour(const glm::vec4 & _clear)
+  {
+    m_clearColour = _clear;
   }
 
 } } // engine::graphics

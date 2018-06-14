@@ -15,14 +15,13 @@ void main()
 #shader geometry 
 #version 430 core
 
-#define MAX_CASCADES 3
-
 layout (triangles) in;
-layout (triangle_strip, max_vertices = 9) out; //MAX_CASCADES * 3 (triangle)
+layout (triangle_strip, max_vertices = 15) out; //MAX_CASCADES * 3 (triangle)
 
-uniform mat4 vp[MAX_CASCADES];
+const int MAX_CASCADES = 5;
 
 uniform int cascadeCount;
+uniform mat4 vp[MAX_CASCADES];
 
 void main()
 {

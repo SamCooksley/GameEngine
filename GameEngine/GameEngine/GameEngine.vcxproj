@@ -321,6 +321,7 @@
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)graphics\</XMLDocumentationFileName>
     </ClCompile>
     <ClCompile Include="src\graphics\Shadow2D.cpp" />
+    <ClCompile Include="src\graphics\Texture2DArray.cpp" />
     <ClCompile Include="src\graphics\TextureCube.cpp">
       <AssemblerListingLocation Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)graphics\</AssemblerListingLocation>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)graphics\</ObjectFileName>
@@ -518,6 +519,7 @@
     <ClInclude Include="src\graphics\Texture.h" />
     <ClInclude Include="src\graphics\Texture2D.h" />
     <ClInclude Include="src\graphics\Shadow2D.h" />
+    <ClInclude Include="src\graphics\Texture2DArray.h" />
     <ClInclude Include="src\graphics\TextureCube.h" />
     <ClInclude Include="src\graphics\TextureTypes.h" />
     <ClInclude Include="src\graphics\TypeData.h" />
@@ -550,6 +552,7 @@
     <None Include="src\core\Dictionary.inl" />
     <None Include="src\GameObject.inl" />
     <None Include="src\graphics\BufferLayout.inl" />
+    <None Include="src\graphics\FrameBuffer.inl" />
     <None Include="src\graphics\Material.inl" />
     <None Include="src\graphics\Mesh.inl" />
     <None Include="src\graphics\Shader.inl" />

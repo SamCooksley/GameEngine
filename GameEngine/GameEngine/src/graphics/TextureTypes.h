@@ -9,6 +9,7 @@ namespace graphics {
   enum class TextureType : GLenum
   {
     TEXTURE_2D,
+    TEXTURE_2D_ARRAY,
     TEXTURE_CUBE,
     SHADOW_2D,
     SHADOW_2D_ARRAY
@@ -32,8 +33,10 @@ namespace graphics {
   
   enum class TextureFormat : GLenum
   {
+    RG32F = GL_RG32F,
     RGBA8 = GL_RGBA8,
     RGBA16F = GL_RGBA16F,
+    RGBA32F = GL_RGBA32F,
     DEPTH_COMPONENT16 = GL_DEPTH_COMPONENT16,
     DEPTH_COMPONENT24 = GL_DEPTH_COMPONENT24,
     DEPTH_COMPONENT32F = GL_DEPTH_COMPONENT32F,

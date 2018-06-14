@@ -22,11 +22,6 @@ namespace graphics {
     m_deferredDirectional->setUniform("normal", 1);
     m_deferredDirectional->setUniform("colour", 2);
     m_deferredDirectional->setUniform("shadowMap", 3);
-    /*for (int i = 0; i < MAX_DIRECTIONAL_CASCADES; ++i)
-    {
-      std::string name = "shadowMap[" + std::to_string(i) + ']';
-      m_deferredDirectional->setUniform(name, 3 + i);
-    }*/
 
     m_deferredPoint = Resources::Load<Shader>("resources/shaders/deferred/point.shader");
     m_deferredPoint->setUniform("position", 0);
@@ -110,15 +105,13 @@ namespace graphics {
 
             int size = glm::min(dir.shadow->distance.size(), MAX_DIRECTIONAL_CASCADES);
 
-            m_deferredDirectional->setUniform<int>("cascadeCount", size);
+            m_deferredDirectional->setUniform("cascadeCount", size);
             dir.shadow->shadowMap->Bind(3);
             for (int i = 0; i < size; ++i)
             {
-              //auto & cascade = dir.shadow->maps[i];
               std::string arr = '[' + std::to_string(i) + ']';
               m_deferredDirectional->setUniform("lightSpace" + arr, dir.shadow->lightSpace[i]);
               m_deferredDirectional->setUniform("distance" + arr, dir.shadow->distance[i]);
-              //cascade.shadowMap->Bind(3 + i);
             }
           }
           else
@@ -212,6 +205,15 @@ namespace graphics {
   
       command.mesh->Render();
     }     
+
+   /*
+    auto tmp = Shader::Load("resources/shaders/debug_shadow.shader");
+
+    tmp->setUniform("tex", 0);
+    tmp->setUniform("depth", 0);
+    m_lights.directional[0].shadow->shadowMap->Bind(0);
+    m_gBuffer->RenderToNDC();  
+    */
   }
 
   void DefaultRenderer::Resize(uint _width, uint _height)
@@ -230,9 +232,9 @@ namespace graphics {
   {
     m_gBuffer = FrameBuffer::Create(_width, _height);
   
-    m_position = m_gBuffer->AddTexture(FrameBufferAttachment::COLOUR, TextureFormat::RGBA16F, TextureDataType::FLOAT);
-    m_normal = m_gBuffer->AddTexture(FrameBufferAttachment::COLOUR, TextureFormat::RGBA16F, TextureDataType::FLOAT);
-    m_colour = m_gBuffer->AddTexture(FrameBufferAttachment::COLOUR, TextureFormat::RGBA16F, TextureDataType::FLOAT);
+    m_position = m_gBuffer->AddTexture(FrameBufferAttachment::COLOUR, TextureFormat::RGBA16F);
+    m_normal = m_gBuffer->AddTexture(FrameBufferAttachment::COLOUR, TextureFormat::RGBA16F);
+    m_colour = m_gBuffer->AddTexture(FrameBufferAttachment::COLOUR, TextureFormat::RGBA16F);
     m_gBuffer->AddRenderBuffer(FrameBufferAttachment::DEPTH, TextureFormat::DEPTH_COMPONENT24);
   }
 

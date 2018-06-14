@@ -9,10 +9,11 @@ namespace graphics {
   {
     switch (_type)
     {
-      case TextureType::TEXTURE_2D:      { return GL_TEXTURE_2D;       }
-      case TextureType::TEXTURE_CUBE:    { return GL_TEXTURE_CUBE_MAP; }
-      case TextureType::SHADOW_2D:       { return GL_TEXTURE_2D;       }
-      case TextureType::SHADOW_2D_ARRAY: { return GL_TEXTURE_2D_ARRAY; }
+      case TextureType::TEXTURE_2D:       { return GL_TEXTURE_2D;       }
+      case TextureType::TEXTURE_2D_ARRAY: { return GL_TEXTURE_2D_ARRAY; }
+      case TextureType::TEXTURE_CUBE:     { return GL_TEXTURE_CUBE_MAP; }
+      case TextureType::SHADOW_2D:        { return GL_TEXTURE_2D;       }
+      case TextureType::SHADOW_2D_ARRAY:  { return GL_TEXTURE_2D_ARRAY; }
       default:
       {
         throw std::invalid_argument("Invalid texture type");
@@ -24,8 +25,9 @@ namespace graphics {
   {
     switch (_type)
     {
-      case GL_TEXTURE_2D:       { return TextureType::TEXTURE_2D;   }
-      case GL_TEXTURE_CUBE_MAP: { return TextureType::TEXTURE_CUBE; }
+      case GL_TEXTURE_2D:       { return TextureType::TEXTURE_2D;       }
+      case GL_TEXTURE_2D_ARRAY: { return TextureType::TEXTURE_2D_ARRAY; }
+      case GL_TEXTURE_CUBE_MAP: { return TextureType::TEXTURE_CUBE;     }
       default: 
       {
         throw std::invalid_argument("Invalid texture type");
@@ -38,10 +40,11 @@ namespace graphics {
     //map specific values as the enum values are opengl textures, not samplers.
     switch (_type)
     {
-      case TextureType::TEXTURE_2D:      { return GL_SAMPLER_2D;              }
-      case TextureType::TEXTURE_CUBE:    { return GL_SAMPLER_CUBE;            }
-      case TextureType::SHADOW_2D:       { return GL_SAMPLER_2D_SHADOW;       }
-      case TextureType::SHADOW_2D_ARRAY: { return GL_SAMPLER_2D_ARRAY_SHADOW; }
+      case TextureType::TEXTURE_2D:       { return GL_SAMPLER_2D;              }
+      case TextureType::TEXTURE_2D_ARRAY: { return GL_SAMPLER_2D_ARRAY;        }
+      case TextureType::TEXTURE_CUBE:     { return GL_SAMPLER_CUBE;            }
+      case TextureType::SHADOW_2D:        { return GL_SAMPLER_2D_SHADOW;       }
+      case TextureType::SHADOW_2D_ARRAY:  { return GL_SAMPLER_2D_ARRAY_SHADOW; }
       default: 
       { 
         throw std::invalid_argument("Invalid texture type");
@@ -53,10 +56,11 @@ namespace graphics {
   {
     switch (_type)
     {
-      case GL_SAMPLER_2D:              { return TextureType::TEXTURE_2D;      }
-      case GL_SAMPLER_CUBE:            { return TextureType::TEXTURE_CUBE;    }
-      case GL_SAMPLER_2D_SHADOW:       { return TextureType::SHADOW_2D;       }
-      case GL_SAMPLER_2D_ARRAY_SHADOW: { return TextureType::SHADOW_2D_ARRAY; }
+      case GL_SAMPLER_2D:              { return TextureType::TEXTURE_2D;       }
+      case GL_SAMPLER_2D_ARRAY:        { return TextureType::TEXTURE_2D_ARRAY; }
+      case GL_SAMPLER_CUBE:            { return TextureType::TEXTURE_CUBE;     }
+      case GL_SAMPLER_2D_SHADOW:       { return TextureType::SHADOW_2D;        }
+      case GL_SAMPLER_2D_ARRAY_SHADOW: { return TextureType::SHADOW_2D_ARRAY;  }
       default:
       { 
         throw std::invalid_argument("Invalid sampler type");
@@ -92,8 +96,10 @@ namespace graphics {
   {
     switch (_format)
     {
+      case GL_RG32F:              { return TextureFormat::RG32F;              }
       case GL_RGBA8:              { return TextureFormat::RGBA8;              }
       case GL_RGBA16F:            { return TextureFormat::RGBA16F;            }
+      case GL_RGBA32F:            { return TextureFormat::RGBA32F;            }
       case GL_DEPTH_COMPONENT16:  { return TextureFormat::DEPTH_COMPONENT16;  }
       case GL_DEPTH_COMPONENT24:  { return TextureFormat::DEPTH_COMPONENT24;  }
       case GL_DEPTH_COMPONENT32F: { return TextureFormat::DEPTH_COMPONENT32F; }

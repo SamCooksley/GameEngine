@@ -2,6 +2,7 @@
 #define _ENGINE_GRAPHICS_FRAMEBUFFER_H_
 
 #include "Texture2D.h"
+#include "Texture2DArray.h"
 #include "TextureCube.h"
 #include "Shadow2D.h"
 #include "Shadow2DArray.h"
@@ -67,31 +68,41 @@ namespace graphics {
 
     void Blit(FrameBuffer & _dst, GLenum _mask, TextureFilter _filter = TextureFilter::NEAREST);
 
-    std::shared_ptr<Texture2D> AddTexture(FrameBufferAttachment _attachment, TextureFormat _format, TextureDataType _type);
+    std::shared_ptr<Texture2D> AddTexture(FrameBufferAttachment _attachment, TextureFormat _format);
     
-    std::shared_ptr<TextureCube> AddCubeMap(FrameBufferAttachment _attachment, TextureFormat _format, TextureDataType _type);
+    std::shared_ptr<TextureCube> AddCubeMap(FrameBufferAttachment _attachment, TextureFormat _format);
   
     std::shared_ptr<Shadow2D> AddShadow2D(TextureFormat _format);
 
     std::shared_ptr<Shadow2D> Add(const std::shared_ptr<Shadow2D> & _shadow);
 
-    void setDepth(const std::shared_ptr<Shadow2DArray> & _shadow);
+    void Add(const std::shared_ptr<Texture2DArray> & _texture, FrameBufferAttachment _attachment);
+    void Add(const std::shared_ptr<Texture2DArray> & _texture, uint _depth, FrameBufferAttachment _attachment);
+   
+    void Add(const std::shared_ptr<Shadow2DArray> & _shadow);
     void setDepth(const std::shared_ptr<Shadow2DArray> & _shadow, uint _depth);
 
     bool AddRenderBuffer(FrameBufferAttachment _attachment, TextureFormat _format);
 
-    const std::shared_ptr<Texture2D> & getTexture(size_t _i);
-    const std::shared_ptr<TextureCube> & getCubeMap(size_t _i);
-    const std::shared_ptr<Shadow2D> & getShadow2D();
+    template <class T>
+    std::shared_ptr<T> getColour(size_t _i);
+
+    template <class T>
+    std::shared_ptr<T> getDepth();
+
+    template <class T>
+    std::shared_ptr<T> getStencil();
 
     uint getWidth() const;
     uint getHeight() const;
+
+    void setClearColour(const glm::vec4 & _clear);
   
    protected:
     FrameBuffer(uint _width, uint _height, bool _default = false);
 
    private:
-    bool Attach(FrameBufferAttachment _attachment);
+    bool Attach(FrameBufferAttachment _attachment, const std::shared_ptr<Texture> & _texture = nullptr);
   
     bool Check() const;
   
@@ -102,16 +113,19 @@ namespace graphics {
     GLenum m_clearFlags;
   
     uint m_width, m_height;
+    uint m_layers;
   
     uint m_colourAttachmentCount;
   
-    std::vector<std::shared_ptr<Texture2D>> m_textures;
-    std::vector<std::shared_ptr<TextureCube>> m_cubeMaps;
-    std::shared_ptr<Shadow2D> m_shadow;
+    std::vector<std::shared_ptr<Texture>> m_colourAttachments;
+    std::shared_ptr<Texture> m_depthAttachment;
+    std::shared_ptr<Texture> m_stencilAttachment;
 
     std::vector<std::unique_ptr<RenderBuffer>> m_renderBuffers;
   };
   
-} } // engine::graphics10
+} } // engine::graphics
+
+#include "FrameBuffer.inl"
 
 #endif //_ENGINE_GRAPHICS_FRAMEBUFFER_H_

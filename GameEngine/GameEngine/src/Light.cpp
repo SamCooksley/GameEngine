@@ -6,8 +6,9 @@
 
 #include "Application.h"
 #include "Resources.h"
-namespace engine {
 
+namespace engine {
+  
   Light::Light()
   { }
 
@@ -25,7 +26,7 @@ namespace engine {
 
     m_shadowCascades = 3;
 
-    m_depth = Resources::Load<graphics::Shader>("resources/shaders/depth_csm.shader");
+    m_depth = Resources::Load<graphics::Shader>("resources/shaders/depth_csm_varience.shader");
   }
 
   void Light::OnDestroy()
@@ -127,19 +128,48 @@ namespace engine {
   {
     if (_castShadows)
     {
+      uint size = 1024;
+
       m_shadowRenderer = std::make_shared<graphics::ShadowRenderer>();
-      m_frameBuffer = graphics::FrameBuffer::Create(1024, 1024);//(2048, 2048);
+      m_frameBuffer = graphics::FrameBuffer::Create(size, size);//(2048, 2048);
+      m_frameBuffer->setClearColour(glm::vec4(1.f, 0.f, 0.f, 0.f));
+
+      //create a depth buffer to keep depth testing.
+      //render buffers cannot be layered so use a texture.
+      auto depth = std::make_shared<graphics::Shadow2DArray>(size, size, 3, graphics::TextureFormat::DEPTH_COMPONENT32F);
+      m_frameBuffer->Add(depth);
+    
       m_shadow = std::make_shared<graphics::CSM>();
 
-      m_shadow->distance.resize(m_shadowCascades);
-      m_shadow->lightSpace.resize(m_shadowCascades);
-      m_shadow->shadowMap = std::make_shared<graphics::Shadow2DArray>(1024, 1024, m_shadowCascades, graphics::TextureFormat::DEPTH_COMPONENT32F);
-      m_frameBuffer->setDepth(m_shadow->shadowMap);
+      m_shadow->distance.resize(3);
+      m_shadow->lightSpace.resize(3);
+      
+      auto colour = std::make_shared<graphics::Texture2DArray>(size, size, 3, 1, graphics::TextureFormat::RG32F);
+      colour->setFilter(graphics::TextureFilter::LINEAR);
+      colour->setWrap(graphics::TextureWrap::CLAMP_TO_BORDER);
+      colour->setBorder(glm::vec4(1.f));
+      m_frameBuffer->Add(colour, graphics::FrameBufferAttachment::COLOUR);
+
+      m_shadow->shadowMap = colour;
+
+      m_frameBuffer->Clear();
+
+      m_blur = graphics::Shader::Load("resources/shaders/filters/blur_array3.shader");
+
+      for (int i = 0; i < 2; ++i)
+      {
+        m_pingpong[i] = graphics::FrameBuffer::Create(size, size);
+        auto tex = std::make_shared<graphics::Texture2DArray>(size, size, 3, 1, graphics::TextureFormat::RG32F);
+        
+        tex->setWrap(graphics::TextureWrap::CLAMP_TO_BORDER);
+        tex->setBorder(glm::vec4(1.f));
+        m_pingpong[i]->Add(tex, graphics::FrameBufferAttachment::COLOUR);
+      }
+
       m_castShadows = true;
     }
     else
     {
-      
       m_castShadows = false;
     }
 
@@ -158,18 +188,17 @@ namespace engine {
     glm::mat4 view = Transform::getTransform(pos, rot, glm::vec3(1.f));
     view = glm::inverse(view);
 
-    auto camera = GenerateDirectionalCamera(*_camera, m_shadowCascades);
+    auto camera = GenerateDirectionalCamera(*_camera, 3);
 
     m_frameBuffer->Bind();
-    //m_frameBuffer->setDepth(m_shadow->shadowMap);
     m_frameBuffer->Clear();
-
     m_depth->Bind();
-
-    m_depth->setUniform("cascadeCount", m_shadowCascades);
-    for (int i = 0; i < m_shadowCascades; ++i)
+    for (int i = 0; i < 3; ++i)
     {
       m_depth->setUniform("vp[" + std::to_string(i) + ']', camera[i].vp);
+
+      m_shadow->lightSpace[i] = camera[i].vp;
+      m_shadow->distance[i] = (1.f / 3.f) * (1.f + i) * 25.f;
     }
 
     const auto & commands = _occluders.getCommands();
@@ -178,19 +207,40 @@ namespace engine {
       m_depth->setModel(command.transform);
       command.mesh->Render();
     }
+    //return;
 
-    
-    for (int i = 0u; i < m_shadowCascades; ++i)
+    m_blur->Bind();
+    m_blur->setUniform("tex", 0);
+    //for (int i = 0; i < 3; ++i)
     {
-      //m_frameBuffer->setDepth(m_shadow->shadowMap, i);
-      //m_frameBuffer->Clear();
-      
-     // m_shadowRenderer->Render(camera[i], _occluders);
-
-      m_shadow->lightSpace[i] = camera[i].vp;
-      m_shadow->distance[i] = (1.f / m_shadowCascades) * (1.f + i) * 25.f;
+      //String uni = "layerMultiplier[" + std::to_string(i) + ']';
+      m_blur->setUniform("layerMultiplier[0]", 1.f);
+      m_blur->setUniform("layerMultiplier[1]", 1.f);// .25f);
+      m_blur->setUniform("layerMultiplier[2]", 1.f);// 0.1f);
     }
-    
+    m_pingpong[0]->Bind();
+
+    m_blur->setUniform("scale", glm::vec2(1, 0));
+
+    m_frameBuffer->getColour<graphics::Texture2DArray>(0)->Bind(0);
+
+    m_pingpong[0]->RenderToNDC();
+
+    m_frameBuffer->Bind();
+    m_frameBuffer->Clear();
+    m_blur->setUniform("scale", glm::vec2(0, 1));
+    m_pingpong[0]->getColour<graphics::Texture2DArray>(0)->Bind(0);
+    m_frameBuffer->RenderToNDC();
+
+    //m_frameBuffer->getColour<graphics::Texture2DArray>(0)->GenerateMipMaps();
+    //m_shadow->shadowMap->Bind(0);
+    /*m_frameBuffer->Bind();
+    m_frameBuffer->Clear();
+    m_blur->setUniform("scale", glm::vec2(0, 1));
+
+    m_pingpong[0]->getColour<graphics::Texture2DArray>(0)->Bind(0);
+
+    m_frameBuffer->RenderToNDC();*/
   }
 
   void Light::UpdateShadow()

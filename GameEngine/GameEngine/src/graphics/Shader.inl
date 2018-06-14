@@ -8,7 +8,7 @@ namespace graphics {
     if (!getUniform(_name, &uniform))
     {
       debug::Log(_name);
-      assert(false);
+      //assert(false);
       return;
     }
 

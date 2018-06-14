@@ -12,7 +12,7 @@ namespace graphics {
     static std::shared_ptr<TextureCube> Load(const std::array<String, 6> & _paths);
   
    public:
-    TextureCube(uint _width, uint _height, TextureFormat _format, TextureDataType _type);
+    TextureCube(uint _width, uint _height, TextureFormat _format);
     TextureCube(uint _width, uint _height, const glm::vec4 & _colour);
   
     ~TextureCube();
@@ -31,7 +31,6 @@ namespace graphics {
     uint m_width, m_height;
 
     TextureFormat m_format;
-    TextureDataType m_dataType;
 
     TextureFilter m_filter;
   };

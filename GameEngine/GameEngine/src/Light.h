@@ -5,6 +5,7 @@
 
 #include "graphics\ShadowMap.h"
 #include "graphics\ShadowRenderer.h"
+#include "graphics\FrameBuffer.h"
 
 #include "Camera.h"
 
@@ -74,6 +75,9 @@ namespace engine {
     //union with other shadow types
     std::shared_ptr<graphics::CSM> m_shadow;
     std::shared_ptr<graphics::Shader> m_depth;
+    std::shared_ptr<graphics::Shader> m_blur;
+
+    std::shared_ptr<graphics::FrameBuffer> m_pingpong[2];
 
     ENGINE_SETUPSHARED(Light);
   };

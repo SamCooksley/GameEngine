@@ -279,6 +279,9 @@
     <ClCompile Include="src\graphics\Shadow2DArray.cpp">
       <Filter>Source Files\graphics</Filter>
     </ClCompile>
+    <ClCompile Include="src\graphics\Texture2DArray.cpp">
+      <Filter>Source Files\graphics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\stdafx.h">
@@ -518,6 +521,9 @@
     <ClInclude Include="src\graphics\Shadow2DArray.h">
       <Filter>Header Files\graphics</Filter>
     </ClInclude>
+    <ClInclude Include="src\graphics\Texture2DArray.h">
+      <Filter>Header Files\graphics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\GameObject.inl">
@@ -542,6 +548,9 @@
       <Filter>Header Files\core</Filter>
     </None>
     <None Include="src\graphics\BufferLayout.inl">
+      <Filter>Header Files\graphics</Filter>
+    </None>
+    <None Include="src\graphics\FrameBuffer.inl">
       <Filter>Header Files\graphics</Filter>
     </None>
   </ItemGroup>

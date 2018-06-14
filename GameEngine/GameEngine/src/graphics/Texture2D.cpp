@@ -6,30 +6,18 @@
 
 namespace engine {
 namespace graphics {
-
-  std::shared_ptr<Texture2D> Texture2D::Create()
-  {
-    struct enable_texture : public Texture2D { };
   
-    return std::make_shared<enable_texture>();
-  }
-  
-  std::shared_ptr<Texture2D> Texture2D::Create(uint _width, uint _height, TextureFormat _format, TextureDataType _type)
+  std::shared_ptr<Texture2D> Texture2D::Create(uint _width, uint _height, TextureFormat _format)
   {
-    auto texture = Create();
-    texture->m_width = _width;
-    texture->m_height = _height;
-
-    texture->m_format = _format;
-    texture->m_dataType = _type;
+    auto texture = std::make_shared<Texture2D>(_width, _height, _format);
   
     GLCALL(
       glTexImage2D(
         GL_TEXTURE_2D, 0,
         TextureFormatToOpenGL(_format),
         _width, _height, 0,
-        TextureBaseFormatToOpenGL(TextureFormatBase(_format)),
-        TextureDataTypeToOpenGL(_type),
+        GL_RED,
+        GL_UNSIGNED_BYTE,
         nullptr
       )
     );
@@ -49,12 +37,7 @@ namespace graphics {
       memcpy(&pixels[i], glm::value_ptr(_colour), sizeof(float) * 4u);
     }
   
-    auto texture = Create();
-    texture->m_width = _width;
-    texture->m_height = _height;
-
-    texture->m_format = TextureFormat::RGBA8;
-    texture->m_dataType = TextureDataType::FLOAT;
+    auto texture = std::make_shared<Texture2D>(_width, _height, TextureFormat::RGBA8);
 
     GLCALL(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, _width, _height, 0, GL_RGBA, GL_FLOAT, &pixels[0]));
   
@@ -72,10 +55,8 @@ namespace graphics {
       throw std::runtime_error("Texture2D Error: failed to load file: " + _path);
     }
   
-    auto texture = Create();
+    auto texture = std::make_shared<Texture2D>(image.width, image.height, TextureFormat::RGBA8);
     texture->setName(file::getFilenameWithoutExtension(_path));
-    texture->m_width = image.width;
-    texture->m_height = image.height;
   
     GLCALL(glTexImage2D(
       GL_TEXTURE_2D, 0, 
@@ -97,7 +78,12 @@ namespace graphics {
     return texture;
   }
   
-  Texture2D::Texture2D() : Texture(TextureType::TEXTURE_2D)
+  Texture2D::Texture2D(uint _width, uint _height, TextureFormat _format) : 
+    Texture(TextureType::TEXTURE_2D),
+    m_width(_width), m_height(_height),
+    m_format(_format),
+    m_wrap(TextureWrap::REPEAT),
+    m_filter(TextureFilter::LINEAR)
   {
     GLCALL(glGenTextures(1, &m_id));
     GLCALL(glBindTexture(GL_TEXTURE_2D, m_id));
@@ -132,8 +118,8 @@ namespace graphics {
         GL_TEXTURE_2D, 0,
         TextureFormatToOpenGL(m_format),
         m_width, m_height, 0,
-        TextureBaseFormatToOpenGL(TextureFormatBase(m_format)),
-        TextureDataTypeToOpenGL(m_dataType),
+        GL_RED,
+        GL_UNSIGNED_BYTE,
         nullptr
       )
     );

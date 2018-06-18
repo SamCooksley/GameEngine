@@ -11,12 +11,6 @@
 
 namespace engine {
 
-  enum class CameraType
-  {
-    PERSPECTIVE,
-    ORTHOGRAPHIC
-  };
-
   class Camera : public Component
   {
    public:
@@ -35,9 +29,6 @@ namespace engine {
 
     graphics::FrameBuffer & getRenderTarget();
 
-    std::vector<glm::vec3> getFrustumPoints() const;
-    std::vector<glm::vec3> getFrustumPoints(const float * _distances, size_t _size) const;
-
    protected:
     void OnAwake() override;
     void OnDestroy() override;
@@ -47,7 +38,7 @@ namespace engine {
     void RemoveAsMainCamera();
 
    private:
-    CameraType m_type;
+    graphics::CameraType m_type;
 
     union
     {

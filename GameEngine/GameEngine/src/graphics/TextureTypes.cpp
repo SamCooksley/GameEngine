@@ -102,6 +102,7 @@ namespace graphics {
       case GL_RGBA32F:            { return TextureFormat::RGBA32F;            }
       case GL_DEPTH_COMPONENT16:  { return TextureFormat::DEPTH_COMPONENT16;  }
       case GL_DEPTH_COMPONENT24:  { return TextureFormat::DEPTH_COMPONENT24;  }
+      case GL_DEPTH_COMPONENT32:  { return TextureFormat::DEPTH_COMPONENT32;  }
       case GL_DEPTH_COMPONENT32F: { return TextureFormat::DEPTH_COMPONENT32F; }
       case GL_DEPTH24_STENCIL8:   { return TextureFormat::DEPTH24_STENCIL8;   }
       default: 

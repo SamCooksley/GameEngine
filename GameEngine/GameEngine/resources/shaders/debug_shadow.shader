@@ -15,5 +15,5 @@ uniform int depth = 0;
 
 void main()
 {
-    out_colour = vec4(vec3(texture(tex, vec3(in_texCoords, depth)).r, 0.0, 0.0), 1.0);
+    out_colour = vec4(vec3(min(texture(tex, vec3(in_texCoords, depth)).r, .3)), 0.7);
 }

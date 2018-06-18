@@ -15,8 +15,9 @@ void main()
 #shader geometry 
 #version 430 core
 
+layout (invocations = 4) in;
 layout (triangles) in;
-layout (triangle_strip, max_vertices = 15) out; //MAX_CASCADES * 3 (triangle)
+layout (triangle_strip, max_vertices = 12) out;
 
 const int MAX_CASCADES = 5;
 
@@ -25,16 +26,13 @@ uniform mat4 vp[MAX_CASCADES];
 
 void main()
 {
-    for (int layer = 0; layer < cascadeCount; ++layer)
+    for (int i = 0; i < 3; ++i)
     {
-        gl_Layer = layer;
-        for (int i = 0; i < 3; ++i)
-        {
-            gl_Position = vp[layer] * gl_in[i].gl_Position; 
-            EmitVertex();
-        }
-        EndPrimitive();
+        gl_Layer = gl_InvocationID;
+        gl_Position = vp[gl_InvocationID] * gl_in[i].gl_Position; 
+        EmitVertex();
     }
+    EndPrimitive();
 }
 
 #shader fragment

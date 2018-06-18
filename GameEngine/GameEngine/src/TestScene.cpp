@@ -26,7 +26,7 @@ namespace engine {
     Scene::Init();
 
     auto camera = GameObject::Instantiate();
-    camera->AddComponent<Camera>()->setPerspective(90.f, .01f, 25.f);
+    camera->AddComponent<Camera>()->setPerspective(60.f, .01f, 25.f);
     camera->AddComponent<CameraMovement>();
 
     auto mesh = Resources::Load<graphics::Mesh>("resources/models/cube.obj");
@@ -116,7 +116,8 @@ namespace engine {
     mr = go->AddComponent<MeshRenderer>();
     mr->setMesh(mesh);
 
-    go->getComponent<Transform>()->setPosition(glm::vec3(0.f, 3.f, 2.f)).setRotation(glm::quat(glm::radians(glm::vec3(-30.f, 30.f, 0.f)))).setLocalScale(glm::vec3(0.1f));
+    //go->getComponent<Transform>()->setRotation(glm::quat(glm::radians(glm::vec3(-90.f, 0.f, 0.f))));
+    go->getComponent<Transform>()->setPosition(glm::vec3(0.f, 3.f, 2.f)).setRotation(glm::quat(glm::radians(glm::vec3(-80.f, 30.f, 0.f)))).setLocalScale(glm::vec3(0.1f));
 
     go = GameObject::Instantiate();
     light = go->AddComponent<Light>();

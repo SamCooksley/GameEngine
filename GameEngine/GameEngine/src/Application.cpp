@@ -202,7 +202,7 @@ namespace engine {
 
     for (auto & light : s_context->directionalShadows)
     {
-      light->GenerateShadowMap(renderer.getCommands().getShadowCommands(), &camera);
+      light->GenerateShadowMap(renderer.getCommands().getShadowCommands(), &cam);
     }
 
     target.Bind();

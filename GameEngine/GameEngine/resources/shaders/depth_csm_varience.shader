@@ -15,11 +15,11 @@ void main()
 #shader geometry 
 #version 430 core
 
-layout (invocations = 3) in;
+layout (invocations = 4) in;
 layout (triangles) in;
-layout (triangle_strip, max_vertices = 9) out;
+layout (triangle_strip, max_vertices = 12) out;
 
-uniform mat4 vp[3];
+uniform mat4 vp[4];
 
 void main()
 {

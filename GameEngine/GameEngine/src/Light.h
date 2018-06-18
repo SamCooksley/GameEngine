@@ -19,6 +19,12 @@ namespace engine {
     SPOT
   };
 
+  struct LightCameraStep
+  {
+    graphics::Camera camera;
+    float distance;
+  };
+
   class Light : public Component
   {
     friend class Application;
@@ -37,7 +43,7 @@ namespace engine {
 
     void setShadows(bool _castShadows);
 
-    void GenerateShadowMap(const graphics::ShadowCommandBuffer & _occluders, const Camera * _camera);
+    void GenerateShadowMap(const graphics::ShadowCommandBuffer & _occluders, const graphics::Camera * _camera);
 
    protected:
     void OnAwake() override;
@@ -47,7 +53,7 @@ namespace engine {
    private:
     void UpdateShadow();
 
-    std::vector<graphics::Camera> GenerateDirectionalCamera(const Camera & _target, size_t _numCascades);
+    std::vector<LightCameraStep> GenerateDirectionalCamera(const graphics::Camera & _target, size_t _numCascades);
 
     void AddShadow();
     void RemoveShadow();

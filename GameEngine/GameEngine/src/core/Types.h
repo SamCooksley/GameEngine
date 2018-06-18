@@ -13,6 +13,8 @@
 
 #include "Dictionary.h"
 
+#include "not_implemented.h"
+
 namespace engine {
 
   using int8  = std::int8_t;

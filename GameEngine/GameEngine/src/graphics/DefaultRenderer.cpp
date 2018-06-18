@@ -105,7 +105,6 @@ namespace graphics {
 
             int size = glm::min(dir.shadow->distance.size(), MAX_DIRECTIONAL_CASCADES);
 
-            m_deferredDirectional->setUniform("cascadeCount", size);
             dir.shadow->shadowMap->Bind(3);
             for (int i = 0; i < size; ++i)
             {
@@ -206,7 +205,7 @@ namespace graphics {
       command.mesh->Render();
     }     
 
-   /*
+    /*
     auto tmp = Shader::Load("resources/shaders/debug_shadow.shader");
 
     tmp->setUniform("tex", 0);
@@ -214,6 +213,7 @@ namespace graphics {
     m_lights.directional[0].shadow->shadowMap->Bind(0);
     m_gBuffer->RenderToNDC();  
     */
+    
   }
 
   void DefaultRenderer::Resize(uint _width, uint _height)
@@ -232,10 +232,10 @@ namespace graphics {
   {
     m_gBuffer = FrameBuffer::Create(_width, _height);
   
-    m_position = m_gBuffer->AddTexture(FrameBufferAttachment::COLOUR, TextureFormat::RGBA16F);
-    m_normal = m_gBuffer->AddTexture(FrameBufferAttachment::COLOUR, TextureFormat::RGBA16F);
-    m_colour = m_gBuffer->AddTexture(FrameBufferAttachment::COLOUR, TextureFormat::RGBA16F);
-    m_gBuffer->AddRenderBuffer(FrameBufferAttachment::DEPTH, TextureFormat::DEPTH_COMPONENT24);
+    m_position = m_gBuffer->AddTexture(FrameBufferAttachment::COLOUR, TextureFormat::RGBA32F);
+    m_normal = m_gBuffer->AddTexture(FrameBufferAttachment::COLOUR, TextureFormat::RGBA32F);
+    m_colour = m_gBuffer->AddTexture(FrameBufferAttachment::COLOUR, TextureFormat::RGBA32F);
+    m_gBuffer->AddRenderBuffer(FrameBufferAttachment::DEPTH, TextureFormat::DEPTH_COMPONENT32);
   }
 
 } } // engine::graphics

@@ -13,14 +13,22 @@ namespace graphics {
   class ShadowRenderer
   {
    public:
-    ShadowRenderer(
-      const std::shared_ptr<Shader> & _depth = Shader::Load("resources/shaders/depth.shader")
-    );
+    ShadowRenderer(const std::shared_ptr<Shader> & _depth);
     ~ShadowRenderer();
 
-    void Render(const Camera & _camera, const ShadowCommandBuffer & _occluders);
+    virtual void setDirectional(const glm::vec3 & _direction);
+    virtual void setDirectional(const glm::vec3 & _direction, const Camera & _target);
 
-   private:
+    virtual void setPoint(const glm::vec3 & _position, float _radius);
+
+    virtual void setSpot(const glm::vec3 & _position, const glm::vec3 & _direction, float _fov, float _distance);
+
+    virtual void Render(const ShadowCommandBuffer & _occluders) = 0;
+  
+   protected:
+    void RenderCommands(const ShadowCommandBuffer & _occluders);
+
+   protected:
     std::shared_ptr<Shader> m_depth;
   };
 

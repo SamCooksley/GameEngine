@@ -27,7 +27,7 @@ uniform DirectionalLight light;
 
 uniform int shadow = 0; 
 
-const int MAX_CASCADES = 3;
+const int MAX_CASCADES = 4;
 
 uniform int cascadeCount;
 
@@ -58,7 +58,7 @@ void main()
 
         int index = -1;
 
-        for (int i = 0; i < cascadeCount; ++i)
+        for (int i = 0; i < 4; ++i)
         {
             if (depth <= distance[i])
             {
@@ -74,9 +74,9 @@ void main()
 
 #ifdef DEBUG_CSM
             const vec3 c[] = {
-                vec3(0.5, 0.0, 0.0),
-                vec3(0.0, 0.5, 0.0),
-                vec3(0.0, 0.0, 0.5),
+                vec3(1, 0, 0),
+                vec3(0, 1, 0),
+                vec3(0, 0, 1),
             };
             colour += c[index % 3] * 0.1;
 #endif

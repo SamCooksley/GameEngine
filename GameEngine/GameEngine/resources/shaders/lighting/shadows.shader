@@ -137,7 +137,7 @@ float VarienceShadowCalculation(const vec4 _lightPos, const sampler2D _shadowMap
   float d  = coords.z - moments.x;
   float pMax = inverseMix01(0.1, 1.0, variance / (variance + d * d));
 
-  return min(max(p, pMax), 1.0);
+  return max(p, pMax);
 }
 
 float VarienceShadowCalculation(const vec4 _lightPos, const sampler2DArray _shadowMap, int _depth)
@@ -150,7 +150,7 @@ float VarienceShadowCalculation(const vec4 _lightPos, const sampler2DArray _shad
   float variance = max(moments.y - moments.x * moments.x, 0.0001);
 
   float d  = coords.z - moments.x;
-  float pMax = inverseMix01(0.2, 1.0, variance / (variance + d * d));
+  float pMax = inverseMix01(0.5, 1.0, variance / (variance + d * d));
 
-  return min(max(p, pMax), 1.0);
+  return max(p, pMax);
 }

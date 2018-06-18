@@ -57,6 +57,7 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)core\</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)core\</XMLDocumentationFileName>
     </ClCompile>
+    <ClCompile Include="src\core\not_implemented.cpp" />
     <ClCompile Include="src\core\Object.cpp">
       <AssemblerListingLocation Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)core\</AssemblerListingLocation>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)core\</ObjectFileName>
@@ -123,6 +124,7 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)graphics\</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)graphics\</XMLDocumentationFileName>
     </ClCompile>
+    <ClCompile Include="src\graphics\CSMRenderer.cpp" />
     <ClCompile Include="src\graphics\FrameBuffer.cpp">
       <AssemblerListingLocation Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)graphics\</AssemblerListingLocation>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)graphics\</ObjectFileName>
@@ -478,6 +480,7 @@
     <ClInclude Include="src\core\glfw.h" />
     <ClInclude Include="src\core\NamedObject.h" />
     <ClInclude Include="src\core\NonCopyable.h" />
+    <ClInclude Include="src\core\not_implemented.h" />
     <ClInclude Include="src\core\Object.h" />
     <ClInclude Include="src\core\String.h" />
     <ClInclude Include="src\core\Types.h" />
@@ -489,6 +492,7 @@
     <ClInclude Include="src\graphics\CameraBuffer.h" />
     <ClInclude Include="src\graphics\CommandBuffer.h" />
     <ClInclude Include="src\graphics\Context.h" />
+    <ClInclude Include="src\graphics\CSMRenderer.h" />
     <ClInclude Include="src\graphics\FrameBuffer.h" />
     <ClInclude Include="src\graphics\GLData.h" />
     <ClInclude Include="src\graphics\Camera.h" />

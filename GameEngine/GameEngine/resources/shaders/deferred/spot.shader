@@ -16,8 +16,14 @@ uniform sampler2D colour;
 
 #include "..\common\camera.shader"
 #include "..\lighting\lighting.shader"
+#include "..\lighting\shadows.shader"
 
 uniform SpotLight light;
+
+uniform int shadow = 0;
+
+uniform mat4 lightSpace;
+uniform sampler2D shadowMap;
 
 void main()
 {
@@ -35,5 +41,11 @@ void main()
     vec3 viewDir_world = normalize(camera.position_world - surf.position);
 
     vec3 colour = CalculateLight(light, surf, viewDir_world);
+
+    if (shadow > 0)
+    {
+        colour *= VarienceShadowCalculation(lightSpace * vec4(surf.position, 1.0), shadowMap);
+    }
+
     out_colour = vec4(colour, 1.0);
 }

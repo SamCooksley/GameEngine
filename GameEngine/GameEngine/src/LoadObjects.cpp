@@ -20,7 +20,7 @@ namespace engine {
     {
       const aiMaterial * aimat = _aiScene->mMaterials[i];
 
-      std::shared_ptr<graphics::Material> mat = graphics::Material::Create(_defaultMaterial);
+      std::shared_ptr<graphics::Material> mat = std::make_shared<graphics::Material>(*_defaultMaterial);
     
       aiString name;
       
@@ -41,7 +41,7 @@ namespace engine {
       }
       else if (aimat->Get(AI_MATKEY_COLOR_DIFFUSE, colour) == AI_SUCCESS)
       {
-        texture = graphics::Texture2D::Create(64, 64, glm::vec4(colour.r, colour.g, colour.b, 1.f));
+        texture = std::make_shared<graphics::Texture2D>(64, 64, glm::vec4(colour.r, colour.g, colour.b, 1.f));
       }
 
       if (texture)
@@ -57,7 +57,7 @@ namespace engine {
       }
       else if (aimat->Get(AI_MATKEY_COLOR_SPECULAR, colour) == AI_SUCCESS)
       {
-        texture = graphics::Texture2D::Create(64, 64, glm::vec4(colour.r, colour.r, colour.r, 1.f));
+        texture = std::make_shared<graphics::Texture2D>(64, 64, glm::vec4(colour.r, colour.r, colour.r, 1.f));
       }
 
       if (texture)
@@ -74,7 +74,7 @@ namespace engine {
       }
       else
       {
-        texture = graphics::Texture2D::Create(64, 64, glm::vec4(.5f, .5f, 1.f, 1.f));
+        texture = std::make_shared<graphics::Texture2D>(64, 64, glm::vec4(.5f, .5f, 1.f, 1.f));
       }
 
       if (texture)
@@ -90,7 +90,7 @@ namespace engine {
       }
       else
       {
-        texture = graphics::Texture2D::Create(64, 64, glm::vec4(1.f));
+        texture = std::make_shared<graphics::Texture2D>(64, 64, glm::vec4(1.f));
       }
 
       if (texture)
@@ -106,7 +106,7 @@ namespace engine {
       }
       else
       {
-        texture = graphics::Texture2D::Create(64, 64, glm::vec4(0.f));// 0.f, 0.f, 1.f));
+        texture = std::make_shared<graphics::Texture2D>(64, 64, glm::vec4(0.f));// 0.f, 0.f, 1.f));
       }
 
       if (texture)

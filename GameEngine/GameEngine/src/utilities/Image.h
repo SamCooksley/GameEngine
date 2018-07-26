@@ -10,7 +10,7 @@ namespace file {
 
   struct ImageData
   {
-    uint width, height;
+    int width, height;
     std::vector<byte> pixels;
   };
   

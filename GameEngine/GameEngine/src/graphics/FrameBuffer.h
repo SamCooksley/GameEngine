@@ -1,11 +1,15 @@
 #ifndef _ENGINE_GRAPHICS_FRAMEBUFFER_H_
 #define _ENGINE_GRAPHICS_FRAMEBUFFER_H_
 
+#include "FrameBufferBase.h"
+
 #include "Texture2D.h"
 #include "Texture2DArray.h"
 #include "TextureCube.h"
+
 #include "Shadow2D.h"
 #include "Shadow2DArray.h"
+#include "ShadowCube.h"
 
 #include "RenderBuffer.h"
 
@@ -22,27 +26,11 @@ namespace graphics {
   
   GLenum FrameBufferAttachmentToOpenGL(FrameBufferAttachment _attachment, uint _colourOffset = 0);
   FrameBufferAttachment OpenGLToFrameBufferAttachment(GLenum _attachment);
-  
-  enum class FrameBufferBind : GLenum
-  {
-    FULL = GL_FRAMEBUFFER, //Binds to both
-    READ = GL_READ_FRAMEBUFFER,
-    WRITE = GL_DRAW_FRAMEBUFFER
-  };
 
-  GLenum FrameBufferBindToOpenGL(FrameBufferBind _bind);
-
-  enum BufferBit : GLenum
-  {
-    COLOUR = GL_COLOR_BUFFER_BIT,
-    DEPTH = GL_DEPTH_BUFFER_BIT,
-    STENCIL = GL_STENCIL_BUFFER_BIT
-  };
-
-  class FrameBuffer : public std::enable_shared_from_this<FrameBuffer>
+  class FrameBuffer : public FrameBufferBase
   {
    public:
-    static FrameBuffer & BindDefault(FrameBufferBind _bind = FrameBufferBind::FULL);
+     FrameBufferBase & BindDefault(FrameBufferBind _bind = FrameBufferBind::WRITE);
 
     static void Blit(
       int _srcX0, int _srcY0, int _srcX1, int _srcY1,
@@ -51,77 +39,89 @@ namespace graphics {
       TextureFilter _filter = TextureFilter::NEAREST
     );
 
-    static std::shared_ptr<FrameBuffer> Create(uint _width, uint _height);
-    static std::shared_ptr<FrameBuffer> CreateDefault(uint _width, uint _height);
+    static std::shared_ptr<FrameBuffer> Create(int _width, int _height, int _depth = 1);
 
    public:
     ~FrameBuffer();
   
-    void Bind(FrameBufferBind _bind = FrameBufferBind::FULL);
-    void Unbind();
+    void Bind(FrameBufferBind _bind = FrameBufferBind::WRITE) override;
   
-    void Clear();
-  
-    void Resize(uint _width, uint _height);
+    void Clear() override;
 
-    void RenderToNDC() const; //TODO: move out of framebuffer
-
-    void Blit(FrameBuffer & _dst, GLenum _mask, TextureFilter _filter = TextureFilter::NEAREST);
-
-    std::shared_ptr<Texture2D> AddTexture(FrameBufferAttachment _attachment, TextureFormat _format);
+    void Blit(GLenum _mask, TextureFilter _filter = TextureFilter::NEAREST);
     
-    std::shared_ptr<TextureCube> AddCubeMap(FrameBufferAttachment _attachment, TextureFormat _format);
-  
-    std::shared_ptr<Shadow2D> AddShadow2D(TextureFormat _format);
+    void Attach(const std::shared_ptr<Texture2D> & _texture, FrameBufferAttachment _attachment, int _colourIndex = -1);
+    void Attach(const std::shared_ptr<Texture2DArray> & _texture, FrameBufferAttachment _attachement, int _colourIndex = -1);
+    void Attach(const std::shared_ptr<Texture2DArray> & _texture, int _layer, FrameBufferAttachment _attachment, int _colourIndex = -1);
+    
+    void Attach(const std::shared_ptr<TextureCube> & _texture, FrameBufferAttachment _attachment, int _colourIndex = -1);
+    void Attach(const std::shared_ptr<TextureCube> & _texture, int _layer, FrameBufferAttachment _attachment, int _colourInidex = -1);
 
-    std::shared_ptr<Shadow2D> Add(const std::shared_ptr<Shadow2D> & _shadow);
+    void AttachDepth(const std::shared_ptr<Shadow2D> & _shadow);
+    void AttachDepth(const std::shared_ptr<Shadow2DArray> & _shadow);
+    void AttachDepth(const std::shared_ptr<Shadow2DArray> & _shadow, int _layer);
+    void AttachDepth(const std::shared_ptr<ShadowCube> & _shadow);
+    void AttachDepth(const std::shared_ptr<ShadowCube> & _shadow, int _layer);
 
-    void Add(const std::shared_ptr<Texture2DArray> & _texture, FrameBufferAttachment _attachment);
-    void Add(const std::shared_ptr<Texture2DArray> & _texture, uint _depth, FrameBufferAttachment _attachment);
-   
-    void Add(const std::shared_ptr<Shadow2DArray> & _shadow);
-    void setDepth(const std::shared_ptr<Shadow2DArray> & _shadow, uint _depth);
+    void AttachTemp(Texture2D & _texture, FrameBufferAttachment _attachment, int _colourIndex = 0);
+    void AttachTemp(Texture2DArray & _texture, FrameBufferAttachment _attachement, int _colourIndex = 0);
+    void AttachTemp(Texture2DArray & _texture, int _layer, FrameBufferAttachment _attachment, int _colourIndex = 0);
+    
+    void AttachTemp(TextureCube & _texture, FrameBufferAttachment _attachment, int _colourIndex = 0);
+    void AttachTemp(TextureCube & _texture, int _layer, FrameBufferAttachment _attachement, int _colourIndex = 0);
 
-    bool AddRenderBuffer(FrameBufferAttachment _attachment, TextureFormat _format);
+    //void set(std::unique_ptr<RenderBuffer> _renderBuffer, FrameBufferAttachment _attachment, int _colourIndex = -1);
+
+    void Reset(int _width, int _height, int _depth = 1);
 
     template <class T>
-    std::shared_ptr<T> getColour(size_t _i);
+    std::shared_ptr<T> getColourAttachment(int _i);
+    template <>
+    std::shared_ptr<Texture> getColourAttachment(int _i);
 
     template <class T>
-    std::shared_ptr<T> getDepth();
+    std::shared_ptr<T> getDepthAttachment();
+    template <>
+    std::shared_ptr<Texture> getDepthAttachment();
 
     template <class T>
-    std::shared_ptr<T> getStencil();
-
-    uint getWidth() const;
-    uint getHeight() const;
-
-    void setClearColour(const glm::vec4 & _clear);
+    std::shared_ptr<T> getStencilAttachment();
+    template <>
+    std::shared_ptr<Texture> getStencilAttachment();
   
    protected:
-    FrameBuffer(uint _width, uint _height, bool _default = false);
+    FrameBuffer();
 
    private:
-    bool Attach(FrameBufferAttachment _attachment, const std::shared_ptr<Texture> & _texture = nullptr);
+    void ValidateFrameBuffer(FrameBufferAttachment _attachment, int _colourIndex = 0);
+    void ValidateTexture(Texture & _texture, bool _useLayers, FrameBufferAttachment _attachment);
+
+    void GetColourIndex(int & _index);
+
+    void Attach(
+      const Texture & _texture, bool _useLayers,
+      const std::shared_ptr<Texture> & _store,
+      FrameBufferAttachment _attachment,
+      int _colourIndex = 0
+    );
   
-    bool Check() const;
+    void Check() const;
   
    private:
     GLuint m_fbo;
   
-    glm::vec4 m_clearColour;
     GLenum m_clearFlags;
   
-    uint m_width, m_height;
-    uint m_layers;
-  
-    uint m_colourAttachmentCount;
-  
-    std::vector<std::shared_ptr<Texture>> m_colourAttachments;
+    bool m_depthStencil;
+
+    std::map<int, std::shared_ptr<Texture>> m_colourAttachments;
+
+    //std::vector<std::shared_ptr<Texture>> m_colourAttachments;
     std::shared_ptr<Texture> m_depthAttachment;
     std::shared_ptr<Texture> m_stencilAttachment;
+    
 
-    std::vector<std::unique_ptr<RenderBuffer>> m_renderBuffers;
+    //std::vector<std::unique_ptr<RenderBuffer>> m_renderBuffers;
   };
   
 } } // engine::graphics

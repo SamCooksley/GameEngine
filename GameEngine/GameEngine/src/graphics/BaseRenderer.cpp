@@ -11,7 +11,7 @@ namespace graphics {
     Renderer(_flags)
   { 
     auto skyboxShader = Resources::Load<graphics::Shader>("resources/shaders/skybox.shader");
-    auto skyboxMaterial = graphics::Material::Create(skyboxShader);
+    auto skyboxMaterial = std::make_shared<graphics::Material>(skyboxShader);
 
     std::array<String, 6u> skyboxTexturePaths;
     for (size_t i = 0u; i < 6u; ++i)

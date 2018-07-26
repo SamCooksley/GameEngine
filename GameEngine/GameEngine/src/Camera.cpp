@@ -82,7 +82,7 @@ namespace engine {
     m_far = _far;
   }
 
-  graphics::FrameBuffer & Camera::getRenderTarget()
+  graphics::FrameBufferBase & Camera::getRenderTarget()
   {
     return *m_target;
   }

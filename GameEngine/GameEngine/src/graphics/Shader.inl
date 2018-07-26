@@ -7,8 +7,7 @@ namespace graphics {
     ShaderUniform uniform;
     if (!getUniform(_name, &uniform))
     {
-      debug::Log(_name);
-      //assert(false);
+      debug::Log(getName() + ": " + _name);
       return;
     }
 
@@ -41,7 +40,7 @@ namespace graphics {
     }
   
     int data;
-    GLCALL(glGetnUniformiv(m_program, _uniform.location, _uniform.size, &data));
+    glGetnUniformiv(m_program, _uniform.location, _uniform.size, &data);
     return data;
   }
   
@@ -57,7 +56,7 @@ namespace graphics {
     }
   
     float data;
-    GLCALL(glGetnUniformfv(m_program, _uniform.location, _uniform.size, &data));
+    glGetnUniformfv(m_program, _uniform.location, _uniform.size, &data);
     return data;
   }
   
@@ -73,7 +72,7 @@ namespace graphics {
     }
   
     glm::vec2 data;
-    GLCALL(glGetnUniformfv(m_program, _uniform.location, _uniform.size, glm::value_ptr(data)));
+    glGetnUniformfv(m_program, _uniform.location, _uniform.size, glm::value_ptr(data));
     return data;
   }
   
@@ -89,7 +88,7 @@ namespace graphics {
     }
   
     glm::vec3 data;
-    GLCALL(glGetnUniformfv(m_program, _uniform.location, _uniform.size, glm::value_ptr(data)));
+    glGetnUniformfv(m_program, _uniform.location, _uniform.size, glm::value_ptr(data));
     return data;
   }
   
@@ -105,7 +104,7 @@ namespace graphics {
     }
   
     glm::vec4 data;
-    GLCALL(glGetnUniformfv(m_program, _uniform.location, _uniform.size, glm::value_ptr(data)));
+    glGetnUniformfv(m_program, _uniform.location, _uniform.size, glm::value_ptr(data));
     return data;
   }
   
@@ -121,7 +120,7 @@ namespace graphics {
     }
   
     glm::mat3 data;
-    GLCALL(glGetnUniformfv(m_program, _uniform.location, _uniform.size, glm::value_ptr(data)));
+    glGetnUniformfv(m_program, _uniform.location, _uniform.size, glm::value_ptr(data));
     return data;
   }
   
@@ -137,7 +136,7 @@ namespace graphics {
     }
   
     glm::mat4 data;
-    GLCALL(glGetnUniformfv(m_program, _uniform.location, _uniform.size, glm::value_ptr(data)));
+    glGetnUniformfv(m_program, _uniform.location, _uniform.size, glm::value_ptr(data));
     return data;
   }
   

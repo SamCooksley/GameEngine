@@ -57,5 +57,63 @@ namespace graphics {
   
     return Error::OK;
   }
+
+  template <class T>
+  Material::Error Material::setTexture(const String & _name, const std::shared_ptr<T> & _texture, bool _new)
+  {
+    static_assert(std::is_base_of<Texture, T>::value, "Object must be type of texture");
+
+    ShaderSampler sampler;
+    if (!m_shader->getSampler(_name, &sampler))
+    {
+      return Error::INVALID_UNIFORM;
+    }
+
+    return setTexture(sampler, T::type, _texture, _new);
+  }
+
+  template <class T>
+  Material::Error Material::getTexture(const String & _name, std::shared_ptr<T> * _outTexture) const
+  {
+    static_assert(std::is_base_of<Texture, T>::value, "Object must be type of texture");
+
+    if (_outTexture != nullptr)
+    {
+      *_outTexture = nullptr;
+    }
+
+    ShaderSampler sampler;
+    if (!m_shader->getSampler(_name, &sampler))
+    {
+      return Error::INVALID_UNIFORM;
+    }
+
+    if (sampler.type != T::type)
+    {
+      return Error::INVALID_TYPE;
+    }
+
+    int unit;
+    Error error = getTextureUnit(_name, &unit);
+    if (error != Error::OK)
+    {
+      return error;
+    }
+
+    if (unit < 0)
+    {
+      return Error::OK;
+    }
+
+    auto texture = m_textures.find(unit);
+    assert(texture != m_textures.mend());
+
+    if (_outTexture != nullptr)
+    {
+      *_outTexture = std::static_pointer_cast<T>(m_textures[texture->second].texture);
+    }
+
+    return Error::OK;
+  }
   
 } } // engine::graphics

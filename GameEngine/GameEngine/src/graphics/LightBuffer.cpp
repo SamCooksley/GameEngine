@@ -27,8 +27,7 @@ namespace graphics {
 
   const uint LightBuffer::Point::COLOUR_OFFSET = 0u;
   const uint LightBuffer::Point::POSITION_OFFSET = 16u;
-  const uint LightBuffer::Point::LINEAR_OFFSET = 32u;
-  const uint LightBuffer::Point::QUADRATIC_OFFSET = 36u;
+  const uint LightBuffer::Point::RADIUS_OFFSET = 32u;
   const uint LightBuffer::Point::SIZE = 48u;
 
   const uint LightBuffer::SPOT_OFFSET = LightBuffer::POINT_OFFSET + LightBuffer::Point::SIZE * LightBuffer::MAX_POINT;
@@ -38,8 +37,7 @@ namespace graphics {
   const uint LightBuffer::Spot::DIRECTION_OFFSET = 32u;
   const uint LightBuffer::Spot::CUTOFF_OFFSET = 48u;
   const uint LightBuffer::Spot::OUTERCUTOFF_OFFSET = 52u;
-  const uint LightBuffer::Spot::LINEAR_OFFSET = 64u;
-  const uint LightBuffer::Spot::QUADRATIC_OFFSET = 68u;
+  const uint LightBuffer::Spot::RADIUS_OFFSET = 64u;
   const uint LightBuffer::Spot::SIZE = 80u;
 
   const uint LightBuffer::SIZE = LightBuffer::SPOT_OFFSET + LightBuffer::Spot::SIZE * LightBuffer::MAX_SPOT;
@@ -83,8 +81,7 @@ namespace graphics {
       
       memcpy(&data[offset + LightBuffer::Point::COLOUR_OFFSET],    glm::value_ptr(point.colour),   sizeof(glm::vec3));
       memcpy(&data[offset + LightBuffer::Point::POSITION_OFFSET],  glm::value_ptr(point.position), sizeof(glm::vec3));
-      memcpy(&data[offset + LightBuffer::Point::LINEAR_OFFSET],    &point.atten.linear,            sizeof(float));
-      memcpy(&data[offset + LightBuffer::Point::QUADRATIC_OFFSET], &point.atten.quadratic,         sizeof(float));
+      memcpy(&data[offset + LightBuffer::Point::RADIUS_OFFSET],    &point.radius,                  sizeof(float));
     }
 
     for (uint i = 0; i < numSpot; ++i)
@@ -97,8 +94,7 @@ namespace graphics {
       memcpy(&data[offset + LightBuffer::Spot::DIRECTION_OFFSET],   glm::value_ptr(spot.direction), sizeof(glm::vec3));
       memcpy(&data[offset + LightBuffer::Spot::CUTOFF_OFFSET],      &spot.cutoff,                   sizeof(float));
       memcpy(&data[offset + LightBuffer::Spot::OUTERCUTOFF_OFFSET], &spot.outerCutoff,              sizeof(float));
-      memcpy(&data[offset + LightBuffer::Spot::LINEAR_OFFSET],      &spot.atten.linear,             sizeof(float));
-      memcpy(&data[offset + LightBuffer::Spot::QUADRATIC_OFFSET],   &spot.atten.quadratic,          sizeof(float));
+      memcpy(&data[offset + LightBuffer::Spot::RADIUS_OFFSET],      &spot.radius,                   sizeof(float));
     }
 
     setData(data.data(), data.size());

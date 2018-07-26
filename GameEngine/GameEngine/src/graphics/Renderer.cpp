@@ -33,7 +33,7 @@ namespace graphics {
   void Renderer::Add(const SpotLight & _spot)
   { }
 
-  void Renderer::Resize(uint _width, uint _height)
+  void Renderer::Resize(int _width, int _height)
   { }
 
 } } // engine::graphics

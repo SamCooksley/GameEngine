@@ -124,7 +124,11 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)graphics\</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)graphics\</XMLDocumentationFileName>
     </ClCompile>
-    <ClCompile Include="src\graphics\CSMRenderer.cpp" />
+    <ClCompile Include="src\graphics\DebugOutput.cpp" />
+    <ClCompile Include="src\graphics\filter\Blur.cpp" />
+    <ClCompile Include="src\graphics\filter\BlurArray.cpp" />
+    <ClCompile Include="src\graphics\filter\Filter.cpp" />
+    <ClCompile Include="src\graphics\filter\FilterArray.cpp" />
     <ClCompile Include="src\graphics\FrameBuffer.cpp">
       <AssemblerListingLocation Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)graphics\</AssemblerListingLocation>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)graphics\</ObjectFileName>
@@ -133,6 +137,8 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)graphics\</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)graphics\</XMLDocumentationFileName>
     </ClCompile>
+    <ClCompile Include="src\graphics\FrameBufferBase.cpp" />
+    <ClCompile Include="src\graphics\FrameBufferDefault.cpp" />
     <ClCompile Include="src\graphics\GLData.cpp">
       <AssemblerListingLocation Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)graphics\</AssemblerListingLocation>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)graphics\</ObjectFileName>
@@ -157,6 +163,7 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)graphics\</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)graphics\</XMLDocumentationFileName>
     </ClCompile>
+    <ClCompile Include="src\graphics\GLVersion.cpp" />
     <ClCompile Include="src\graphics\Graphics.cpp">
       <AssemblerListingLocation Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)graphics\</AssemblerListingLocation>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)graphics\</ObjectFileName>
@@ -165,6 +172,7 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)graphics\</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)graphics\</XMLDocumentationFileName>
     </ClCompile>
+    <ClCompile Include="src\graphics\CameraCube.cpp" />
     <ClCompile Include="src\graphics\IndexBuffer.cpp">
       <AssemblerListingLocation Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)graphics\</AssemblerListingLocation>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)graphics\</ObjectFileName>
@@ -296,8 +304,13 @@
     </ClCompile>
     <ClCompile Include="src\graphics\Shadow2DArray.cpp" />
     <ClCompile Include="src\graphics\ShadowCommandBuffer.cpp" />
+    <ClCompile Include="src\graphics\ShadowCube.cpp" />
     <ClCompile Include="src\graphics\ShadowMap.cpp" />
     <ClCompile Include="src\graphics\ShadowRenderer.cpp" />
+    <ClCompile Include="src\graphics\shadows\CascadedShadowRenderer.cpp" />
+    <ClCompile Include="src\graphics\shadows\PointShadowRendererCube.cpp" />
+    <ClCompile Include="src\graphics\shadows\PointShadowRendererDP.cpp" />
+    <ClCompile Include="src\graphics\shadows\SpotShadowRenderer.cpp" />
     <ClCompile Include="src\graphics\Skybox.cpp">
       <AssemblerListingLocation Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)graphics\</AssemblerListingLocation>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)graphics\</ObjectFileName>
@@ -490,13 +503,21 @@
     <ClInclude Include="src\graphics\BaseRenderer.h" />
     <ClInclude Include="src\graphics\BufferLayout.h" />
     <ClInclude Include="src\graphics\CameraBuffer.h" />
+    <ClInclude Include="src\graphics\CameraCube.h" />
     <ClInclude Include="src\graphics\CommandBuffer.h" />
     <ClInclude Include="src\graphics\Context.h" />
-    <ClInclude Include="src\graphics\CSMRenderer.h" />
+    <ClInclude Include="src\graphics\DebugOutput.h" />
+    <ClInclude Include="src\graphics\filter\Blur.h" />
+    <ClInclude Include="src\graphics\filter\BlurArray.h" />
+    <ClInclude Include="src\graphics\filter\Filter.h" />
+    <ClInclude Include="src\graphics\filter\FilterArray.h" />
     <ClInclude Include="src\graphics\FrameBuffer.h" />
+    <ClInclude Include="src\graphics\FrameBufferBase.h" />
+    <ClInclude Include="src\graphics\FrameBufferDefault.h" />
     <ClInclude Include="src\graphics\GLData.h" />
     <ClInclude Include="src\graphics\Camera.h" />
     <ClInclude Include="src\graphics\DefaultRenderer.h" />
+    <ClInclude Include="src\graphics\GLVersion.h" />
     <ClInclude Include="src\graphics\Graphics.h" />
     <ClInclude Include="src\graphics\IndexBuffer.h" />
     <ClInclude Include="src\graphics\Indices.h" />
@@ -517,8 +538,13 @@
     <ClInclude Include="src\graphics\ShaderUniform.h" />
     <ClInclude Include="src\graphics\Shadow2DArray.h" />
     <ClInclude Include="src\graphics\ShadowCommandBuffer.h" />
+    <ClInclude Include="src\graphics\ShadowCube.h" />
     <ClInclude Include="src\graphics\ShadowMap.h" />
     <ClInclude Include="src\graphics\ShadowRenderer.h" />
+    <ClInclude Include="src\graphics\shadows\CascadedShadowRenderer.h" />
+    <ClInclude Include="src\graphics\shadows\PointShadowRendererCube.h" />
+    <ClInclude Include="src\graphics\shadows\PointShadowRendererDP.h" />
+    <ClInclude Include="src\graphics\shadows\SpotShadowRenderer.h" />
     <ClInclude Include="src\graphics\Skybox.h" />
     <ClInclude Include="src\graphics\Texture.h" />
     <ClInclude Include="src\graphics\Texture2D.h" />

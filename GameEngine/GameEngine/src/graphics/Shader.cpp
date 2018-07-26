@@ -99,21 +99,21 @@ namespace graphics {
     m_depth(Depth::LESS), m_cull(Cull::BACK), 
     m_blend(Blend::Disable())
   {
-    GLCALL(m_program = glCreateProgram());
+    m_program = glCreateProgram();
   }
   
   Shader::~Shader()
   {
     RemoveShader();
   
-    GLCALL(glDeleteProgram(m_program));
+    glDeleteProgram(m_program);
   }
   
   void Shader::Bind()
   {
     if (this != Graphics::getContext().activeShader.lock().get())
     {
-      GLCALL(glUseProgram(m_program));
+      glUseProgram(m_program);
   
       Graphics::GL().SetDepth(m_depth);
       Graphics::GL().SetCull(m_cull);
@@ -123,45 +123,39 @@ namespace graphics {
     }
   }
   
-  void Shader::Unbind()
-  {
-    GLCALL(glUseProgram(0));
-    Graphics::getContext().activeShader.reset();
-  }
-  
   void Shader::CreateShader(const String & _source, ShaderType::Type _type)
   {
-    GLCALL(GLuint shader = glCreateShader(ShaderType::ToOpenGL(_type)));
+    GLuint shader = glCreateShader(ShaderType::ToOpenGL(_type));
   
-    const char* source = _source.c_str();
-    GLCALL(glShaderSource(shader, 1, &source, nullptr));
+    const char * source = _source.c_str();
+    glShaderSource(shader, 1, &source, nullptr);
   
-    GLCALL(glCompileShader(shader));
+    glCompileShader(shader);
   
     GLint compiled;
-    GLCALL(glGetShaderiv(shader, GL_COMPILE_STATUS, &compiled));
+    glGetShaderiv(shader, GL_COMPILE_STATUS, &compiled);
   
     if (compiled == GL_FALSE)
     {
       GLsizei length;
-      GLCALL(glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &length));
+      glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &length);
       std::vector<GLchar> log(length);
-      GLCALL(glGetShaderInfoLog(shader, length, &length, &log[0]));
+      glGetShaderInfoLog(shader, length, &length, &log[0]);
   
-      GLCALL(glDeleteShader(shader));
+      glDeleteShader(shader);
   
       throw std::runtime_error(
         "Shader Error: " + getName() + " compilation failed. " + String(&log[0], length)
       );
     }
   
-    GLCALL(glAttachShader(m_program, shader));
+    glAttachShader(m_program, shader);
     m_shaders.push_back(shader);
   }
   
   void Shader::LinkProgram()
   {
-    GLCALL(glLinkProgram(m_program));
+    glLinkProgram(m_program);
   
     GLint linked;
     glGetProgramiv(m_program, GL_LINK_STATUS, &linked);
@@ -169,9 +163,9 @@ namespace graphics {
     if (linked == GL_FALSE)
     {
       GLsizei length;
-      GLCALL(glGetProgramiv(m_program, GL_INFO_LOG_LENGTH, &length));
+      glGetProgramiv(m_program, GL_INFO_LOG_LENGTH, &length);
       std::vector<GLchar> log(length);
-      GLCALL(glGetProgramInfoLog(m_program, length, &length, &log[0]));
+      glGetProgramInfoLog(m_program, length, &length, &log[0]);
   
       throw std::runtime_error(
         "Shader Error: " + getName() + " linking failed. " + String(&log[0], length)
@@ -183,8 +177,8 @@ namespace graphics {
   {
     for (auto shader : m_shaders)
     {
-      GLCALL(glDetachShader(m_program, shader));
-      GLCALL(glDeleteShader(shader));
+      glDetachShader(m_program, shader);
+      glDeleteShader(shader);
     }
     m_shaders.clear();
   }
@@ -217,13 +211,13 @@ namespace graphics {
   void Shader::SetupAttributes()
   {
     GLint scount;
-    GLCALL(glGetProgramiv(m_program, GL_ACTIVE_ATTRIBUTES, &scount));
+    glGetProgramiv(m_program, GL_ACTIVE_ATTRIBUTES, &scount);
   
     if (scount < 0) { return; }
     GLuint count = scount;
   
     GLint maxLength;
-    GLCALL(glGetProgramiv(m_program, GL_ACTIVE_ATTRIBUTE_MAX_LENGTH, &maxLength));
+    glGetProgramiv(m_program, GL_ACTIVE_ATTRIBUTE_MAX_LENGTH, &maxLength);
   
     std::vector<GLchar> nameBuffer(maxLength);
   
@@ -232,7 +226,7 @@ namespace graphics {
       GLenum type;
       GLsizei length;
       GLint size;
-      GLCALL(glGetActiveAttrib(m_program, i, maxLength, &length, &size, &type, &nameBuffer[0]));
+      glGetActiveAttrib(m_program, i, maxLength, &length, &size, &type, nameBuffer.data());
   
       String name(nameBuffer.begin(), nameBuffer.begin() + length);
   
@@ -251,15 +245,14 @@ namespace graphics {
   
   void Shader::SetupUniforms()
   {
-
     GLint scount;
-    GLCALL(glGetProgramiv(m_program, GL_ACTIVE_UNIFORMS, &scount));
+    glGetProgramiv(m_program, GL_ACTIVE_UNIFORMS, &scount);
   
     if (scount < 0) { return; }
     GLuint count = scount;
   
     GLint maxLength;
-    GLCALL(glGetProgramiv(m_program, GL_ACTIVE_UNIFORM_MAX_LENGTH, &maxLength));
+    glGetProgramiv(m_program, GL_ACTIVE_UNIFORM_MAX_LENGTH, &maxLength);
    
     std::vector<GLchar> nameBuffer(maxLength);
   
@@ -270,7 +263,7 @@ namespace graphics {
       GLsizei length;
       GLint size;
   
-      GLCALL(glGetActiveUniform(m_program, i, maxLength, &length, &size, &type, &nameBuffer[0]));
+      glGetActiveUniform(m_program, i, maxLength, &length, &size, &type, nameBuffer.data());
   
       String name(nameBuffer.begin(), nameBuffer.begin() + length);
 
@@ -327,7 +320,7 @@ namespace graphics {
         loc = getUniformLocation(elementName);
         //should be guaranteed to be valid value as the first element location is already 
         //valid.
-        assert(loc >= 0);
+        assert(loc >= 0 && "Uniform not found");
 
         ShaderUniform uniform;
         uniform.name = elementName;
@@ -472,60 +465,57 @@ namespace graphics {
   
   GLint Shader::getUniformLocation(const String & _name) const
   {
-    GLCALL(GLint loc = glGetUniformLocation(m_program, _name.c_str()));
-    return loc;
+    return glGetUniformLocation(m_program, _name.c_str());
   }
   
   GLint Shader::getAttributeLocation(const String & _name) const
   {
-    GLCALL(GLint loc = glGetAttribLocation(m_program, _name.c_str()));
-    return loc;
+    return glGetAttribLocation(m_program, _name.c_str());
   }
   
   GLuint Shader::getUniformBlockIndex(const String & _name) const
   {
-    GLCALL(GLuint index = glGetUniformBlockIndex(m_program, _name.c_str()));
-    return index;
+    return glGetUniformBlockIndex(m_program, _name.c_str());
   }
   
   void Shader::setUniformBlockBinding(GLuint _index, GLuint _bind)
   {
-    GLCALL(glUniformBlockBinding(m_program, _index, _bind));
+    glUniformBlockBinding(m_program, _index, _bind);
   }
   
   void Shader::setUniform(GLint _location, int _val)
   {
-    GLCALL(glUniform1i(_location, _val));
+    glUniform1i(_location, _val);
   }
   
   void Shader::setUniform(GLint _location, float _val)
   {
-    GLCALL(glUniform1f(_location, _val));
+    glUniform1f(_location, _val);
   }
   
   void Shader::setUniform(GLint _location, const glm::vec2& _vec)
   {
-    GLCALL(glUniform2fv(_location, 1, glm::value_ptr(_vec)));
+    glUniform2fv(_location, 1, glm::value_ptr(_vec));
   }
   
   void Shader::setUniform(GLint _location, const glm::vec3& _vec)
   {
-    GLCALL(glUniform3fv(_location, 1, glm::value_ptr(_vec)));
+    glUniform3fv(_location, 1, glm::value_ptr(_vec));
   }
   
   void Shader::setUniform(GLint _location, const glm::vec4& _vec)
   {
-    GLCALL(glUniform4fv(_location, 1, glm::value_ptr(_vec)));
+    glUniform4fv(_location, 1, glm::value_ptr(_vec));
   }
   
   void Shader::setUniform(GLint _location, const glm::mat3& _mat)
   {
-    GLCALL(glUniformMatrix3fv(_location, 1, GL_FALSE, glm::value_ptr(_mat)));
+    glUniformMatrix3fv(_location, 1, GL_FALSE, glm::value_ptr(_mat));
   }
   
   void Shader::setUniform(GLint _location, const glm::mat4& _mat)
   {
-    GLCALL(glUniformMatrix4fv(_location, 1, GL_FALSE, glm::value_ptr(_mat)));
+    glUniformMatrix4fv(_location, 1, GL_FALSE, glm::value_ptr(_mat));
   }
   
   void Shader::setUniform(GLint _location, Type _type, const void * _data)

@@ -21,6 +21,8 @@
 
 #include "graphics\mesh\quad.h"
 
+#include "glfw\glfw3.h"
+
 namespace engine {
 
   std::unique_ptr<Context> Application::s_context;
@@ -38,6 +40,8 @@ namespace engine {
 
     s_context->glfwContext.reset(new glfw());
 
+    glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, true);
+
     s_context->window.reset(new graphics::Window("Engine", 640, 480));
     s_context->window->setVsync(true);
 
@@ -54,11 +58,13 @@ namespace engine {
       throw std::runtime_error("glew error: " + std::to_string(error) + ": " + String((const char*)glewGetErrorString(error)));
     }
 
-    debug::Log("OpenGL version: " + String(reinterpret_cast<const char*>(glGetString(GL_VERSION))));
-    debug::Log("GLSL version: " + String(reinterpret_cast<const char*>(glGetString(GL_SHADING_LANGUAGE_VERSION))));
- 
     s_context->graphics = std::make_unique<graphics::Context>();
-    s_context->graphics->defaultFrameBuffer = graphics::FrameBuffer::CreateDefault(640, 480);
+    s_context->graphics->debug = std::make_unique<graphics::DebugOutput>();
+    s_context->graphics->debug->AddFilter(false, graphics::DebugSource::API, graphics::DebugType::OTHER, graphics::DebugSeverity::ANY, { 131185u });
+
+    s_context->graphics->defaultFrameBuffer = graphics::FrameBufferDefault::Create(s_context->window->getWidth(), s_context->window->getHeight());
+
+    glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 
     //uniform buffers
     {
@@ -70,29 +76,28 @@ namespace engine {
     }
 
     s_context->renderer = std::make_unique<graphics::DefaultRenderer>();
-
     
-    s_context->graphics->screenQuad = graphics::mesh::Quad().getMesh();
+    s_context->graphics->quad = graphics::mesh::Quad().getMesh();
     
     s_context->graphics->errorShader = Resources::Load<graphics::Shader>("resources/shaders/error.shader");
 
     s_context->graphics->depthShader = Resources::Load<graphics::Shader>("resources/shaders/depth.shader");
 
     auto defaultShader = Resources::Load<graphics::Shader>("resources/shaders/gbuffer.shader");
-    s_context->graphics->defaultMaterial = graphics::Material::Create(defaultShader);
+    s_context->graphics->defaultMaterial = std::make_shared<graphics::Material>(defaultShader);
    
-    auto texture = graphics::Texture2D::Create(1, 1, glm::vec4(0.9f));
+    auto texture = std::make_shared<graphics::Texture2D>(1, 1, glm::vec4(0.9f));
     s_context->graphics->defaultMaterial->setTexture("diffuse", texture);
 
-    texture = graphics::Texture2D::Create(1, 1, glm::vec4(.5f, .5f, 1.f, 1.f));
+    texture = std::make_shared<graphics::Texture2D>(1, 1, glm::vec4(.5f, .5f, 1.f, 1.f));
     s_context->graphics->defaultMaterial->setTexture("normal", texture);
 
-    texture = graphics::Texture2D::Create(1, 1, glm::vec4(1.f));
+    texture = std::make_shared<graphics::Texture2D>(1, 1, glm::vec4(1.f));
     s_context->graphics->defaultMaterial->setTexture("specular", texture);
-    texture = graphics::Texture2D::Create(1, 1, glm::vec4(1.f));
+    texture = std::make_shared<graphics::Texture2D>(1, 1, glm::vec4(1.f));
     s_context->graphics->defaultMaterial->setTexture("displacement", texture);
 
-    texture = graphics::Texture2D::Create(1, 1, glm::vec4(1.f));
+    texture = std::make_shared<graphics::Texture2D>(1, 1, glm::vec4(1.f));
     s_context->graphics->defaultMaterial->setTexture("opacity", texture);
 
     s_context->graphics->defaultMaterial->setUniform("displacementScale", 0.01f);
@@ -188,8 +193,8 @@ namespace engine {
 
     auto & target = camera.getRenderTarget();
 
-    uint width = target.getWidth();
-    uint height = target.getHeight();
+    int width = target.getWidth();
+    int height = target.getHeight();
     renderer.Resize(width, height);
 
     float aspect = static_cast<float>(width) / static_cast<float>(height);
@@ -198,11 +203,6 @@ namespace engine {
     if (s_context->scene)
     {
       s_context->scene->Render(renderer);
-    }
-
-    for (auto & light : s_context->directionalShadows)
-    {
-      light->GenerateShadowMap(renderer.getCommands().getShadowCommands(), &cam);
     }
 
     target.Bind();

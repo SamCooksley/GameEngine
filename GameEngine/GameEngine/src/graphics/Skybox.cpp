@@ -27,8 +27,6 @@ namespace graphics {
     shader->setProjection(_camera.projection);
   
     m_mesh->Render();
-  
-    m_material->Unbind();
   }
 
 } } // engine::graphics

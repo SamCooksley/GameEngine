@@ -31,25 +31,26 @@ namespace engine {
 
     auto mesh = Resources::Load<graphics::Mesh>("resources/models/cube.obj");
     
-    auto material = graphics::Material::Create(Graphics::getContext().defaultMaterial); //graphics::Material::Create(Resources::Load<graphics::Shader>("resources/shaders/default.shader"));
+    auto material = std::make_shared<graphics::Material>(*Graphics::getContext().defaultMaterial); //graphics::Material::Create(Resources::Load<graphics::Shader>("resources/shaders/default.shader"));
 
     material->setTexture("diffuse", graphics::Texture2D::Load("resources/textures/stone_wall/diffuse.jpg"));
     material->setTexture("normal", graphics::Texture2D::Load("resources/textures/stone_wall/normal.jpg"));
     material->setTexture("specular", graphics::Texture2D::Load("resources/textures/stone_wall/specular.jpg"));
     material->setTexture("displacement", graphics::Texture2D::Load("resources/textures/stone_wall/displacement.jpg"));
-    material->setTexture("opacity", graphics::Texture2D::Create(64, 64, glm::vec4(1.f)));
+    material->setTexture("opacity", std::make_shared<graphics::Texture2D>(16, 16, glm::vec4(1.f)));
     material->setUniform("displacementScale", .02f);
     
     auto go = GameObject::Instantiate();
 
+    
     auto mr = go->AddComponent<MeshRenderer>();
     mr->setMesh(mesh);
     mr->setMaterial(material);
 
     go->getComponent<Transform>()->setPosition(glm::vec3(0, 0, -5));
 
-    
-    material = graphics::Material::Create(Graphics::getContext().defaultMaterial);
+    /*
+    material = std::make_shared<graphics::Material>(*Graphics::getContext().defaultMaterial);
 
     material->setTexture("diffuse", graphics::Texture2D::Load("resources/textures/stone_wall_2/diffuse.jpg"));
     material->setTexture("normal", graphics::Texture2D::Load("resources/textures/stone_wall_2/normal.jpg"));
@@ -62,16 +63,17 @@ namespace engine {
     mr = go->AddComponent<MeshRenderer>();
     mr->setMesh(mesh);
     mr->setMaterial(material);
+    
 
-    go->getComponent<Transform>()->setPosition(glm::vec3(2, 0, -5));
-
+    go->getComponent<Transform>()->setPosition(glm::vec3(2, 0, -4));
+    */
     auto transShader = Resources::Load<graphics::Shader>("resources/shaders/transparent.shader");
-    auto transMat = graphics::Material::Create(transShader);
+    auto transMat = std::make_shared<graphics::Material>(transShader);
 
-    transMat->setTexture("diffuse", Resources::Load<graphics::Texture2D>("resources/textures/window.png"));
-    transMat->setTexture("normal", Resources::Load<graphics::Texture2D>("resources/textures/flat.png"));
-    transMat->setTexture("specular", graphics::Texture2D::Create(64, 64, glm::vec4(1.f)));
-    transMat->setTexture("displacement", graphics::Texture2D::Create(64, 64, glm::vec4(1.f)));
+    transMat->setTexture("diffuse", graphics::Texture2D::Load("resources/textures/window.png"));
+    transMat->setTexture("normal", graphics::Texture2D::Load("resources/textures/flat.png"));
+    transMat->setTexture("specular", std::make_shared<graphics::Texture2D>(64, 64, glm::vec4(1.f)));
+    transMat->setTexture("displacement", std::make_shared<graphics::Texture2D>(64, 64, glm::vec4(1.f)));
 
     auto quad = Resources::Load<graphics::Mesh>("resources/models/quad.obj");
 
@@ -81,7 +83,7 @@ namespace engine {
     mr->setMesh(quad);
     mr->setMaterial(transMat);
 
-    go->getComponent<Transform>()->setPosition(glm::vec3(0.f, .5f, -1.f)).setRotation(glm::quat(glm::radians(glm::vec3(90.f, 0.f, 0.f))));
+    go->getComponent<Transform>()->setPosition(glm::vec3(0.f, .5f, 1.f)).setRotation(glm::quat(glm::radians(glm::vec3(90.f, 0.f, 0.f)))).setLocalScale(glm::vec3(0.5f));
 
     go = GameObject::Instantiate();
 
@@ -89,7 +91,7 @@ namespace engine {
     mr->setMesh(quad);
     mr->setMaterial(transMat);
 
-    go->getComponent<Transform>()->setPosition(glm::vec3(-0.5f, 1.5f, -1.5f)).setRotation(glm::quat(glm::radians(glm::vec3(90.f, 0.f, 0.f))));
+    go->getComponent<Transform>()->setPosition(glm::vec3(-0.5f, 1.5f, 1.5f)).setRotation(glm::quat(glm::radians(glm::vec3(90.f, 0.f, 0.f)))).setLocalScale(glm::vec3(0.5f));
 
     go = GameObject::Instantiate();
 
@@ -97,42 +99,95 @@ namespace engine {
     mr->setMesh(quad);
     mr->setMaterial(transMat);
 
-    go->getComponent<Transform>()->setPosition(glm::vec3(0.5f, 1.f, -2.f)).setRotation(glm::quat(glm::radians(glm::vec3(90.f, 0.f, 0.f))));
+    go->getComponent<Transform>()->setPosition(glm::vec3(0.5f, 1.f, 2.f)).setRotation(glm::quat(glm::radians(glm::vec3(90.f, 0.f, 0.f)))).setLocalScale(glm::vec3(0.5f));
 
+#if 1
+    go = GameObject::Instantiate();
+
+    mr = go->AddComponent<MeshRenderer>();
+    mr->setMesh(quad);
+    
+    go->getComponent<Transform>()->setPosition(glm::vec3(0.f, -.5f, 0.f)).setLocalScale(glm::vec3(10.f, 1.f, 10.f));
+
+#else
     go = GameObject::Instantiate();
 
     mr = go->AddComponent<MeshRenderer>();
     mr->setMesh(quad);
 
-    go->getComponent<Transform>()->setPosition(glm::vec3(0, -.5f, 0)).setLocalScale(glm::vec3(10.f, 1.f, 10.f));
+    go->getComponent<Transform>()->setPosition(glm::vec3(2.5f, -.5f, 2.5f)).setLocalScale(glm::vec3(5.f, 1.f, 5.f));
    
     go = GameObject::Instantiate();
 
-    auto light = go->AddComponent<Light>();
-    light->setColour(glm::vec3(.6f, .5f, .5f) * 0.5f);
-    light->setDirectional();
-    light->setShadows(true);
+    mr = go->AddComponent<MeshRenderer>();
+    mr->setMesh(quad);
+
+    go->getComponent<Transform>()->setPosition(glm::vec3(2.5f, -.5f, -2.5f)).setLocalScale(glm::vec3(5.f, 1.f, 5.f));
+
+    go = GameObject::Instantiate();
+
+    mr = go->AddComponent<MeshRenderer>();
+    mr->setMesh(quad);
+
+    go->getComponent<Transform>()->setPosition(glm::vec3(-2.5f, -.5f, 2.5f)).setLocalScale(glm::vec3(5.f, 1.f, 5.f));
+
+    go = GameObject::Instantiate();
+
+    mr = go->AddComponent<MeshRenderer>();
+    mr->setMesh(quad);
+
+    go->getComponent<Transform>()->setPosition(glm::vec3(-2.5f, -.5f, -2.5f)).setLocalScale(glm::vec3(5.f, 1.f, 5.f));
+#endif
+    
+    go = GameObject::Instantiate();
+
+    go->AddComponent<Light>()
+      ->setColour(glm::vec3(.6f, .5f, .5f) * 0.5f)
+      .setDirectional()
+      .setShadows(true);
     
     mr = go->AddComponent<MeshRenderer>();
     mr->setMesh(mesh);
-
-    //go->getComponent<Transform>()->setRotation(glm::quat(glm::radians(glm::vec3(-90.f, 0.f, 0.f))));
-    go->getComponent<Transform>()->setPosition(glm::vec3(0.f, 3.f, 2.f)).setRotation(glm::quat(glm::radians(glm::vec3(-80.f, 30.f, 0.f)))).setLocalScale(glm::vec3(0.1f));
-
+    
+    go->getComponent<Transform>()
+      ->setPosition(glm::vec3(0.f, 3.f, 2.f))
+      .setRotation(glm::quat(glm::radians(glm::vec3(-70.f, 30.f, 0.f))))
+      .setLocalScale(glm::vec3(0.1f));
+    
     go = GameObject::Instantiate();
-    light = go->AddComponent<Light>();
-    light->setColour(glm::vec3(.5f, .0f, .0f) * 1.5f);
-    light->setPoint(0.f, 5.f);
-    //light->setDirectional();
 
-    go->getComponent<Transform>()->setPosition(glm::vec3(0.f, -0.f, -7.f)).setRotation(glm::quat(glm::vec3(-45.f, 0.f, 45.f))).setLocalScale(glm::vec3(0.1f));
+    go->AddComponent<Light>()
+      ->setColour(glm::vec3(1.f))
+      .setSpot(80.f, 90.f)
+      .setRadius(10.f)
+      .setShadows(true);
 
+    go->getComponent<Transform>()
+      ->setPosition(glm::vec3(4.f, 2.f, -5.f))
+      .setRotation(glm::quat(glm::radians(glm::vec3(0.f, 0.f, 0.f))))
+      .setLocalScale(glm::vec3(0.1f));
 
     mr = go->AddComponent<MeshRenderer>();
     mr->setMesh(mesh);
+    
+    int count = 10;
+    for (int i = 0; i <= count; ++i)
+    {
+      go = GameObject::Instantiate();
 
-    //auto sponza = Load("resources/sponza/sponza.obj");
-    //sponza->getComponent<Transform>()->setLocalScale(glm::vec3(0.01f));
+      mr = go->AddComponent<MeshRenderer>();
+      mr->setMesh(mesh);
+      mr->setMaterial(material);
+      float angle = 360.f / count * i;
+      float scale = 9;
+      float x = glm::sin(angle) * scale;
+      float y = glm::cos(angle) * scale;
+
+      go->getComponent<Transform>()->setPosition(glm::vec3(x, 0, y));
+    }
+
+    auto sponza = Load("resources/sponza/sponza.obj");
+    sponza->getComponent<Transform>()->setLocalScale(glm::vec3(0.01f)).setRotation(glm::quat(glm::radians(glm::vec3(0.f, 90.f, 0.f))));
   }
 
 } // engine

@@ -2,7 +2,6 @@
 
 #include "Input.h"
 
-
 #include "debug\Debug.h"
 #include "Application.h"
 

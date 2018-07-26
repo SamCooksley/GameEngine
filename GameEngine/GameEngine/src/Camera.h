@@ -9,6 +9,8 @@
 
 #include "Scene.h"
 
+#include "graphics\FrameBufferBase.h"
+
 namespace engine {
 
   class Camera : public Component
@@ -27,7 +29,7 @@ namespace engine {
 
     void setZClipping(float _near, float _far);
 
-    graphics::FrameBuffer & getRenderTarget();
+    graphics::FrameBufferBase & getRenderTarget();
 
    protected:
     void OnAwake() override;
@@ -49,7 +51,7 @@ namespace engine {
     float m_near;
     float m_far;
 
-    std::shared_ptr<graphics::FrameBuffer> m_target; //TODO
+    std::shared_ptr<graphics::FrameBufferBase> m_target; //TODO
 
     ENGINE_SETUPSHARED(Camera);
   };

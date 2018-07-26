@@ -8,11 +8,13 @@ namespace graphics {
 
   enum class TextureType : GLenum
   {
+    NONE,
     TEXTURE_2D,
     TEXTURE_2D_ARRAY,
     TEXTURE_CUBE,
     SHADOW_2D,
-    SHADOW_2D_ARRAY
+    SHADOW_2D_ARRAY,
+    SHADOW_CUBE
   };
   
   GLenum TextureTypeToOpenGL(TextureType _type);
@@ -23,6 +25,10 @@ namespace graphics {
   
   enum class TextureBaseFormat : GLenum
   {
+    NONE,
+    R = GL_RED,
+    RG = GL_RG,
+    RGB = GL_RGB,
     RGBA = GL_RGBA,
     DEPTH_COMPONENT = GL_DEPTH_COMPONENT,
     DEPTH_STENCIL = GL_DEPTH_STENCIL
@@ -33,6 +39,7 @@ namespace graphics {
   
   enum class TextureFormat : GLenum
   {
+    NONE,
     RG32F = GL_RG32F,
     RGBA8 = GL_RGBA8,
     RGBA16F = GL_RGBA16F,
@@ -71,11 +78,11 @@ namespace graphics {
   
   enum class TextureFilter : GLenum
   {
-    LINEAR = GL_LINEAR,
-    NEAREST = GL_NEAREST
+    LINEAR,
+    NEAREST
   };
   
-  GLenum TextureFilterToOpenGL(TextureFilter _filter);
+  GLenum TextureFilterToOpenGL(TextureFilter _filter, bool _mipmaps);
   TextureFilter OpenGLToTextureFilter(GLenum _filter);
 
 } } // engine::graphics

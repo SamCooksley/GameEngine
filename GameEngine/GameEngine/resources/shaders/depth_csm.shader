@@ -15,28 +15,37 @@ void main()
 #shader geometry 
 #version 430 core
 
-layout (invocations = 4) in;
 layout (triangles) in;
-layout (triangle_strip, max_vertices = 12) out;
+layout (triangle_strip, max_vertices = 30) out;
 
-const int MAX_CASCADES = 5;
-
-uniform int cascadeCount;
-uniform mat4 vp[MAX_CASCADES];
+uniform int cascadeCount = 1;
+uniform mat4 vp[10];
 
 void main()
 {
-    for (int i = 0; i < 3; ++i)
+    int layers = min(cascadeCount, 10);
+    for (int layer = 0; layer < layers; ++layer)
     {
-        gl_Layer = gl_InvocationID;
-        gl_Position = vp[gl_InvocationID] * gl_in[i].gl_Position; 
-        EmitVertex();
+        for (int i = 0; i < 3; ++i)
+        {
+            gl_Layer = layer;
+            gl_Position = vp[layer] * gl_in[i].gl_Position; 
+            EmitVertex();
+        }
+        EndPrimitive();
     }
-    EndPrimitive();
-}
+}   
 
 #shader fragment
 #version 430 core
 
+layout (location = 0) out vec2 out_moment;
+
 void main()
-{ }
+{ 
+    float depth = gl_FragCoord.z;
+    float dx = dFdx(depth);
+    float dy = dFdx(depth);
+    float moment2 = depth * depth + 0.25 * (dx * dx + dy * dy);
+    out_moment = vec2(depth, moment2);
+}

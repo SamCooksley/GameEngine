@@ -1,15 +1,8 @@
 #include "..\common\surface.shader"
 
-struct Attenuation
+float CalculateAttenuation(const float _radius, float _distance)
 {
-    float linear;
-    float quadratic;
-};
-
-float CalculateAttenuation(const Attenuation _atten, const vec3 _lightPos, const vec3 _fragPos)
-{
-	float dist = length(_lightPos - _fragPos);
-	return 1.0 / (1.0 + _atten.linear * dist + _atten.quadratic * dist * dist);
+	return pow(clamp(1.0 - _distance / _radius, 0.0, 1.0), 2.0);
 }
 
 struct DirectionalLight
@@ -35,20 +28,22 @@ struct PointLight
     vec3 colour;
     vec3 position;
 
-    Attenuation atten;
+    float radius;
 };
 
 vec3 CalculateLight(const PointLight _light, const Surface _surface, const vec3 _viewDir)
 {
-	vec3 lightDir = normalize(_light.position.xyz - _surface.position);
+	vec3 lightDir = _light.position - _surface.position;
+	float distance = length(lightDir);
+	lightDir /= distance;
 
 	float diffuseProduct = max(dot(_surface.normal, lightDir), 0.0);
 	vec3 diffuse = diffuseProduct * (_light.colour.rgb * _surface.colour);
 
 	vec3 halfDir = normalize(lightDir + _viewDir);
-	vec3 specular = max(diffuseProduct, 0.0) * pow(max(dot(_surface.normal, halfDir), 0.0), _surface.shininess) * (_light.colour.rgb * _surface.specular);
+	vec3 specular = diffuseProduct * pow(max(dot(_surface.normal, halfDir), 0.0), _surface.shininess) * (_light.colour.rgb * _surface.specular);
 
-	return (diffuse + specular) * CalculateAttenuation(_light.atten, _light.position, _surface.position);
+	return (diffuse + specular) * CalculateAttenuation(_light.radius, distance);
 }
 
 struct SpotLight
@@ -61,22 +56,24 @@ struct SpotLight
     float outerCutoff;
     float cutoff;
 
-    Attenuation atten;
+    float radius;
 };
 
 vec3 CalculateLight(const SpotLight _light, const Surface _surface, const vec3 _viewDir)
 {
-	vec3 lightDir = normalize(_light.position.xyz - _surface.position);
+	vec3 lightDir = _light.position - _surface.position;
+	float distance = length(lightDir);
+	lightDir /= distance;
 
 	float diffuseProduct = max(dot(_surface.normal, lightDir), 0.0);
 	vec3 diffuse = diffuseProduct * (_light.colour.rgb * _surface.colour);
 
 	vec3 halfDir = normalize(lightDir + _viewDir);
-	vec3 specular = pow(max(dot(_surface.normal, halfDir), 0.0), _surface.shininess) * (_light.colour.rgb * _surface.specular);
+	vec3 specular = diffuseProduct * pow(max(dot(_surface.normal, halfDir), 0.0), _surface.shininess) * (_light.colour.rgb * _surface.specular);
 
-	float theta = dot(lightDir, normalize(_light.direction.xyz));
+	float theta = dot(lightDir, normalize(_light.direction));
 	float epsilon = _light.cutoff - _light.outerCutoff;
 	float intensity = clamp((theta - _light.outerCutoff) / epsilon, 0.0, 1.0);
 
-	return (diffuse + specular) * CalculateAttenuation(_light.atten, _light.position, _surface.position) * intensity;
+	return (diffuse + specular) * CalculateAttenuation(_light.radius, distance) * intensity;
 }

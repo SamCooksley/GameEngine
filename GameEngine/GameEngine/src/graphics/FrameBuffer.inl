@@ -2,45 +2,83 @@ namespace engine {
 namespace graphics {
 
   template <class T>
-  std::shared_ptr<T> FrameBuffer::getColour(size_t _i)
+  std::shared_ptr<T> FrameBuffer::getColourAttachment(int _i)
   {
-    static_assert(std::is_base_of<Texture, T>::value, "Object must be type of Texture");
+    static_assert(std::is_base_of<Texture, T>::value, "Object must be type of texture");
 
-    assert(_i < m_colourAttachments.size() && "Colour attachment out of range");
+    auto tex = getColourAttachment<Texture>(_i);
 
-    assert(T::type == m_colourAttachments[_i]->type && "Texture not of same type");
+    if (!tex)
+    {
+      return nullptr;
+    }
 
-    return std::static_pointer_cast<T>(m_colourAttachments[_i]);
+    if (T::type != tex->getType())
+    {
+      throw std::logic_error("Texture not of type");
+    }
+
+    return std::static_pointer_cast<T>(tex);
+  }
+
+  template <>
+  std::shared_ptr<Texture> FrameBuffer::getColourAttachment(int _i)
+  {
+    auto tex = m_colourAttachments.find(_i);
+    if (tex == m_colourAttachments.end())
+    {
+      return nullptr;
+    }
+    
+    return tex->second;
   }
 
   template <class T>
-  std::shared_ptr<T> FrameBuffer::getDepth()
+  std::shared_ptr<T> FrameBuffer::getDepthAttachment()
   {
-    static_assert(std::is_base_of<Texture, T>::value, "Object must be type of Texture");
+    static_assert(std::is_base_of<Texture, T>::value, "Object must be type of texture");
 
     if (!m_depthAttachment)
     {
       return nullptr;
     }
 
-    assert(T::type == m_depthAttachment->type && "Texture not of same type");
+    if (T::type != m_depthAttachment->getType())
+    {
+      throw std::logic_error("Texture not of type");
+    }
 
     return std::static_pointer_cast<T>(m_depthAttachment);
   }
 
-  template <class T>
-  std::shared_ptr<T> FrameBuffer::getStencil()
+  template <>
+  std::shared_ptr<Texture> FrameBuffer::getDepthAttachment()
   {
-    static_assert(std::is_base_of<Texture, T>::value, "Object must be type of Texture");
+    return m_depthAttachment;
+  }
+
+  template <class T>
+  std::shared_ptr<T> FrameBuffer::getStencilAttachment()
+  {
+    static_assert(std::is_base_of<Texture, T>::value, "Object must be type of texture");
 
     if (!m_stencilAttachment)
     {
       return nullptr;
     }
-
-    assert(T::type == m_stencilAttachment->type && "Texture not of same type");
+    
+    if (T::type != m_stencilAttachment->getType())
+    {
+      throw std::logic_error("Texture not of type");
+    }
 
     return std::static_pointer_cast<T>(m_stencilAttachment);
   }
 
-} }  // engine::graphics
+  template <>
+  std::shared_ptr<Texture> FrameBuffer::getStencilAttachment()
+  {
+    return m_stencilAttachment;
+  }
+
+} } // engine::graphics

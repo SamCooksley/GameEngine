@@ -11,23 +11,11 @@ namespace graphics {
    public:
     static const TextureType type = TextureType::SHADOW_2D;
 
-    static std::shared_ptr<Shadow2D> Create(uint _width, uint _height, TextureFormat _format);
-
    public:
+    Shadow2D(TextureFormat _format, int _width, int _height);
     ~Shadow2D();
 
-    void Bind(uint _unit) const override;
-    void Unbind(uint _unit) const override;
-
-    void Resize(uint _width, uint _height) override;
-
-   protected:
-     Shadow2D();
-
-   private:
-    uint m_width, m_height;
-
-    TextureFormat m_format;
+    void Bind(int _unit) const override;
   };
 
 } } // engine::graphics

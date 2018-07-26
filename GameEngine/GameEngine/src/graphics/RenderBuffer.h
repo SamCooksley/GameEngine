@@ -13,18 +13,20 @@ namespace graphics {
     friend class FrameBuffer;
   
    public:
-    RenderBuffer(uint _width, uint _height, TextureFormat _format);
+    RenderBuffer(TextureFormat _format, int _width, int _height);
     ~RenderBuffer();
   
     void Bind() const;
-    void Unbind() const;
 
-    void Resize(uint _width, uint _height);
+    int getWidth() const;
+    int getHeight() const;
+
+    TextureFormat getFormat() const;
   
    private:
     GLuint m_rb;
   
-    uint m_width, m_height;
+    int m_width, m_height;
   
     TextureFormat m_format;
   };

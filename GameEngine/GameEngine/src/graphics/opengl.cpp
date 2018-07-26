@@ -2,6 +2,8 @@
 
 #include "opengl.h"
 
+#include <sstream>
+
 namespace engine {
 namespace graphics {
 namespace opengl {

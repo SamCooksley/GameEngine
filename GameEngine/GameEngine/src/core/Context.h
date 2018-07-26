@@ -52,7 +52,6 @@ namespace engine {
     std::unique_ptr<graphics::BaseRenderer> renderer;
   
     std::shared_ptr<Camera> camera;
-    std::vector<std::shared_ptr<Light>> directionalShadows;
   };
   
   void Destroy(std::unique_ptr<Context> & _context);

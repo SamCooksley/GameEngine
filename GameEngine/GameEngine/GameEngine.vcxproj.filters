@@ -43,6 +43,18 @@
     <Filter Include="Source Files\graphics\mesh">
       <UniqueIdentifier>{103e8fbd-e674-42a7-bf04-80f02e2c2aa8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\graphics\filter">
+      <UniqueIdentifier>{18af7378-6806-492f-9828-00839a619dbf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\graphics\shadows">
+      <UniqueIdentifier>{02f499c7-9264-403c-b283-7034b90ea7c6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\graphics\shadows">
+      <UniqueIdentifier>{49cf615f-cf69-4a13-9184-77b2b659c282}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\graphics\filter">
+      <UniqueIdentifier>{6cf0d60f-653d-4c62-995f-c183a0fe5ff4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Main.cpp">
@@ -285,8 +297,47 @@
     <ClCompile Include="src\core\not_implemented.cpp">
       <Filter>Source Files\core</Filter>
     </ClCompile>
-    <ClCompile Include="src\graphics\CSMRenderer.cpp">
+    <ClCompile Include="src\graphics\filter\Filter.cpp">
+      <Filter>Source Files\graphics\filter</Filter>
+    </ClCompile>
+    <ClCompile Include="src\graphics\filter\Blur.cpp">
+      <Filter>Source Files\graphics\filter</Filter>
+    </ClCompile>
+    <ClCompile Include="src\graphics\filter\FilterArray.cpp">
+      <Filter>Source Files\graphics\filter</Filter>
+    </ClCompile>
+    <ClCompile Include="src\graphics\filter\BlurArray.cpp">
+      <Filter>Source Files\graphics\filter</Filter>
+    </ClCompile>
+    <ClCompile Include="src\graphics\CameraCube.cpp">
       <Filter>Source Files\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\graphics\FrameBufferBase.cpp">
+      <Filter>Source Files\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\graphics\GLVersion.cpp">
+      <Filter>Source Files\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\graphics\FrameBufferDefault.cpp">
+      <Filter>Source Files\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\graphics\shadows\PointShadowRendererDP.cpp">
+      <Filter>Source Files\graphics\shadows</Filter>
+    </ClCompile>
+    <ClCompile Include="src\graphics\shadows\PointShadowRendererCube.cpp">
+      <Filter>Source Files\graphics\shadows</Filter>
+    </ClCompile>
+    <ClCompile Include="src\graphics\shadows\CascadedShadowRenderer.cpp">
+      <Filter>Source Files\graphics\shadows</Filter>
+    </ClCompile>
+    <ClCompile Include="src\graphics\ShadowCube.cpp">
+      <Filter>Source Files\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\graphics\DebugOutput.cpp">
+      <Filter>Source Files\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\graphics\shadows\SpotShadowRenderer.cpp">
+      <Filter>Source Files\graphics\shadows</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -533,8 +584,47 @@
     <ClInclude Include="src\core\not_implemented.h">
       <Filter>Header Files\core</Filter>
     </ClInclude>
-    <ClInclude Include="src\graphics\CSMRenderer.h">
+    <ClInclude Include="src\graphics\filter\Filter.h">
+      <Filter>Header Files\graphics\filter</Filter>
+    </ClInclude>
+    <ClInclude Include="src\graphics\filter\Blur.h">
+      <Filter>Header Files\graphics\filter</Filter>
+    </ClInclude>
+    <ClInclude Include="src\graphics\filter\FilterArray.h">
+      <Filter>Header Files\graphics\filter</Filter>
+    </ClInclude>
+    <ClInclude Include="src\graphics\filter\BlurArray.h">
+      <Filter>Header Files\graphics\filter</Filter>
+    </ClInclude>
+    <ClInclude Include="src\graphics\CameraCube.h">
       <Filter>Header Files\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\graphics\FrameBufferBase.h">
+      <Filter>Header Files\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\graphics\GLVersion.h">
+      <Filter>Header Files\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\graphics\FrameBufferDefault.h">
+      <Filter>Header Files\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\graphics\shadows\PointShadowRendererDP.h">
+      <Filter>Header Files\graphics\shadows</Filter>
+    </ClInclude>
+    <ClInclude Include="src\graphics\shadows\PointShadowRendererCube.h">
+      <Filter>Header Files\graphics\shadows</Filter>
+    </ClInclude>
+    <ClInclude Include="src\graphics\shadows\CascadedShadowRenderer.h">
+      <Filter>Header Files\graphics\shadows</Filter>
+    </ClInclude>
+    <ClInclude Include="src\graphics\ShadowCube.h">
+      <Filter>Header Files\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\graphics\DebugOutput.h">
+      <Filter>Header Files\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\graphics\shadows\SpotShadowRenderer.h">
+      <Filter>Header Files\graphics\shadows</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

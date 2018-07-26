@@ -14,6 +14,7 @@ namespace graphics {
       case TextureType::TEXTURE_CUBE:     { return GL_TEXTURE_CUBE_MAP; }
       case TextureType::SHADOW_2D:        { return GL_TEXTURE_2D;       }
       case TextureType::SHADOW_2D_ARRAY:  { return GL_TEXTURE_2D_ARRAY; }
+      case TextureType::SHADOW_CUBE:      { return GL_TEXTURE_CUBE_MAP; }
       default:
       {
         throw std::invalid_argument("Invalid texture type");
@@ -45,6 +46,7 @@ namespace graphics {
       case TextureType::TEXTURE_CUBE:     { return GL_SAMPLER_CUBE;            }
       case TextureType::SHADOW_2D:        { return GL_SAMPLER_2D_SHADOW;       }
       case TextureType::SHADOW_2D_ARRAY:  { return GL_SAMPLER_2D_ARRAY_SHADOW; }
+      case TextureType::SHADOW_CUBE:      { return GL_SAMPLER_CUBE_SHADOW;     }
       default: 
       { 
         throw std::invalid_argument("Invalid texture type");
@@ -61,6 +63,7 @@ namespace graphics {
       case GL_SAMPLER_CUBE:            { return TextureType::TEXTURE_CUBE;     }
       case GL_SAMPLER_2D_SHADOW:       { return TextureType::SHADOW_2D;        }
       case GL_SAMPLER_2D_ARRAY_SHADOW: { return TextureType::SHADOW_2D_ARRAY;  }
+      case GL_SAMPLER_CUBE_SHADOW:     { return TextureType::SHADOW_CUBE;      }
       default:
       { 
         throw std::invalid_argument("Invalid sampler type");
@@ -70,6 +73,10 @@ namespace graphics {
   
   GLenum TextureBaseFormatToOpenGL(TextureBaseFormat _format)
   {
+    if (_format == TextureBaseFormat::NONE)
+    {
+      throw std::invalid_argument("invalid base texture format");
+    }
     return static_cast<GLenum>(_format);
   }
   
@@ -77,13 +84,13 @@ namespace graphics {
   {
     switch (_format)
     {
+      case GL_RED:             { return TextureBaseFormat::R;               }
+      case GL_RG:              { return TextureBaseFormat::RG;              }
+      case GL_RGB:             { return TextureBaseFormat::RGB;             }
       case GL_RGBA:            { return TextureBaseFormat::RGBA;            }
       case GL_DEPTH_COMPONENT: { return TextureBaseFormat::DEPTH_COMPONENT; }
       case GL_DEPTH_STENCIL:   { return TextureBaseFormat::DEPTH_STENCIL;   }
-      default: 
-      { 
-        throw std::invalid_argument("Invalid base texture format");
-      }
+      default:                 { return TextureBaseFormat::NONE;            }
     }
   }
   
@@ -105,10 +112,7 @@ namespace graphics {
       case GL_DEPTH_COMPONENT32:  { return TextureFormat::DEPTH_COMPONENT32;  }
       case GL_DEPTH_COMPONENT32F: { return TextureFormat::DEPTH_COMPONENT32F; }
       case GL_DEPTH24_STENCIL8:   { return TextureFormat::DEPTH24_STENCIL8;   }
-      default: 
-      {
-        throw std::invalid_argument("Invalid texture format");
-      }
+      default:                    { return TextureFormat::NONE;               }
     }
   }
   
@@ -116,16 +120,16 @@ namespace graphics {
   {
     switch (_format)
     {
+      case TextureFormat::RG32F:              { return TextureBaseFormat::RG;              }
       case TextureFormat::RGBA8:              { return TextureBaseFormat::RGBA;            }
       case TextureFormat::RGBA16F:            { return TextureBaseFormat::RGBA;            }
+      case TextureFormat::RGBA32F:            { return TextureBaseFormat::RGBA;            }
       case TextureFormat::DEPTH_COMPONENT16:  { return TextureBaseFormat::DEPTH_COMPONENT; }
       case TextureFormat::DEPTH_COMPONENT24:  { return TextureBaseFormat::DEPTH_COMPONENT; }
+      case TextureFormat::DEPTH_COMPONENT32:  { return TextureBaseFormat::DEPTH_COMPONENT; }
       case TextureFormat::DEPTH_COMPONENT32F: { return TextureBaseFormat::DEPTH_COMPONENT; }
       case TextureFormat::DEPTH24_STENCIL8:   { return TextureBaseFormat::DEPTH_STENCIL;   }
-      default: 
-      {
-        throw std::invalid_argument("Invalid texture format");
-      }
+      default:                                { return TextureBaseFormat::NONE;            }
     }
   }
   
@@ -167,17 +171,24 @@ namespace graphics {
     }
   }
   
-  GLenum TextureFilterToOpenGL(TextureFilter _filter)
+  GLenum TextureFilterToOpenGL(TextureFilter _filter, bool _mipmaps)
   {
-    return static_cast<GLenum>(_filter);
+    switch (_filter)
+    {
+      case TextureFilter::LINEAR:  { return _mipmaps ? GL_LINEAR_MIPMAP_LINEAR   : GL_LINEAR;  }
+      case TextureFilter::NEAREST: { return _mipmaps ? GL_NEAREST_MIPMAP_NEAREST : GL_NEAREST; }
+      default: { assert(false); }
+    }
   }
   
   TextureFilter OpenGLToTextureFilter(GLenum _filter)
   {
     switch (_filter)
     {
-      case GL_LINEAR: { return TextureFilter::LINEAR; }
-      case GL_NEAREST: { return TextureFilter::NEAREST; }
+      case GL_LINEAR:                 { return TextureFilter::LINEAR;  }
+      case GL_LINEAR_MIPMAP_LINEAR:   { return TextureFilter::LINEAR;  }
+      case GL_NEAREST:                { return TextureFilter::NEAREST; }
+      case GL_NEAREST_MIPMAP_NEAREST: { return TextureFilter::NEAREST; }
       default: 
       { 
         throw std::invalid_argument("Invalid texture filter.");

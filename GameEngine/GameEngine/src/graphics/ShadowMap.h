@@ -3,51 +3,47 @@
 
 #include "Shadow2D.h"
 #include "Shadow2DArray.h"
+#include "ShadowCube.h"
+
 #include "Texture2D.h"
 #include "Texture2DArray.h"
+#include "TextureCube.h"
 
 namespace engine { 
 namespace graphics {
  
-  struct DirectionalShadowMap
+  struct CascadedShadowMap
   {
    public:
-    float distance;
-    glm::mat4 lightSpace;
-    std::shared_ptr<Shadow2D> shadowMap;
-  };
-
-  struct CSM
-  {
-  public:
-    std::vector<float> distance;
-    std::vector<glm::mat4> lightSpace;
+    std::vector<float> distances;
+    std::vector<glm::mat4> lightSpaces;
     std::shared_ptr<Texture2DArray> shadowMap;
   };
 
-  /*
-  public:
-    ShadowMap(
-      uint _width, uint _height,
-      TextureFormat _format = TextureFormat::DEPTH_COMPONENT32F, 
-      const std::shared_ptr<Shader> & _depth = nullptr
-    );
-    ~ShadowMap();
-
-    const glm::mat4 & getLightSpace() const;
-
-    const std::shared_ptr<Shadow2D> & getShadowMap() const;
-
-    void GenerateShadowMap(const Camera & _camera, const ShadowCommandBuffer & _occluders);
-
-  private:
-    glm::mat4 m_lightSpace;
-    std::shared_ptr<Shader> m_depth;
-    std::shared_ptr<FrameBuffer> m_frameBuffer;
-    std::shared_ptr<Shadow2D> m_shadowMap;
+  struct DualParaboloidShadowMap
+  {
+   public:
+    glm::mat4 lightSpace;
+    float near;
+    float far;
+    std::shared_ptr<Texture2DArray> shadowMap;
   };
-  */
+
+  struct CubeShadowMap
+  {
+   public:
+    float near;
+    float far;
+    std::shared_ptr<TextureCube> shadowMap;
+  };
+
+  struct SpotShadowMap
+  {
+   public:
+    glm::mat4 lightSpace;
+    std::shared_ptr<Texture2D> shadowMap;
+  };
 
 } } // engine::graphics
 
-#endif //_ENGINE_GRAPHICS_SHADOWMAPPING_H_
+#endif //_ENGINE_GRAPHICS_SHADOWMAP_H_

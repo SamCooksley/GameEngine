@@ -11,34 +11,23 @@ namespace graphics {
    public:
     static const TextureType type = TextureType::TEXTURE_2D;
   
-    static std::shared_ptr<Texture2D> Create(uint _width, uint _height, TextureFormat _format);    
-    static std::shared_ptr<Texture2D> Create(uint _width, uint _height, const glm::vec4 & _colour);
-  
-    static std::shared_ptr<Texture2D> Load(const String & _path, bool _mipmaps = true);
+    static std::shared_ptr<Texture2D> Load(const String & _path, int _mipmaps = 0);
 
    public:
-    Texture2D(uint _width, uint _height, TextureFormat _format);
+    Texture2D(TextureFormat _format, int _width, int _height, int _mipmaps = 1);
+    Texture2D(int _width, int _height, const glm::vec4 & _colour);
     ~Texture2D();
   
-    void Bind(uint _unit) const override;
-    void Unbind(uint _uint) const override;
-  
-    void Resize(uint _width, uint _height) override;
+    void Bind(int _unit) const override;
 
     void setWrap(TextureWrap _wrap);
     void setFilter(TextureFilter _filter);
   
     void setBorder(const glm::vec4 & _colour);
-  
-    void GenerateMipMaps();
-  
-   private:
-    uint m_width, m_height;
-  
-    TextureFormat m_format;
 
-    TextureWrap m_wrap;
-    TextureFilter m_filter;
+    void setAnisotropy(float _anisotropy);
+
+    void GenerateMipMaps();
   };
 
 } } // engine::graphics

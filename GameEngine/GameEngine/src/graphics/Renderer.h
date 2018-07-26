@@ -18,6 +18,12 @@ namespace graphics {
     static constexpr Type Shadow = 1 << 0;
     static constexpr Type Debug = 1 << 1;
   };
+
+  enum class Stage
+  {
+    BEFORE,
+    AFTER
+  };
   
   class Renderer
   {
@@ -38,7 +44,7 @@ namespace graphics {
   
     virtual void Render() = 0;
 
-    virtual void Resize(uint _width, uint _height);
+    virtual void Resize(int _width, int _height);
   
    protected:
     Renderer(RenderFlags::Type _flags);

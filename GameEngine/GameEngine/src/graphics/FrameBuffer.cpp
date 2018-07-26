@@ -44,7 +44,7 @@ namespace graphics {
     return static_cast<GLenum>(_bind);
   }
 
-  FrameBuffer & FrameBuffer::BindDefault(FrameBufferBind _bind)
+  FrameBufferBase & FrameBuffer::BindDefault(FrameBufferBind _bind)
   {
     Graphics::getContext().defaultFrameBuffer->Bind(_bind);
     return *Graphics::getContext().defaultFrameBuffer;
@@ -57,372 +57,479 @@ namespace graphics {
     TextureFilter _filter
   )
   {
-    GLCALL(glBlitFramebuffer(_srcX0, _srcY0, _srcX1, _srcY1, _dstX0, _dstY0, _dstX1, _dstY1, _mask, TextureFilterToOpenGL(_filter)));
+    glBlitFramebuffer(_srcX0, _srcY0, _srcX1, _srcY1, _dstX0, _dstY0, _dstX1, _dstY1, _mask, TextureFilterToOpenGL(_filter, false));
   }
 
-  std::shared_ptr<FrameBuffer> FrameBuffer::Create(uint _width, uint _height)
+  std::shared_ptr<FrameBuffer> FrameBuffer::Create(int _width, int _height, int _depth)
   {
-    struct enable_fb : public FrameBuffer 
-    { 
-      enable_fb(uint _width, uint _height) : FrameBuffer(_width, _height, false) 
-      { } 
-    };
-    auto fb = std::make_shared<enable_fb>(_width, _height);
+    struct enable_fb : public FrameBuffer { };
+
+    auto fb = std::make_shared<enable_fb>();
     fb->Bind();
+    fb->Reset(_width, _height, _depth);
     return fb;
   }
 
-  std::shared_ptr<FrameBuffer> FrameBuffer::CreateDefault(uint _width, uint _height)
-  {
-    struct enable_fb : public FrameBuffer
-    {
-      enable_fb(uint _width, uint _height) : FrameBuffer(_width, _height, true) 
-      { }
-    };
-    auto fb = std::make_shared<enable_fb>(_width, _height);
-    fb->Bind();
-    return fb;
-  }
-
-  FrameBuffer::FrameBuffer(uint _width, uint _height, bool _default) :
+  FrameBuffer::FrameBuffer() :
     m_fbo(0),
-    m_clearColour(0.f, 0.f, 0.f, 1.f),
     m_clearFlags(0),
-    m_width(_width), m_height(_height),
-    m_colourAttachmentCount(0)
+    m_depthStencil(false)
   {
-    if (!_default)
-    {
-      GLCALL(glGenFramebuffers(1, &m_fbo));
-    }
-    else
-    {
-      assert(!Graphics::getContext().defaultFrameBuffer && "Default framebuffer already exists");
-      m_clearFlags = BufferBit::COLOUR | BufferBit::DEPTH;
-    }
+    glGenFramebuffers(1, &m_fbo);
   }
   
   FrameBuffer::~FrameBuffer()
   {
-    GLCALL(glDeleteFramebuffers(1, &m_fbo));
+    glDeleteFramebuffers(1, &m_fbo);
   }
   
   void FrameBuffer::Bind(FrameBufferBind _bind)
   {
-    if (Graphics::getContext().activeFrameBuffer.lock().get() != this)
-    {
-      GLCALL(glBindFramebuffer(FrameBufferBindToOpenGL(_bind), m_fbo));
-      GLCALL(glViewport(0, 0, m_width, m_height));
+    glBindFramebuffer(FrameBufferBindToOpenGL(_bind), m_fbo);
 
+    if (_bind == FrameBufferBind::WRITE)
+    {
+      glViewport(0, 0, m_width, m_height);
       Graphics::getContext().activeFrameBuffer = shared_from_this();
     }
   }
   
-  void FrameBuffer::Unbind()
-  {
-    GLCALL(glBindFramebuffer(GL_FRAMEBUFFER, 0));
-    Graphics::getContext().activeFrameBuffer = Graphics::getContext().defaultFrameBuffer;
-  }
-  
   void FrameBuffer::Clear()
   {
-    GLCALL(glClearColor(m_clearColour.r, m_clearColour.g, m_clearColour.b, m_clearColour.a));
-    GLCALL(glClear(m_clearFlags));
+    glClearColor(m_clearColour.r, m_clearColour.g, m_clearColour.b, m_clearColour.a);
+    glClear(m_clearFlags);
   }
 
-  void FrameBuffer::Resize(uint _width, uint _height)
+  void FrameBuffer::Blit(GLenum _mask, TextureFilter _filter)
   {
-    if (_width == m_width && _height == m_height) { return; }
-
-    m_width = _width;
-    m_height = _height;
-
-    for (auto & tex : m_colourAttachments)
-    {
-      tex->Bind(0);
-      tex->Resize(m_width, m_height);
-    }
-
-    if (m_depthAttachment)
-    {
-      m_depthAttachment->Bind(0);
-      m_depthAttachment->Resize(m_width, m_height);
-    }
-
-    if (m_stencilAttachment && m_stencilAttachment != m_depthAttachment)
-    {
-      m_stencilAttachment->Bind(0);
-      m_stencilAttachment->Resize(m_width, m_height);
-    }
-
-    for (auto & rb : m_renderBuffers)
-    {
-      rb->Bind();
-      rb->Resize(m_width, m_height);
-    }
-  }
-
-  void FrameBuffer::RenderToNDC() const
-  {
-    Graphics::getContext().screenQuad->Render();
-  }
-
-  void FrameBuffer::Blit(FrameBuffer & _dst, GLenum _mask, TextureFilter _filter)
-  {
+    auto dst = Graphics::getContext().activeFrameBuffer.lock();
     Blit(
       0, 0, this->getWidth(), this->getHeight(),
-      0, 0, _dst.getWidth(), _dst.getHeight(), 
+      0, 0, dst->getWidth(), dst->getHeight(), 
       _mask, _filter
     );
   }
-  
-  std::shared_ptr<Texture2D> FrameBuffer::AddTexture(FrameBufferAttachment _attachment, TextureFormat _format)
+
+  void FrameBuffer::Attach(const std::shared_ptr<Texture2D> & _texture, FrameBufferAttachment _attachment, int _colourIndex)
   {
-    assert(m_fbo != 0 && "Cannot attach items to default framebuffer");
+    assert(_texture);
+    GetColourIndex(_colourIndex);
 
-    auto texture = Texture2D::Create(m_width, m_height, _format);
-    texture->setFilter(TextureFilter::LINEAR);
-    texture->setWrap(TextureWrap::CLAMP_TO_EDGE);
-  
-    GLCALL(glFramebufferTexture2D(
-        GL_FRAMEBUFFER,
-        FrameBufferAttachmentToOpenGL(_attachment, m_colourAttachmentCount),
-        GL_TEXTURE_2D,
-        texture->m_id,
-        0
-    ));
-  
-    if (!Attach(_attachment, texture))
-    {
-      return nullptr;
-    }
-  
-    return texture;
-  }
-  
-  std::shared_ptr<TextureCube> FrameBuffer::AddCubeMap(FrameBufferAttachment _attachment, TextureFormat _format)
-  {
-    assert(m_fbo != 0 && "Cannot attach items to default framebuffer");
+    ValidateFrameBuffer(_attachment, _colourIndex);
+    ValidateTexture(*_texture, true, _attachment);
 
-    auto cube = std::make_shared<TextureCube>(m_width, m_height, _format);
-    cube->setFilter(TextureFilter::LINEAR);
-  
-    GLCALL(glFramebufferTexture(
-        GL_FRAMEBUFFER,
-        FrameBufferAttachmentToOpenGL(_attachment, m_colourAttachmentCount),
-        cube->m_id,
-        0
-    ));
-  
-    if (!Attach(_attachment, cube))
-    {
-      return nullptr;
-    }
-  
-    return cube;
-  }
-
-  std::shared_ptr<Shadow2D> FrameBuffer::AddShadow2D(TextureFormat _format)
-  {
-    assert(m_fbo != 0 && "Cannot attach items to default framebuffer");
-
-    auto texture = Shadow2D::Create(m_width, m_height, _format);
-
-    GLCALL(glFramebufferTexture2D(
-      GL_FRAMEBUFFER,
-      FrameBufferAttachmentToOpenGL(FrameBufferAttachment::DEPTH, m_colourAttachmentCount),
-      GL_TEXTURE_2D,
-      texture->m_id,
+    glFramebufferTexture(
+      GL_DRAW_FRAMEBUFFER,
+      FrameBufferAttachmentToOpenGL(_attachment, _colourIndex),
+      _texture->m_id,
       0
-    ));
+    );
 
-    if (!Attach(FrameBufferAttachment::DEPTH, texture))
-    {
-      return nullptr;
-    }
-
-    return texture;
+    Attach(*_texture, true, _texture, _attachment, _colourIndex);
   }
 
-  std::shared_ptr<Shadow2D> FrameBuffer::Add(const std::shared_ptr<Shadow2D> & _shadow)
+  void FrameBuffer::Attach(const std::shared_ptr<Texture2DArray> & _texture, FrameBufferAttachment _attachment, int _colourIndex)
   {
-    assert(m_fbo != 0 && "Cannot attach items to default framebuffer");
+    assert(_texture);
+    GetColourIndex(_colourIndex);
 
-    GLCALL(glFramebufferTexture2D(
-      GL_FRAMEBUFFER,
+    ValidateFrameBuffer(_attachment, _colourIndex);
+    ValidateTexture(*_texture, true, _attachment);
+
+    glFramebufferTexture(
+      GL_DRAW_FRAMEBUFFER,
+      FrameBufferAttachmentToOpenGL(_attachment, _colourIndex),
+      _texture->m_id,
+      0
+    );
+
+    Attach(*_texture, true, _texture, _attachment, _colourIndex);
+  }
+
+  void FrameBuffer::Attach(const std::shared_ptr<Texture2DArray> & _texture, int _layer, FrameBufferAttachment _attachment, int _colourIndex)
+  {
+    assert(_texture); 
+    GetColourIndex(_colourIndex);
+
+    ValidateFrameBuffer(_attachment, _colourIndex);
+    ValidateTexture(*_texture, false, _attachment);
+
+    glFramebufferTextureLayer(
+      GL_DRAW_FRAMEBUFFER,
+      FrameBufferAttachmentToOpenGL(_attachment, _colourIndex),
+      _texture->m_id, 0, _layer
+    );
+
+    Attach(*_texture, false, _texture, _attachment, _colourIndex);
+  }
+
+  void FrameBuffer::Attach(const std::shared_ptr<TextureCube> & _texture, FrameBufferAttachment _attachment, int _colourIndex)
+  {
+    assert(_texture);
+    GetColourIndex(_colourIndex);
+
+    ValidateFrameBuffer(_attachment, _colourIndex);
+    ValidateTexture(*_texture, true, _attachment);
+
+    glFramebufferTexture(
+      GL_DRAW_FRAMEBUFFER,
+      FrameBufferAttachmentToOpenGL(_attachment, _colourIndex),
+      _texture->m_id,
+      0
+    );
+
+    Attach(*_texture, true, _texture, _attachment, _colourIndex);
+  }
+
+  void FrameBuffer::Attach(const std::shared_ptr<TextureCube> & _texture, int _layer, FrameBufferAttachment _attachment, int _colourIndex)
+  {
+    assert(_texture);
+    GetColourIndex(_colourIndex);
+
+    ValidateFrameBuffer(_attachment, _colourIndex);
+    ValidateTexture(*_texture, false, _attachment);
+
+    glFramebufferTextureLayer(
+      GL_DRAW_FRAMEBUFFER,
+      FrameBufferAttachmentToOpenGL(_attachment, _colourIndex),
+      _texture->m_id, 0, _layer
+    );
+
+    Attach(*_texture, false, _texture, _attachment, _colourIndex);
+  }
+
+  void FrameBuffer::AttachDepth(const std::shared_ptr<Shadow2D> & _texture)
+  {
+    assert(_texture);
+
+    ValidateFrameBuffer(FrameBufferAttachment::DEPTH);
+    ValidateTexture(*_texture, true, FrameBufferAttachment::DEPTH);
+
+    glFramebufferTexture2D(
+      GL_DRAW_FRAMEBUFFER,
       GL_DEPTH_ATTACHMENT,
       GL_TEXTURE_2D,
-      _shadow->m_id,
+      _texture->m_id,
       0
-    ));
+    );
 
-    if (!Attach(FrameBufferAttachment::DEPTH, _shadow))
-    {
-      return nullptr;
-    }
-
-    return _shadow;
+    Attach(*_texture, true, _texture, FrameBufferAttachment::DEPTH);
   }
 
-  void FrameBuffer::Add(const std::shared_ptr<Texture2DArray> & _texture, FrameBufferAttachment _attachment)
+  void FrameBuffer::AttachDepth(const std::shared_ptr<Shadow2DArray> & _texture)
   {
-    assert(m_fbo != 0 && "Cannot attach items to default framebuffer");
+    assert(_texture);
 
-    GLCALL(glFramebufferTexture(
-      GL_FRAMEBUFFER, FrameBufferAttachmentToOpenGL(_attachment, m_colourAttachmentCount), _texture->m_id, 0
-    ));
+    ValidateFrameBuffer(FrameBufferAttachment::DEPTH);
+    ValidateTexture(*_texture, true, FrameBufferAttachment::DEPTH);
 
-    if (!Attach(_attachment, _texture))
+    glFramebufferTexture(
+      GL_DRAW_FRAMEBUFFER,
+      GL_DEPTH_ATTACHMENT,
+      _texture->m_id,
+      0
+    );
+
+    Attach(*_texture, true, _texture, FrameBufferAttachment::DEPTH);
+  }
+
+  void FrameBuffer::AttachDepth(const std::shared_ptr<Shadow2DArray> & _texture, int _layer)
+  {
+    assert(_texture);
+
+    ValidateFrameBuffer(FrameBufferAttachment::DEPTH);
+    ValidateTexture(*_texture, false, FrameBufferAttachment::DEPTH);
+
+    glFramebufferTextureLayer(
+      GL_DRAW_FRAMEBUFFER,
+      GL_DEPTH_ATTACHMENT,
+      _texture->m_id, 0, _layer
+    );
+
+    Attach(*_texture, false, _texture, FrameBufferAttachment::DEPTH);
+  }
+
+  void FrameBuffer::AttachDepth(const std::shared_ptr<ShadowCube> & _texture)
+  {
+    assert(_texture);
+
+    ValidateFrameBuffer(FrameBufferAttachment::DEPTH);
+    ValidateTexture(*_texture, true, FrameBufferAttachment::DEPTH);
+
+    glFramebufferTexture(
+      GL_DRAW_FRAMEBUFFER,
+      GL_DEPTH_ATTACHMENT,
+      _texture->m_id,
+      0
+    );
+
+    Attach(*_texture, true, _texture, FrameBufferAttachment::DEPTH);
+  }
+
+  void FrameBuffer::AttachDepth(const std::shared_ptr<ShadowCube> & _texture, int _layer)
+  {
+    assert(_texture);
+
+    ValidateFrameBuffer(FrameBufferAttachment::DEPTH);
+    ValidateTexture(*_texture, false, FrameBufferAttachment::DEPTH);
+
+    glFramebufferTextureLayer(
+      GL_DRAW_FRAMEBUFFER,
+      GL_DEPTH_ATTACHMENT,
+      _texture->m_id, 0, _layer
+    );
+
+    Attach(*_texture, false, _texture, FrameBufferAttachment::DEPTH);
+  }
+
+  void FrameBuffer::AttachTemp(Texture2D & _texture, FrameBufferAttachment _attachment, int _colourIndex)
+  {
+    GetColourIndex(_colourIndex);
+
+    ValidateFrameBuffer(_attachment, _colourIndex);
+    ValidateTexture(_texture, true, _attachment);
+
+    glFramebufferTexture(
+      GL_DRAW_FRAMEBUFFER,
+      FrameBufferAttachmentToOpenGL(_attachment, _colourIndex),
+      _texture.m_id,
+      0
+    );
+
+    Attach(_texture, true, nullptr, _attachment, _colourIndex);
+  }
+
+  void FrameBuffer::AttachTemp(Texture2DArray & _texture, FrameBufferAttachment _attachment, int _colourIndex)
+  {
+    GetColourIndex(_colourIndex);
+
+    ValidateFrameBuffer(_attachment, _colourIndex);
+    ValidateTexture(_texture, true, _attachment);
+
+    glFramebufferTexture(
+      GL_DRAW_FRAMEBUFFER,
+      FrameBufferAttachmentToOpenGL(_attachment, _colourIndex),
+      _texture.m_id,
+      0
+    );
+
+    Attach(_texture, true, nullptr, _attachment, _colourIndex);
+  }
+
+  void FrameBuffer::AttachTemp(Texture2DArray & _texture, int _layer, FrameBufferAttachment _attachment, int _colourIndex)
+  {
+    GetColourIndex(_colourIndex);
+
+    ValidateFrameBuffer(_attachment, _colourIndex);
+    ValidateTexture(_texture, false, _attachment);
+
+    glFramebufferTextureLayer(
+      GL_DRAW_FRAMEBUFFER,
+      FrameBufferAttachmentToOpenGL(_attachment, _colourIndex),
+      _texture.m_id, 0, _layer
+    );
+
+    Attach(_texture, false, nullptr, _attachment, _colourIndex);
+  }
+
+  void FrameBuffer::AttachTemp(TextureCube & _texture, FrameBufferAttachment _attachment, int _colourIndex)
+  {
+    GetColourIndex(_colourIndex);
+
+    ValidateFrameBuffer(_attachment, _colourIndex);
+    ValidateTexture(_texture, true, _attachment);
+
+    glFramebufferTexture(
+      GL_DRAW_FRAMEBUFFER,
+      FrameBufferAttachmentToOpenGL(_attachment, _colourIndex),
+      _texture.m_id,
+      0
+    );
+
+    Attach(_texture, true, nullptr, _attachment, _colourIndex);
+  }
+
+  void FrameBuffer::AttachTemp(TextureCube & _texture, int _layer, FrameBufferAttachment _attachment, int _colourIndex)
+  {
+    GetColourIndex(_colourIndex);
+
+    ValidateFrameBuffer(_attachment, _colourIndex);
+    ValidateTexture(_texture, false, _attachment);
+
+    glFramebufferTextureLayer(
+      GL_DRAW_FRAMEBUFFER,
+      FrameBufferAttachmentToOpenGL(_attachment, _colourIndex),
+      _texture.m_id, 0, _layer
+    );
+
+    Attach(_texture, false, nullptr, _attachment, _colourIndex);
+  }
+
+  /*void set(std::unique_ptr<RenderBuffer> _renderBuffer, FrameBufferAttachment _attachment, int _colourIndex)
+  {
+
+  }*/
+
+  void FrameBuffer::ValidateFrameBuffer(FrameBufferAttachment _attachment, int _colourIndex)
+  {
+    if (Graphics::getContext().activeFrameBuffer.lock().get() != this)
     {
-      return;
+      //TODO: framebuffernotbound exception.
+    }
+
+    if (_attachment == FrameBufferAttachment::COLOUR &&
+        _colourIndex >= Graphics::getContext().glData.getMaxColourAttachments())
+    {
+      throw std::out_of_range("maximum colour attachments reached");
     }
   }
 
-  void FrameBuffer::Add(const std::shared_ptr<Texture2DArray> & _texture, uint _depth, FrameBufferAttachment _attachment)
+  void FrameBuffer::ValidateTexture(Texture & _texture, bool _useLayers, FrameBufferAttachment _attachment)
   {
-    m_colourAttachmentCount = 0;
-    assert(m_fbo != 0 && "Cannot attach items to default framebuffer");
-    //assert(_depth < _shadow->getCount());
-
-    GLCALL(glFramebufferTextureLayer(
-      GL_FRAMEBUFFER, FrameBufferAttachmentToOpenGL(_attachment, m_colourAttachmentCount), 
-      _texture->m_id, 0, _depth
-    ));
-
-    if (!Attach(_attachment, _texture))
+    if (_texture.getWidth()                      != m_width  ||
+        _texture.getHeight()                     != m_height ||
+        ((_useLayers) ? _texture.getDepth() : 1) != m_depth        
+      )
     {
-      return;
+      throw std::invalid_argument("invalid texture size");
     }
-  }
-
-  void FrameBuffer::Add(const std::shared_ptr<Shadow2DArray> & _shadow)
-  {
-    assert(m_fbo != 0 && "Cannot attach items to default framebuffer");
-
-    GLCALL(glFramebufferTexture(
-      GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, _shadow->m_id, 0
-    ));
-
-    if (!Attach(FrameBufferAttachment::DEPTH, _shadow))
-    {
-      return;
-    }
-  }
-
-  void FrameBuffer::setDepth(const std::shared_ptr<Shadow2DArray> & _shadow, uint _depth)
-  {
-    assert(m_fbo != 0 && "Cannot attach items to default framebuffer");
-    assert(_depth < _shadow->getCount());
-
-    GLCALL(glFramebufferTextureLayer(
-      GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, _shadow->m_id, 0, _depth
-    ));
-
-    if (!Attach(FrameBufferAttachment::DEPTH, _shadow))
-    {
-      return;
-    }
-  }
-  
-  bool FrameBuffer::AddRenderBuffer(FrameBufferAttachment _attachment, TextureFormat _format)
-  {
-    assert(m_fbo != 0 && "Cannot attach items to default framebuffer");
-
-    auto renderBuffer = std::make_unique<RenderBuffer>(m_width, m_height, _format);
-  
-    GLCALL(glFramebufferRenderbuffer(
-        GL_FRAMEBUFFER,
-        FrameBufferAttachmentToOpenGL(_attachment, m_colourAttachmentCount),
-        GL_RENDERBUFFER,
-        renderBuffer->m_rb
-    ));
-  
-    if (!Attach(_attachment))
-    {
-      return false;
-    }
-  
-    m_renderBuffers.push_back(std::move(renderBuffer));
-  
-    return true;
-  }
-  
-  bool FrameBuffer::Attach(FrameBufferAttachment _attachment, const std::shared_ptr<Texture> & _texture)
-  {
-    //make the frame buffer clear attachmented types.
+    
     if (_attachment == FrameBufferAttachment::COLOUR)
     {
-      if (m_colourAttachmentCount >= Graphics::GL().GetMaxColourAttachments())
+      TextureBaseFormat base = TextureFormatBase(_texture.getFormat());
+      if (base != TextureBaseFormat::R   &&
+          base != TextureBaseFormat::RG  &&
+          base != TextureBaseFormat::RGB &&
+          base != TextureBaseFormat::RGBA)
       {
-        throw std::runtime_error("Maximum colour attachments reached");
+        throw std::invalid_argument("invalid texture format");
+      }
+    }
+    else if (_attachment == FrameBufferAttachment::DEPTH)
+    {
+      TextureBaseFormat base = TextureFormatBase(_texture.getFormat());
+      if (base != TextureBaseFormat::DEPTH_COMPONENT &&
+          base != TextureBaseFormat::DEPTH_STENCIL)
+      {
+        throw std::invalid_argument("invalid texture format");
+      }
+    }
+    else if (_attachment == FrameBufferAttachment::STENCIL)
+    {
+      // TODO: can depth textures be stencil?
+      TextureBaseFormat base = TextureFormatBase(_texture.getFormat());
+      if (base != TextureBaseFormat::DEPTH_COMPONENT &&
+        base != TextureBaseFormat::DEPTH_STENCIL)
+      {
+        throw std::invalid_argument("invalid texture format");
+      }
+    }
+    else if (_attachment == FrameBufferAttachment::DEPTH_STENCIL)
+    {
+      if (TextureFormatBase(_texture.getFormat()) != TextureBaseFormat::DEPTH_STENCIL)
+      {
+        throw std::invalid_argument("invalid texture format");
+      }
+    }
+    else { assert(false); }
+  }
+
+  void FrameBuffer::GetColourIndex(int & _index)
+  {
+    if (_index < 0)
+    {
+      _index = m_colourAttachments.size();
+    }
+  }
+
+  void FrameBuffer::Attach(
+    const Texture & _texture, bool _useLayers, 
+    const std::shared_ptr<Texture> & _store,
+    FrameBufferAttachment _attachment, int _colourIndex
+  )
+  {
+    if (_attachment == FrameBufferAttachment::COLOUR)
+    {
+      m_colourAttachments[_colourIndex] = _store;
+
+      std::vector<GLenum> buffers;
+      for (auto & colour : m_colourAttachments)
+      {
+        buffers.push_back(GL_COLOR_ATTACHMENT0 + colour.first);
       }
 
-      if (_texture)
-      {
-        m_colourAttachments.push_back(_texture);
-      }
-  
-      ++m_colourAttachmentCount;
-  
-      //draw all the colour buffers.
-      std::vector<GLenum> buffers(m_colourAttachmentCount);
-      for (uint i = 0; i < m_colourAttachmentCount; ++i)
-      {
-        buffers[i] = GL_COLOR_ATTACHMENT0 + i;
-      }
-  
-      GLCALL(glDrawBuffers(buffers.size(), &buffers[0]));
-  
+      glDrawBuffers(buffers.size(), &buffers[0]);
+   
       m_clearFlags |= BufferBit::COLOUR;
     }
     else if (_attachment == FrameBufferAttachment::DEPTH)
     {
-      m_clearFlags |= BufferBit::DEPTH;
+      if (m_depthStencil)
+      {
+        m_stencilAttachment = nullptr;
+      }
 
-      m_depthAttachment = _texture;
+      m_depthAttachment = _store;
+
+      m_depthStencil = false;
+      m_clearFlags |= BufferBit::DEPTH;
     }
     else if (_attachment == FrameBufferAttachment::STENCIL)
     {
-      m_clearFlags |= BufferBit::STENCIL;
+      if (m_depthStencil)
+      {
+        m_depthAttachment = nullptr;
+      }
 
-      m_stencilAttachment = _texture;
+      m_stencilAttachment = _store;
+
+      m_depthStencil = false;
+      m_clearFlags |= BufferBit::STENCIL;
     }
     else if (_attachment == FrameBufferAttachment::DEPTH_STENCIL)
     {
-      m_clearFlags |= BufferBit::DEPTH | BufferBit::STENCIL;
+      m_depthAttachment = _store;
+      m_stencilAttachment = _store;
 
-      m_depthAttachment = _texture;
-      m_stencilAttachment = _texture;
+      m_depthStencil = true;
+      m_clearFlags |= BufferBit::DEPTH | BufferBit::STENCIL;
     }
-  
-    return Check();
+
+    Check();
   }
   
-  bool FrameBuffer::Check() const
+  void FrameBuffer::Check() const
   {
-    GLCALL(GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER));
-    //if it is not complete, log an error.
+    GLenum status = glCheckFramebufferStatus(GL_DRAW_FRAMEBUFFER);
+
     if (status != GL_FRAMEBUFFER_COMPLETE)
     {
-      debug::LogError("Failed to create FrameBuffer: " + std::to_string(status));
+      // TODO: custom exception
+      throw std::runtime_error("invalid framebuffer");
     }
-  
-    return status == GL_FRAMEBUFFER_COMPLETE;
   }
 
-  uint FrameBuffer::getWidth() const
+  void FrameBuffer::Reset(int _width, int _height, int _depth)
   {
-    return m_width;
-  }
-  
-  uint FrameBuffer::getHeight() const
-  {
-    return m_height;
-  }
+    for (auto & colour : m_colourAttachments)
+    {
+      glFramebufferTexture(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + colour.first, 0, 0);
+    }
 
-  void FrameBuffer::setClearColour(const glm::vec4 & _clear)
-  {
-    m_clearColour = _clear;
+    glFramebufferTexture(GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, 0, 0);
+    glFramebufferTexture(GL_DRAW_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, 0, 0);
+
+    m_width = _width;
+    m_height = _height;
+    m_depth = _depth;
+
+    m_clearFlags = 0;
+
+    m_colourAttachments.clear();
+    m_depthAttachment = nullptr;
+    m_stencilAttachment = nullptr;
+
+    m_depthStencil = false;
   }
 
 } } // engine::graphics

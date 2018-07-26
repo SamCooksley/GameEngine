@@ -19,12 +19,6 @@ namespace engine {
     SPOT
   };
 
-  struct LightCameraStep
-  {
-    graphics::Camera camera;
-    float distance;
-  };
-
   class Light : public Component
   {
     friend class Application;
@@ -33,32 +27,22 @@ namespace engine {
     Light();
     ~Light();
 
-    void setColour(const glm::vec3 & _colour);
+    Light & setColour(const glm::vec3 & _colour);
 
-    void setDirectional();
+    Light & setDirectional();
 
-    void setPoint(float _linear, float _quadratic);
+    Light & setPoint();
 
-    void setSpot(float _cutoff, float _outerCutoff, float _linear, float _quadratic);
+    Light & setSpot(float _cutoff, float _outerCutoff);
 
-    void setShadows(bool _castShadows);
+    Light & setRadius(float _radius);
 
-    void GenerateShadowMap(const graphics::ShadowCommandBuffer & _occluders, const graphics::Camera * _camera);
+    Light & setShadows(bool _castShadows);
 
    protected:
     void OnAwake() override;
     void OnDestroy() override;
     void OnRender(graphics::Renderer & _renderer) override;
-
-   private:
-    void UpdateShadow();
-
-    std::vector<LightCameraStep> GenerateDirectionalCamera(const graphics::Camera & _target, size_t _numCascades);
-
-    void AddShadow();
-    void RemoveShadow();
-
-    std::vector<std::shared_ptr<Light>> * getShadowList(LightType _type);
 
    private:
     LightType m_type;
@@ -67,23 +51,12 @@ namespace engine {
     float m_intensity;
 
     float m_cutoffAngle;
-    float m_outerCuttofAngle;
+    float m_outerCutoffAngle;
 
-    graphics::Attenutation m_attenuation;
+    float m_radius;
 
     bool m_castShadows;
-    LightType m_shadowList;
-
-    int m_shadowCascades;
-
-    std::shared_ptr<graphics::FrameBuffer> m_frameBuffer;
-    std::shared_ptr<graphics::ShadowRenderer> m_shadowRenderer;
-    //union with other shadow types
-    std::shared_ptr<graphics::CSM> m_shadow;
-    std::shared_ptr<graphics::Shader> m_depth;
-    std::shared_ptr<graphics::Shader> m_blur;
-
-    std::shared_ptr<graphics::FrameBuffer> m_pingpong[2];
+    float m_near;
 
     ENGINE_SETUPSHARED(Light);
   };

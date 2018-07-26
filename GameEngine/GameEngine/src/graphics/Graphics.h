@@ -10,7 +10,6 @@ namespace engine {
     friend class graphics::Shader;
     friend class graphics::Material;
     friend class graphics::UniformBuffers;
-    friend class graphics::FrameBuffer;
 
     friend class glfw;
 
@@ -30,6 +29,8 @@ namespace engine {
     static graphics::GLData & GL();
 
     static graphics::Context & getContext();
+
+    static void RenderQuad();
   };
 
 } // engine

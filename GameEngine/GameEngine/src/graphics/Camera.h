@@ -15,12 +15,6 @@ namespace graphics {
   struct Camera
   {
    public:
-    struct FrustumPositions
-    {
-      std::array<glm::vec3, 4> positions;
-      float distance;
-    };
-
     Camera();
     Camera(
       CameraType _type,
@@ -51,17 +45,17 @@ namespace graphics {
     std::vector<glm::vec3> getFrustumPointsOrthographic(const float * _distances, size_t _size) const;
 
    public:
-     CameraType type;
+    CameraType type;
 
-     union
-     {
-       float fov;
-       float size;
-     };
-     float aspect;
+    union
+    {
+      float fov;
+      float size;
+    };
+    float aspect;
 
-     float near;
-     float far;
+    float near;
+    float far;
 
     glm::mat4 projection;
     glm::mat4 view;

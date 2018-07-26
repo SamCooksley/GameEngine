@@ -47,8 +47,7 @@ namespace graphics {
         COLOUR_OFFSET,
         POSITION_OFFSET,
 
-        LINEAR_OFFSET,
-        QUADRATIC_OFFSET,
+        RADIUS_OFFSET,
 
         SIZE;
     };
@@ -63,8 +62,7 @@ namespace graphics {
         CUTOFF_OFFSET,
         OUTERCUTOFF_OFFSET,
 
-        LINEAR_OFFSET,
-        QUADRATIC_OFFSET,
+        RADIUS_OFFSET,
 
         SIZE;
     };

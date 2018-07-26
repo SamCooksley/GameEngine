@@ -4,7 +4,7 @@
 #include "..\vertex\screen_vert.shader"
 
 #shader fragment
-#version 430 core
+#version 440 core
 
 layout (location = 0) in vec2 in_texCoords;
 
@@ -16,8 +16,15 @@ uniform sampler2D colour;
 
 #include "..\common\camera.shader"
 #include "..\lighting\lighting.shader"
+#include "..\lighting\shadows.shader"
 
 uniform PointLight light;
+
+uniform int shadow = 0;
+
+uniform float near;
+uniform float far;
+uniform samplerCube shadowMap;
 
 void main()
 {
@@ -35,5 +42,10 @@ void main()
     vec3 viewDir_world = normalize(camera.position_world - surf.position);
 
     vec3 colour = CalculateLight(light, surf, viewDir_world);
+    if (shadow > 0)
+    {
+        colour *= VarienceShadowCalculation(light.position, near, far, surf.position, shadowMap);
+    }
+
     out_colour = vec4(colour, 1.0);
 }

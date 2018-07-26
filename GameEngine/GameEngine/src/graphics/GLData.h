@@ -3,6 +3,8 @@
 
 #include "opengl.h"
 
+#include "GLVersion.h"
+
 namespace engine {
 namespace graphics {
 
@@ -144,6 +146,10 @@ namespace graphics {
    public:
     GLData();
     ~GLData();
+
+    const GLVersion & getVersion() const;
+
+    int getContextFlags() const;
   
     void SetDepthWrite(bool _write);
     void SetDepth(Depth::Func _depth);
@@ -155,18 +161,25 @@ namespace graphics {
   
     void SetBlend(const Blend & _blend);
   
-    uint GetMaxUniformBuffers() const;
-    uint GetMaxColourAttachments() const;
+    int getMaxUniformBuffers() const;
+    int getMaxColourAttachments() const;
   
+    float getMaxAnisotropy() const;
+
    private:
+    GLVersion m_version;
+    int m_contextFlags;
+
     bool m_depthWrite;
     Depth::Func m_depth;
     Cull::Face m_cull;
     PolygonMode::Mode m_polygonMode;
     Blend m_blend;
   
-    uint m_maxUniformBuffers;
-    uint m_maxColourAttachments;
+    int m_maxUniformBuffers;
+    int m_maxColourAttachments;
+
+    float m_maxAnisotropy;
   };
   
 } } // engine::graphics

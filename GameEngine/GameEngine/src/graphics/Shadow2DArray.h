@@ -12,20 +12,10 @@ namespace graphics {
     static const TextureType type = TextureType::SHADOW_2D_ARRAY;
 
    public:
-    Shadow2DArray(uint _width, uint _height, uint _count, TextureFormat _format);
+    Shadow2DArray(TextureFormat _format, uint _width, uint _height, uint _count);
     ~Shadow2DArray();
 
-    void Bind(uint _unit) const override;
-    void Unbind(uint _uint) const override;
-
-    void Resize(uint _width, uint _height) override;
-
-    uint getCount() const;
-
-   private:
-    uint m_width, m_height, m_count;
-
-    TextureFormat m_format;
+    void Bind(int _unit) const override;
   };
 
 } } // engine::graphics

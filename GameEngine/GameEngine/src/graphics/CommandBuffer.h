@@ -42,18 +42,13 @@ namespace graphics {
     const std::vector<Command> & getForwardCommands() const;
     const std::vector<Command> & getTransparentCommands() const;
 
-    const Lights & getLights() const;
-
-    const ShadowCommandBuffer & getShadowCommands() const;
+    const std::vector<Command> & getShadowCasters() const;
   
    private:
     std::vector<Command> m_deferred;
     std::vector<Command> m_forward;
     std::vector<Command> m_transparent;
-
-    Lights m_lights;
-
-    ShadowCommandBuffer m_shadowCommands;
+    std::vector<Command> m_shadowCasters;
   };
   
 } } // engine::graphics

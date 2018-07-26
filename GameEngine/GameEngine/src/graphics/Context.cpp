@@ -12,7 +12,7 @@ namespace engine {
     _context->errorShader = nullptr;
     _context->depthShader = nullptr;
     _context->defaultMaterial = nullptr;
-    _context->screenQuad = nullptr;
+    _context->quad = nullptr;
 
     _context = nullptr;
   }

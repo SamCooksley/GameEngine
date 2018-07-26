@@ -27,13 +27,11 @@ uniform DirectionalLight light;
 
 uniform int shadow = 0; 
 
-const int MAX_CASCADES = 4;
-
-uniform int cascadeCount;
+uniform int cascadeCount = 1;
 
 uniform sampler2DArray shadowMap;
-uniform mat4 lightSpace[MAX_CASCADES];
-uniform float distance[MAX_CASCADES];
+uniform mat4 lightSpace[10];
+uniform float distance[10];
 
 void main()
 {
@@ -53,12 +51,21 @@ void main()
     vec3 colour = CalculateLight(light, surf, viewDir_world);
     if (shadow > 0)
     {
-        vec4 clip = camera.vp * vec4(surf.position, 1.0);
+        vec4 pos = vec4(surf.position, 1.0);
+
+        /*
+        for (int i = 0; i < cascadeCount; ++i)
+        {
+            colour *= VarienceShadowCalculation(lightSpace[i] * pos, shadowMap, i);
+        }
+        */
+
+        vec4 clip = camera.vp * pos;
         float depth = clip.z;
 
         int index = -1;
 
-        for (int i = 0; i < 4; ++i)
+        for (int i = 0; i < cascadeCount; ++i)
         {
             if (depth <= distance[i])
             {
@@ -67,10 +74,11 @@ void main()
             }
         }
 
+        
         if (index >= 0)
         {
-            //colour *= ShadowCalculation(lightSpace[index] * vec4(surf.position, 1.0), light.direction, surf.position, surf.normal, shadowMap, index);
-            colour *= VarienceShadowCalculation(lightSpace[index] * vec4(surf.position, 1.0), shadowMap, index);
+            //colour *= ShadowCalculation(lightSpace[index] * pos, light.direction, surf.position, surf.normal, shadowMap, index);
+            colour *= VarienceShadowCalculation(lightSpace[index] * pos, shadowMap, index);
 
 #ifdef DEBUG_CSM
             const vec3 c[] = {
@@ -78,7 +86,7 @@ void main()
                 vec3(0, 1, 0),
                 vec3(0, 0, 1),
             };
-            colour += c[index % 3] * 0.1;
+            colour += c[index % 3] * 0.05;
 #endif
         }
     }

@@ -4,13 +4,13 @@
 
 #include "utilities\Image.h"
 
+#include "Graphics.h"
+
 namespace engine {
 namespace graphics {
 
-  std::shared_ptr<TextureCube> TextureCube::Load(const std::array<String, 6> & _paths)
+  std::shared_ptr<TextureCube> TextureCube::Load(const std::array<String, 6> & _paths, int _mipmaps)
   {
-    struct enable_texture : public TextureCube { };
-  
     std::array<file::ImageData, 6> images;
     for (size_t i = 0; i < _paths.size(); ++i)
     {
@@ -20,133 +20,84 @@ namespace graphics {
       }
     }
   
-    auto cube = std::make_shared<enable_texture>();
-    cube->m_width = images[0].width;
-    cube->m_height = images[0].height;
-    
-    cube->m_format = TextureFormat::RGBA8;
-
+    auto cube = std::make_shared<TextureCube>(
+      TextureFormat::RGBA8, images[0].width, images[0].height, _mipmaps
+    );
     cube->setName(file::getFilenameWithoutExtension(_paths[0]));
-
-    cube->setFilter(TextureFilter::LINEAR);
   
-    for (size_t i = 0; i < images.size(); ++i)
+    for (size_t i = 0; i < 6; ++i)
     {
       const file::ImageData & image = images[i];
-      GLCALL(glTexImage2D(
+      glTexSubImage2D(
         GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0,
-        GL_RGBA8,
-        image.width, image.height,
-        0, GL_RGBA, GL_UNSIGNED_BYTE,
-        &image.pixels[0]
-      ));
+        0, 0, images[0].width, images[0].height,
+        GL_RGBA, GL_UNSIGNED_BYTE,
+        &images[i].pixels[0]
+      );
     }
+
+    cube->GenerateMipMaps();
   
     return cube;
   }
   
-  TextureCube::TextureCube() : 
+  TextureCube::TextureCube(TextureFormat _format, int _width, int _height, int _mipmaps) :
     Texture(TextureType::TEXTURE_CUBE)
   {
-    GLCALL(glGenTextures(1, &m_id));
-    GLCALL(glBindTexture(GL_TEXTURE_CUBE_MAP, m_id));
-  
-    GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
-    GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
-    GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE));
-  }
-  
-  TextureCube::TextureCube(uint _width, uint _height, TextureFormat _format) :
-    TextureCube()
-  {
-    m_width = _width;
-    m_height = _height;
-
     m_format = _format;
-
-    for (size_t i = 0u; i < 6u; ++i)
-    {
-      GLCALL(glTexImage2D(
-          GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0,
-          TextureFormatToOpenGL(_format),
-          _width, _height, 0,
-          0,
-          0,
-          nullptr
-      ));
-    }
-  }
-  
-  TextureCube::TextureCube(uint _width, uint _height, const glm::vec4 & _colour) :
-    TextureCube()
-  {
     m_width = _width;
     m_height = _height;
+    m_depth = 6;
 
-    m_format = TextureFormat::RGBA8;
+    m_mipmaps = _mipmaps;
+    if (m_mipmaps <= 0)
+    {
+      m_mipmaps = CalculateMipMapCount(_width, _height);
+    }
 
-    std::vector<float> pixels(_width * _height * 4);
-  
-    for (size_t i = 0; i < pixels.size(); i += 4)
-    {
-      memcpy(&pixels[i], glm::value_ptr(_colour), sizeof(float) * 4u);
-    }
-  
-    for (size_t i = 0; i < 6; ++i)
-    {
-      GLCALL(glTexImage2D(
-        GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0,
-        GL_RGBA8,
-        _width, _height, 0,
-        GL_RGBA, GL_FLOAT,
-        &pixels[0]
-      ));
-    }
+    glGenTextures(1, &m_id);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, m_id);
+
+    glTexStorage2D(
+      GL_TEXTURE_CUBE_MAP, m_mipmaps,
+      TextureFormatToOpenGL(m_format),
+      m_width, m_height
+    );
+
+    m_wrap = TextureWrap::CLAMP_TO_EDGE;
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+    setFilter(TextureFilter::LINEAR);
   }
-  
+
   TextureCube::~TextureCube()
   {
-    GLCALL(glDeleteTextures(1, &m_id));
+    glDeleteTextures(1, &m_id);
   }
   
-  void TextureCube::Bind(uint _unit) const
+  void TextureCube::Bind(int _unit) const
   {
-    GLCALL(glActiveTexture(GL_TEXTURE0 + _unit));
-    GLCALL(glBindTexture(GL_TEXTURE_CUBE_MAP, m_id));
-  }
-  
-  void TextureCube::Unbind(uint _unit) const
-  {
-    GLCALL(glActiveTexture(GL_TEXTURE0 + _unit));
-    GLCALL(glBindTexture(GL_TEXTURE_CUBE_MAP, 0));
-  }
-
-  void TextureCube::Resize(uint _width, uint _height)
-  {
-    if (_width == m_width && _height == m_height) { return; }
-
-    m_width = _width;
-    m_height = _height;
-
-    for (size_t i = 0u; i < 6u; ++i)
-    {
-      GLCALL(glTexImage2D(
-        GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0,
-        TextureFormatToOpenGL(m_format),
-        m_width, m_height, 0,
-        0,
-        0,
-        nullptr
-      ));
-    }
+    glActiveTexture(GL_TEXTURE0 + _unit);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, m_id);
   }
   
   void TextureCube::setFilter(TextureFilter _filter)
   {
     m_filter = _filter;
-    GLenum filter = TextureFilterToOpenGL(m_filter);
-    GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, filter));
-    GLCALL(glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, filter));
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, TextureFilterToOpenGL(m_filter, true));
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, TextureFilterToOpenGL(m_filter, false));
+  }
+
+  void TextureCube::setAnisotropy(float _anisotropy)
+  {
+    glTexParameterf(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAX_ANISOTROPY, glm::min(_anisotropy, Graphics::GL().getMaxAnisotropy()));
+  }
+
+  void TextureCube::GenerateMipMaps()
+  {
+    glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
   }
 
 } } // engine::graphics

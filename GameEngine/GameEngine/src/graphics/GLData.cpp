@@ -317,71 +317,93 @@ namespace graphics {
     throw std::invalid_argument("PolygonMode.FromString");
   }
   
-  GLData::GLData() : 
+  GLData::GLData() :
+    m_version({ 0, 0 }),
     m_depthWrite(true), m_depth(Depth::NONE),
     m_cull(Cull::NONE), m_polygonMode(PolygonMode::FILL),
     m_blend({ false, BlendFactor::ONE, BlendFactor::ZERO, BlendOp::ADD }),
-    m_maxUniformBuffers(36), 
-    m_maxColourAttachments(4)
+    m_maxUniformBuffers(36),
+    m_maxColourAttachments(4),
+    m_maxAnisotropy(0.f)
   { 
-    bool enable;
-    GLint get;
+    GLint geti2[2];
+    GLint & geti = geti2[0];
+    GLfloat getf;
+
+    glGetIntegerv(GL_MAJOR_VERSION, &geti);
+    m_version.major = geti;
+
+    glGetIntegerv(GL_MINOR_VERSION, &geti);
+    m_version.minor = geti;
+
+    glGetIntegerv(GL_CONTEXT_FLAGS, &geti);
+    m_contextFlags = geti;
     
-    GLCALL(glGetIntegerv(GL_DEPTH_WRITEMASK, &get));
-    m_depthWrite = get != 0;
+    glGetIntegerv(GL_DEPTH_WRITEMASK, &geti);
+    m_depthWrite = geti != 0;
   
-    GLCALL(enable = glIsEnabled(GL_DEPTH_TEST) == GL_TRUE);
-    if (!enable)
+    if (glIsEnabled(GL_DEPTH_TEST) == GL_FALSE)
     {
       m_depth = Depth::NONE;
     }
     else
     {
-      GLCALL(glGetIntegerv(GL_DEPTH_FUNC, &get));
-      m_depth = Depth::FromOpenGL(get);
+      glGetIntegerv(GL_DEPTH_FUNC, &geti);
+      m_depth = Depth::FromOpenGL(geti);
     }
   
-    GLCALL(enable = glIsEnabled(GL_CULL_FACE) == GL_TRUE);
-    if (!enable)
+    if (glIsEnabled(GL_CULL_FACE) == GL_FALSE)
     {
       m_cull = Cull::NONE;
     }
     else
     {
-      GLCALL(glGetIntegerv(GL_CULL_FACE_MODE, &get));
-      m_cull = Cull::FromOpenGL(get);
+      glGetIntegerv(GL_CULL_FACE_MODE, &geti);
+      m_cull = Cull::FromOpenGL(geti);
     }
   
-    GLint get2[2];
-    GLCALL(glGetIntegerv(GL_POLYGON_MODE, get2));
-    m_polygonMode = PolygonMode::FromOpenGL(get2[0]);
+    glGetIntegerv(GL_POLYGON_MODE, geti2);
+    m_polygonMode = PolygonMode::FromOpenGL(geti2[0]);
   
-    GLCALL(m_blend.enable = glIsEnabled(GL_BLEND) == GL_TRUE);
+    m_blend.enable = glIsEnabled(GL_BLEND) == GL_TRUE;
   
-    GLCALL(glGetIntegerv(GL_BLEND_SRC, &get));
-    m_blend.src = BlendFactor::FromOpenGL(get);
+    glGetIntegerv(GL_BLEND_SRC, &geti);
+    m_blend.src = BlendFactor::FromOpenGL(geti);
   
-    GLCALL(glGetIntegerv(GL_BLEND_DST, &get));
-    m_blend.dst = BlendFactor::FromOpenGL(get);
+    glGetIntegerv(GL_BLEND_DST, &geti);
+    m_blend.dst = BlendFactor::FromOpenGL(geti);
   
-    GLCALL(glGetIntegerv(GL_BLEND_EQUATION_ALPHA, &get));
-    m_blend.op = BlendOp::FromOpenGL(get);
+    glGetIntegerv(GL_BLEND_EQUATION_ALPHA, &geti);
+    m_blend.op = BlendOp::FromOpenGL(geti);
     
-    GLCALL(glGetIntegerv(GL_MAX_UNIFORM_BUFFER_BINDINGS, &get));
-    m_maxUniformBuffers = glm::max(get, 0);
+    glGetIntegerv(GL_MAX_UNIFORM_BUFFER_BINDINGS, &geti);
+    m_maxUniformBuffers = glm::max(geti, 0);
   
-    GLCALL(glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS, &get));
-    m_maxColourAttachments = glm::max(get, 0);
+    glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS, &geti);
+    m_maxColourAttachments = glm::max(geti, 0);
+
+    glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY, &getf);
+    m_maxAnisotropy = getf;
   }
   
   GLData::~GLData()
   { }
+
+  const GLVersion & GLData::getVersion() const
+  {
+    return m_version;
+  }
+
+  int GLData::getContextFlags() const
+  {
+    return m_contextFlags;
+  }
   
   void GLData::SetDepthWrite(bool _write)
   {
     if (_write != m_depthWrite)
     {
-      GLCALL(glDepthMask(_write));
+      glDepthMask(_write);
       m_depthWrite = _write;
     }
   }
@@ -392,16 +414,16 @@ namespace graphics {
     {
       if (_depth == Depth::NONE)
       {
-        GLCALL(glDisable(GL_DEPTH_TEST));
+        glDisable(GL_DEPTH_TEST);
       }
       else
       {
         if (m_depth == Depth::NONE)
         {
-          GLCALL(glEnable(GL_DEPTH_TEST));
+          glEnable(GL_DEPTH_TEST);
         }
   
-        GLCALL(glDepthFunc(Depth::ToOpenGL(_depth)));
+        glDepthFunc(Depth::ToOpenGL(_depth));
       }
       m_depth = _depth;
     }
@@ -413,15 +435,15 @@ namespace graphics {
     {
       if (_cull == Cull::NONE)
       {
-        GLCALL(glDisable(GL_CULL_FACE));
+        glDisable(GL_CULL_FACE);
       }
       else
       {
         if (m_cull == Cull::NONE)
         {
-          GLCALL(glEnable(GL_CULL_FACE));
+          glEnable(GL_CULL_FACE);
         }
-        GLCALL(glCullFace(Cull::ToOpenGL(_cull)));
+        glCullFace(Cull::ToOpenGL(_cull));
       }
       m_cull = _cull;
     }
@@ -431,7 +453,7 @@ namespace graphics {
   {
     if (_mode != m_polygonMode)
     {
-      GLCALL(glPolygonMode(GL_FRONT_AND_BACK, PolygonMode::ToOpenGL(_mode)));
+      glPolygonMode(GL_FRONT_AND_BACK, PolygonMode::ToOpenGL(_mode));
       m_polygonMode = _mode;
     }
   }
@@ -440,23 +462,23 @@ namespace graphics {
   {
     if (!m_blend.enable)
     {
-      GLCALL(glEnable(GL_BLEND));
+      glEnable(GL_BLEND);
       m_blend.enable = true;
     }
   
     if (_src != m_blend.src || _dst != m_blend.dst)
     {
-      GLCALL(glBlendFunc(
+      glBlendFunc(
         BlendFactor::ToOpenGL(_src),
         BlendFactor::ToOpenGL(_dst)
-      ));
+      );
       m_blend.src = _src;
       m_blend.dst = _dst;
     }
   
     if (_op != m_blend.op)
     {
-      GLCALL(glBlendEquation(BlendOp::ToOpenGL(_op)));
+      glBlendEquation(BlendOp::ToOpenGL(_op));
       m_blend.op = _op;
     }
   }
@@ -465,7 +487,7 @@ namespace graphics {
   {
     if (m_blend.enable)
     {
-      GLCALL(glDisable(GL_BLEND));
+      glDisable(GL_BLEND);
       m_blend.enable = false;
     }
   }
@@ -482,14 +504,19 @@ namespace graphics {
     }
   }
   
-  uint GLData::GetMaxUniformBuffers() const
+  int GLData::getMaxUniformBuffers() const
   {
     return m_maxUniformBuffers;
   }
   
-  uint GLData::GetMaxColourAttachments() const
+  int GLData::getMaxColourAttachments() const
   {
     return m_maxColourAttachments;
+  }
+
+  float GLData::getMaxAnisotropy() const
+  {
+    return m_maxAnisotropy;
   }
 
 } } // engine::graphics

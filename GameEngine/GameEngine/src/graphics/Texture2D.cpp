@@ -4,50 +4,12 @@
 
 #include "utilities\Image.h"
 
+#include "Graphics.h"
+
 namespace engine {
 namespace graphics {
-  
-  std::shared_ptr<Texture2D> Texture2D::Create(uint _width, uint _height, TextureFormat _format)
-  {
-    auto texture = std::make_shared<Texture2D>(_width, _height, _format);
-  
-    GLCALL(
-      glTexImage2D(
-        GL_TEXTURE_2D, 0,
-        TextureFormatToOpenGL(_format),
-        _width, _height, 0,
-        GL_RED,
-        GL_UNSIGNED_BYTE,
-        nullptr
-      )
-    );
-  
-    texture->setWrap(TextureWrap::CLAMP_TO_EDGE);
-    texture->setFilter(TextureFilter::LINEAR);
-  
-    return texture;
-  }
-  
-  std::shared_ptr<Texture2D> Texture2D::Create(uint _width, uint _height, const glm::vec4 & _colour)
-  {
-    std::vector<float> pixels(_width * _height * 4u);
-  
-    for (size_t i = 0; i < pixels.size(); i += 4)
-    {
-      memcpy(&pixels[i], glm::value_ptr(_colour), sizeof(float) * 4u);
-    }
-  
-    auto texture = std::make_shared<Texture2D>(_width, _height, TextureFormat::RGBA8);
 
-    GLCALL(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, _width, _height, 0, GL_RGBA, GL_FLOAT, &pixels[0]));
-  
-    texture->setWrap(TextureWrap::CLAMP_TO_EDGE);
-    texture->setFilter(TextureFilter::NEAREST);
-  
-    return texture;
-  }
-  
-  std::shared_ptr<Texture2D> Texture2D::Load(const String & _path, bool _mipmaps)
+  std::shared_ptr<Texture2D> Texture2D::Load(const String & _path, int _mipmaps)
   {
     file::ImageData image;
     if (!file::LoadImagePowerOf2(_path, &image, false))
@@ -55,102 +17,113 @@ namespace graphics {
       throw std::runtime_error("Texture2D Error: failed to load file: " + _path);
     }
   
-    auto texture = std::make_shared<Texture2D>(image.width, image.height, TextureFormat::RGBA8);
+    auto texture = std::make_shared<Texture2D>(
+      TextureFormat::RGBA8, 
+      image.width, image.height,
+      _mipmaps
+    );
     texture->setName(file::getFilenameWithoutExtension(_path));
   
-    GLCALL(glTexImage2D(
-      GL_TEXTURE_2D, 0, 
-      GL_RGBA, 
+    glTexSubImage2D(
+      GL_TEXTURE_2D, 0,
+      0, 0,
       image.width, image.height, 
-      0,
-      GL_RGBA, GL_UNSIGNED_BYTE, 
-      &image.pixels[0]
-    ));
-  
+      GL_RGBA, GL_UNSIGNED_BYTE, &image.pixels[0]
+    );
+
+    texture->GenerateMipMaps();
+
     texture->setWrap(TextureWrap::REPEAT);
     texture->setFilter(TextureFilter::LINEAR);
-  
-    if (_mipmaps)
-    {
-      texture->GenerateMipMaps();
-    }
-  
+    // TODO:
+    texture->setAnisotropy(8.f);
+
     return texture;
   }
   
-  Texture2D::Texture2D(uint _width, uint _height, TextureFormat _format) : 
-    Texture(TextureType::TEXTURE_2D),
-    m_width(_width), m_height(_height),
-    m_format(_format),
-    m_wrap(TextureWrap::REPEAT),
-    m_filter(TextureFilter::LINEAR)
+  Texture2D::Texture2D(TextureFormat _format, int _width, int _height, int _mipmaps) :
+    Texture(TextureType::TEXTURE_2D)
   {
-    GLCALL(glGenTextures(1, &m_id));
-    GLCALL(glBindTexture(GL_TEXTURE_2D, m_id));
+    m_format = _format;
+    m_width = _width;
+    m_height = _height;
+
+    m_mipmaps = _mipmaps;
+    if (m_mipmaps <= 0)
+    {
+      m_mipmaps = CalculateMipMapCount(_width, _height);
+    }
+
+    glGenTextures(1, &m_id);
+    glBindTexture(GL_TEXTURE_2D, m_id);
+
+    glTexStorage2D(GL_TEXTURE_2D, m_mipmaps, TextureFormatToOpenGL(m_format), m_width, m_height);
+
+    setWrap(TextureWrap::REPEAT);
+    setFilter(TextureFilter::LINEAR);
+  }
+
+  Texture2D::Texture2D(int _width, int _height, const glm::vec4 & _colour) :
+    Texture2D(TextureFormat::RGBA8, _width, _height, 1)
+  {
+    std::vector<float> pixels(m_width * m_height * 4);
+
+    for (size_t i = 0; i < pixels.size(); i += 4)
+    {
+      memcpy(&pixels[i], glm::value_ptr(_colour), sizeof(float) * 4u);
+    }
+
+    glTexSubImage2D(
+      GL_TEXTURE_2D, 0,
+      0, 0,
+      _width, _height,
+      GL_RGBA, GL_FLOAT, &pixels[0]
+    );
+
+    setWrap(TextureWrap::REPEAT);
+    setFilter(TextureFilter::NEAREST);
   }
   
   Texture2D::~Texture2D()
   {
-    GLCALL(glDeleteTextures(1, &m_id));
+    glDeleteTextures(1, &m_id);
   }
   
-  void Texture2D::Bind(uint _unit) const
+  void Texture2D::Bind(int _unit) const
   {
-    GLCALL(glActiveTexture(GL_TEXTURE0 + _unit));
-    GLCALL(glBindTexture(GL_TEXTURE_2D, m_id));
-  }
-  
-  void Texture2D::Unbind(uint _unit) const
-  {
-    GLCALL(glActiveTexture(GL_TEXTURE0 + _unit));
-    GLCALL(glBindTexture(GL_TEXTURE_2D, 0));
-  }
-
-  void Texture2D::Resize(uint _width, uint _height)
-  {
-    if (_width == m_width && _height == m_height) { return; }
-
-    m_width = _width;
-    m_height = _height;
-
-    GLCALL(
-      glTexImage2D(
-        GL_TEXTURE_2D, 0,
-        TextureFormatToOpenGL(m_format),
-        m_width, m_height, 0,
-        GL_RED,
-        GL_UNSIGNED_BYTE,
-        nullptr
-      )
-    );
+    glActiveTexture(GL_TEXTURE0 + _unit);
+    glBindTexture(GL_TEXTURE_2D, m_id);
   }
   
   void Texture2D::setWrap(TextureWrap _wrap)
   {
     m_wrap = _wrap;
     GLenum wrap = TextureWrapToOpenGL(m_wrap);
-    GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrap));
-    GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrap));
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrap);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrap);
   }
   
   void Texture2D::setFilter(TextureFilter _filter)
   {
     m_filter = _filter;
-    GLenum filter = TextureFilterToOpenGL(m_filter);
-    GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter));
-    GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter));
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, TextureFilterToOpenGL(m_filter, true));
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, TextureFilterToOpenGL(m_filter, false));
   }
   
   void Texture2D::setBorder(const glm::vec4 & _colour)
   {
-    GLCALL(glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, glm::value_ptr(_colour)));
+    glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, glm::value_ptr(_colour));
   }
-  
+
+  void Texture2D::setAnisotropy(float _anisotropy)
+  {
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY, glm::min(_anisotropy, Graphics::GL().getMaxAnisotropy()));
+  }
+
   void Texture2D::GenerateMipMaps()
   {
-    GLCALL(glGenerateMipmap(GL_TEXTURE_2D));
-    GLenum filter = m_filter == TextureFilter::LINEAR ? GL_LINEAR_MIPMAP_LINEAR : GL_NEAREST_MIPMAP_NEAREST;
-    GLCALL(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter));
+    glGenerateMipmap(GL_TEXTURE_2D);
   }
 
 } } // engine::graphics

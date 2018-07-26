@@ -40,7 +40,6 @@ namespace graphics {
     ~Shader();
   
     void Bind();
-    void Unbind();
   
     void setModel(const glm::mat4 & _model);
     void setView(const glm::mat4 & _view);

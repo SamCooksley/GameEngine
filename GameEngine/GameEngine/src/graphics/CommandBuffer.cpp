@@ -36,7 +36,7 @@ namespace graphics {
 
     if (_castShadows)
     {
-      m_shadowCommands.Add(_mesh, _transform);
+      m_shadowCasters.push_back({ _mesh, nullptr, _transform });
     }
   }
   
@@ -45,7 +45,7 @@ namespace graphics {
     m_deferred.clear();
     m_forward.clear();
     m_transparent.clear();
-    m_shadowCommands.Clear();
+    m_shadowCasters.clear();
   }
   
   void CommandBuffer::Sort(const Camera & _camera)
@@ -59,8 +59,8 @@ namespace graphics {
       return _lhs.material->getShader() < _rhs.material->getShader();
     };
   
-    //not accurate (not per triangle) but performs some bias towards closer objects.
-    //also slow, need to cache distances.
+    // not accurate (not per triangle) but performs some bias towards closer objects.
+    // also slow, need to cache distances.
     auto sortTrans = [&_camera](const Command & _lhs, const Command & _rhs) -> bool
     {
       return
@@ -88,14 +88,9 @@ namespace graphics {
     return m_transparent;
   }
 
-  const Lights & CommandBuffer::getLights() const
+  const std::vector<Command> & CommandBuffer::getShadowCasters() const
   {
-    return m_lights;
-  }
-
-  const ShadowCommandBuffer & CommandBuffer::getShadowCommands() const
-  {
-    return m_shadowCommands;
+    return m_shadowCasters;
   }
 
 } } // engine::graphics

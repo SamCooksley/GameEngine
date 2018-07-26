@@ -90,7 +90,7 @@ namespace graphics {
     }
     else
     {
-      GLCALL(glDrawArrays(DrawTypeToOpenGL(m_draw), 0, m_vertices.size()));
+      glDrawArrays(DrawTypeToOpenGL(m_draw), 0, m_vertices.size());
     }
   }
   

@@ -9,6 +9,11 @@
 
 #include "ShadowRenderer.h"
 
+#include "shadows\CascadedShadowRenderer.h"
+#include "shadows\PointShadowRendererDP.h"
+#include "shadows\PointShadowRendererCube.h"
+#include "shadows\SpotShadowRenderer.h"
+
 namespace engine {
 namespace graphics {
 
@@ -20,11 +25,17 @@ namespace graphics {
   
     void Render() override;
 
-    void Resize(uint _width, uint _height) override;
+    void Resize(int _width, int _height) override;
   
    private:
-    void CreateGBuffer(uint _width, uint _height);
-  
+    void CreateGBuffer(int _width, int _height);
+
+    void GenerateShadows();
+    void GeneratePerCameraShadows();
+    void DeferredRender();
+    void ForwardRender();
+   
+   private:
     std::shared_ptr<FrameBuffer> m_gBuffer;
 
     std::shared_ptr<Texture2D> m_position;
@@ -35,6 +46,10 @@ namespace graphics {
     std::shared_ptr<Shader> m_deferredDirectional;
     std::shared_ptr<Shader> m_deferredPoint;
     std::shared_ptr<Shader> m_deferredSpot;
+
+    std::unique_ptr<CascadedShadowRenderer> m_directionalShadowRenderer;
+    std::unique_ptr<PointShadowRendererCube> m_pointShadowRenderer;
+    std::unique_ptr<SpotShadowRenderer> m_spotShadowRenderer;
   };
 
 } } // engine::graphics

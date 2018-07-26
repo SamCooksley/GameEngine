@@ -27,4 +27,9 @@ namespace engine {
     return *Application::s_context->graphics;
   }
 
+  void Graphics::RenderQuad()
+  {
+    getContext().quad->Render();
+  }
+
 } // engine

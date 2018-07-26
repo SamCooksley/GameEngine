@@ -15,11 +15,13 @@ void main()
 #shader geometry 
 #version 430 core
 
-layout (invocations = 4) in;
+layout (invocations = 6) in;
 layout (triangles) in;
-layout (triangle_strip, max_vertices = 12) out;
+layout (triangle_strip, max_vertices = 3) out;
 
-uniform mat4 vp[4];
+layout (location = 0) out vec3 out_position;
+
+uniform mat4 vp[6];
 
 void main()
 {
@@ -27,21 +29,31 @@ void main()
     {
         gl_Layer = gl_InvocationID;
         gl_Position = vp[gl_InvocationID] * gl_in[i].gl_Position; 
+        out_position = gl_in[i].gl_Position.xyz;
         EmitVertex();
     }
     EndPrimitive();
-}
+}   
 
 #shader fragment
 #version 430 core
 
+layout (location = 0) in vec3 in_position;
+
 layout (location = 0) out vec2 out_moment;
+
+uniform vec3 position;
+uniform float near;
+uniform float far;
 
 void main()
 { 
-    float depth = gl_FragCoord.z;
+    float depth = length(in_position - position);
+    depth = (depth - near) / (far - near);
+    gl_FragDepth = depth;
+
     float dx = dFdx(depth);
-    float dy = dFdx(depth);
+    float dy = dFdy(depth);
     float moment2 = depth * depth + 0.25 * (dx * dx + dy * dy);
     out_moment = vec2(depth, moment2);
 }

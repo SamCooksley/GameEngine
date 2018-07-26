@@ -9,30 +9,21 @@ namespace graphics {
   class TextureCube : public Texture
   {
    public:
-    static std::shared_ptr<TextureCube> Load(const std::array<String, 6> & _paths);
+    static const TextureType type = TextureType::TEXTURE_CUBE;
+
+    static std::shared_ptr<TextureCube> Load(const std::array<String, 6> & _paths, int _mipmaps = 0);
   
    public:
-    TextureCube(uint _width, uint _height, TextureFormat _format);
-    TextureCube(uint _width, uint _height, const glm::vec4 & _colour);
-  
+    TextureCube(TextureFormat _format, int _width, int _height, int _mipmaps);  
     ~TextureCube();
   
-    void Bind(uint _unit) const override;
-    void Unbind(uint _unit) const override;
-  
-    void Resize(uint _width, uint _height) override;
+    void Bind(int _unit) const override;
 
     void setFilter(TextureFilter _filter);
-  
-   protected:
-    TextureCube();
-  
-   private:
-    uint m_width, m_height;
 
-    TextureFormat m_format;
+    void setAnisotropy(float _anisotropy);
 
-    TextureFilter m_filter;
+    void GenerateMipMaps();
   };
 
 } } // engine::graphics

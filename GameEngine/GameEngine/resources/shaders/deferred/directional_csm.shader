@@ -33,6 +33,8 @@ uniform sampler2DArray shadowMap;
 uniform mat4 lightSpace[10];
 uniform float distance[10];
 
+uniform float blurBand = 0.5;
+
 void main()
 {
     vec4 pos  = texture(position, in_texCoords);
@@ -53,13 +55,6 @@ void main()
     {
         vec4 pos = vec4(surf.position, 1.0);
 
-        /*
-        for (int i = 0; i < cascadeCount; ++i)
-        {
-            colour *= VarienceShadowCalculation(lightSpace[i] * pos, shadowMap, i);
-        }
-        */
-
         vec4 clip = camera.vp * pos;
         float depth = clip.z;
 
@@ -67,18 +62,29 @@ void main()
 
         for (int i = 0; i < cascadeCount; ++i)
         {
-            if (depth <= distance[i])
+            if (depth <= distance[i] + blurBand)
             {
                 index = i;
                 break;
             }
         }
-
         
         if (index >= 0)
         {
-            //colour *= ShadowCalculation(lightSpace[index] * pos, light.direction, surf.position, surf.normal, shadowMap, index);
-            colour *= VarienceShadowCalculation(lightSpace[index] * pos, shadowMap, index);
+            float shadowFactor = VarienceShadowCalculation(lightSpace[index] * pos, shadowMap, index);
+
+            // fade between cascades.
+            if (index < cascadeCount - 1 && depth > distance[index] - blurBand)
+            {
+                float fade = blurBand + depth - distance[index];
+                fade /= blurBand * 2.0;
+                fade = clamp(fade / (blurBand * 2.0), 0.0, 1.0) ;
+                float shadowFactor2 = VarienceShadowCalculation(lightSpace[index + 1] * pos, shadowMap, index + 1);
+                shadowFactor = mix(shadowFactor, shadowFactor2, fade);
+            }
+            
+            colour *= shadowFactor;
+
 
 #ifdef DEBUG_CSM
             const vec3 c[] = {

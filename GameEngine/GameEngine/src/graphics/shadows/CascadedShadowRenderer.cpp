@@ -2,6 +2,8 @@
 
 #include "CascadedShadowRenderer.h"
 
+#include "Input.h"
+
 namespace engine {
 namespace graphics {
 
@@ -10,7 +12,7 @@ namespace graphics {
     const std::shared_ptr<Shader> & _depth,
     const std::shared_ptr<FilterArray> & _blur
   ) :
-    m_cameras(_cascadeCount), m_distances(_cascadeCount),
+    m_distances(_cascadeCount), m_vps(_cascadeCount),
     m_depth(_depth),
     m_blur(_blur),
     m_shadowBuffer(FrameBuffer::Create(_size, _size, _cascadeCount))
@@ -31,22 +33,11 @@ namespace graphics {
 
   void CascadedShadowRenderer::setLight(const glm::vec3 & _direction, const Camera & _camera)
   {
-    //debug::Log(std::to_string(_direction.x) + ", " + std::to_string(_direction.y) + ", " +
-    //  std::to_string(_direction.z));
-
-    size_t cascadeCount = m_cameras.size();
+    size_t cascadeCount = m_vps.size();
 
     m_shadowBuffer->Bind();
     m_shadowBuffer->Attach(CreateVarienceShadowMap(), FrameBufferAttachment::COLOUR, 0);
     m_shadowBuffer->Clear();
-
-    // convert the direction to a transformation matrix.
-    glm::vec3 up(0.f, 1.f, 0.f);
-    glm::vec3 xaxis = glm::cross(up, _direction);
-    xaxis = glm::normalize(xaxis);
-
-    glm::vec3 yaxis = glm::cross(_direction, xaxis);
-    yaxis = glm::normalize(yaxis);
 
     glm::mat4 cam = glm::inverse(_camera.view);
 
@@ -77,74 +68,45 @@ namespace graphics {
     std::vector<glm::vec3> frustumPoints = _camera.getFrustumPoints(dist.data(), dist.size());
     assert(frustumPoints.size() / 4 - 1 == cascadeCount);
 
+    debug::Log(""); debug::Log("");
     for (size_t i = 0u; i < cascadeCount; ++i)
     {
-      glm::vec3 * points = &frustumPoints[i * 4];
+      glm::vec3 * points = &frustumPoints[i * 4u];
 
-      // create a world space aabb for the frustum split.
-      glm::vec3 world = glm::vec3(cam * glm::vec4(points[0], 1.f));
-
-      glm::vec3 min(world);
-      glm::vec3 max(world);
+      glm::vec3 min(points[0]);
+      glm::vec3 max(points[0]);
 
       for (size_t i = 1u; i < 8u; ++i)
       {
-        world = glm::vec3(cam * glm::vec4(points[i], 1.f));
-
-        min = glm::min(min, world);
-        max = glm::max(max, world);
+        min = glm::min(min, points[i]);
+        max = glm::max(max, points[i]);
       }
 
+     
+      // use sphere instead of aabb so shadow map size is consistent (independent of direction). 
+      float radius = glm::length(max - min) * 0.5f;
+
       glm::vec3 centre = (min + max) * .5f;
-
-      // get the size of the frustum split on the lights axes (right, up, forward).
-
-      glm::vec3 halfSize = max - centre;
-
-      std::array<glm::vec3, 4> axes = {
-        glm::vec3(halfSize.x,  halfSize.y,  halfSize.z),
-        glm::vec3(halfSize.x,  halfSize.y, -halfSize.z),
-        glm::vec3(halfSize.x, -halfSize.y, -halfSize.z),
-        glm::vec3(halfSize.x, -halfSize.y,  halfSize.z)
-      };
-
-      // y axis
-      float height = glm::max(
-        glm::abs(glm::dot(axes[0], yaxis)),
-        glm::abs(glm::dot(axes[1], yaxis)),
-        glm::abs(glm::dot(axes[2], yaxis)),
-        glm::abs(glm::dot(axes[3], yaxis))
-      );
-
-      // x axis
-      float width = glm::max(
-        glm::abs(glm::dot(axes[0], xaxis)),
-        glm::abs(glm::dot(axes[1], xaxis)),
-        glm::abs(glm::dot(axes[2], xaxis)),
-        glm::abs(glm::dot(axes[3], xaxis))
-      );
-
-      // z axis
-      float depth = glm::max(
-        glm::abs(glm::dot(axes[0], _direction)),
-        glm::abs(glm::dot(axes[1], _direction)),
-        glm::abs(glm::dot(axes[2], _direction)),
-        glm::abs(glm::dot(axes[3], _direction))
-      );
-
-      glm::mat4 view = glm::lookAt(centre, centre - _direction, up);
+      centre = glm::vec3(cam * glm::vec4(centre, 1.f));
 
       // additional padding to get shadows of objects out of the camera frustum.
       // TODO: search scene for furthest possible caster and adjust padding accordingly.
       float padding = 20.f;
+      
+      glm::mat4 view = glm::lookAt(centre, centre - _direction, glm::vec3(0.f, 1.f, 0.f));
+      glm::mat4 proj = glm::ortho(-radius, radius, -radius, radius, -radius - padding, radius);
+      glm::mat4 & vp = m_vps[i];
+      vp = proj * view;
 
-      m_cameras[i] = Camera(
-        graphics::CameraType::ORTHOGRAPHIC,
-        height, width / height, 
-        -depth - padding, depth,
-        view, centre
-      );
-      m_distances[i] = dist[1 + i];
+      // translate vp so it moves in steps of the shadow maps texel size.
+      float size = m_shadowBuffer->getWidth() * .5f;
+
+      glm::vec2 origin(vp * glm::vec4(0.f, 0.f, 0.f, 1.f));
+      glm::vec2 rounded = glm::round(origin * size) / size;
+      glm::vec2 diff = rounded - origin;
+      vp = glm::translate(diff.x, diff.y, 0.f) * vp;
+
+      m_distances[i] = dist[1u + i];
     }
   }
 
@@ -155,11 +117,11 @@ namespace graphics {
 
     m_depth->Bind();
 
-    m_depth->setUniform<int>("cascadeCount", m_cameras.size());
+    m_depth->setUniform<int>("cascadeCount", m_vps.size());
 
-    for (size_t i = 0; i < m_cameras.size(); ++i)
+    for (size_t i = 0; i < m_vps.size(); ++i)
     {
-      m_depth->setUniform<glm::mat4>("vp[" + std::to_string(i) + ']', m_cameras[i].vp);
+      m_depth->setUniform<glm::mat4>("vp[" + std::to_string(i) + ']', m_vps[i]);
     }
 
     auto & occluders = _commands.getShadowCasters();
@@ -180,12 +142,7 @@ namespace graphics {
   {
     CascadedShadowMap shadow;
     shadow.distances = m_distances;
-
-    shadow.lightSpaces.reserve(m_cameras.size());
-    for (const Camera & cam : m_cameras)
-    {
-      shadow.lightSpaces.emplace_back(cam.vp);
-    }
+    shadow.lightSpaces = m_vps;
 
     shadow.shadowMap = m_shadowBuffer->getColourAttachment<Texture2DArray>(0);
     

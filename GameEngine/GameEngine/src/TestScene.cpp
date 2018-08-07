@@ -186,8 +186,8 @@ namespace engine {
       go->getComponent<Transform>()->setPosition(glm::vec3(x, 0, y));
     }
 
-    auto sponza = Load("resources/sponza/sponza.obj");
-    sponza->getComponent<Transform>()->setLocalScale(glm::vec3(0.01f)).setRotation(glm::quat(glm::radians(glm::vec3(0.f, 90.f, 0.f))));
+    //auto sponza = Load("resources/sponza/sponza.obj");
+    //sponza->getComponent<Transform>()->setLocalScale(glm::vec3(0.01f)).setRotation(glm::quat(glm::radians(glm::vec3(0.f, 90.f, 0.f))));
   }
 
 } // engine

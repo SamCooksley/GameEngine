@@ -32,8 +32,8 @@ namespace graphics {
     std::shared_ptr<Texture2DArray> CreateVarienceShadowMap();
 
   private:
-    std::vector<Camera> m_cameras;
     std::vector<float> m_distances;
+    std::vector<glm::mat4> m_vps;
 
     std::shared_ptr<Shader> m_depth;
     std::shared_ptr<FilterArray> m_blur;

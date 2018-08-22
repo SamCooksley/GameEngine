@@ -14,8 +14,8 @@ namespace engine {
     MeshRenderer();
     ~MeshRenderer();
 
-    void setMesh(const std::shared_ptr<graphics::Mesh> & _mesh);
-    void setMaterial(const std::shared_ptr<graphics::Material> & _material);
+    MeshRenderer & setMesh(const std::shared_ptr<graphics::Mesh> & _mesh);
+    MeshRenderer & setMaterial(const std::shared_ptr<graphics::Material> & _material);
 
    protected:
     void OnAwake() override;

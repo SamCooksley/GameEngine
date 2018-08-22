@@ -145,7 +145,7 @@ namespace graphics {
       glDeleteShader(shader);
   
       throw std::runtime_error(
-        "Shader Error: " + getName() + " compilation failed. " + String(&log[0], length)
+        "Shader Error: " + getName() + " (" + ShaderType::ToString(_type) + ") compilation failed. " + String(&log[0], length)
       );
     }
   
@@ -629,8 +629,7 @@ namespace graphics {
     auto & shaders = Graphics::getContext().shaders;
     for (size_t i = 0u; i < shaders.size();)
     {
-      if (shaders[i].expired() ||
-          shaders[i].lock().get() == this)
+      if (shaders[i].expired())
       {
         shaders.erase(shaders.begin() + i);
       }

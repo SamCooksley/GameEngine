@@ -11,12 +11,14 @@ namespace graphics {
    public:
     static const TextureType type = TextureType::TEXTURE_CUBE;
 
-    static std::shared_ptr<TextureCube> Load(const std::array<String, 6> & _paths, int _mipmaps = 0);
+    static std::shared_ptr<TextureCube> Load(const std::array<String, 6> & _paths, bool _linear = false, int _mipmaps = 0);
   
    public:
     TextureCube(TextureFormat _format, int _width, int _height, int _mipmaps);  
+    TextureCube(const TextureCube & _src, int _level, int _levelCount = 1);
     ~TextureCube();
   
+    void Bind() const override;
     void Bind(int _unit) const override;
 
     void setFilter(TextureFilter _filter);

@@ -15,6 +15,7 @@ namespace graphics {
     ShadowCube(TextureFormat _format, int _width, int _height);
     ~ShadowCube();
 
+    void Bind() const override;
     void Bind(int _unit) const override;
   };
 

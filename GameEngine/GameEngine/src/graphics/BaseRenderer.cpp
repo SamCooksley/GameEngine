@@ -10,21 +10,6 @@ namespace graphics {
   BaseRenderer::BaseRenderer(RenderFlags::Type _flags) :
     Renderer(_flags)
   { 
-    auto skyboxShader = Resources::Load<graphics::Shader>("resources/shaders/skybox.shader");
-    auto skyboxMaterial = std::make_shared<graphics::Material>(skyboxShader);
-
-    std::array<String, 6u> skyboxTexturePaths;
-    for (size_t i = 0u; i < 6u; ++i)
-    {
-      skyboxTexturePaths[i] = "resources/textures/skybox/skybox" + std::to_string(i + 1) + ".jpg";
-    }
-
-    auto skyboxCube = graphics::TextureCube::Load(skyboxTexturePaths);
-    skyboxMaterial->setTexture("cubemap", skyboxCube);
-
-    auto skybox = std::make_shared<graphics::Skybox>(skyboxMaterial);
-    setSkybox(skybox);
-
     m_lights.ambient = glm::vec3(0.1f);
   }
   

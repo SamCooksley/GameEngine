@@ -10,8 +10,7 @@ namespace engine {
 namespace graphics {
 
   Filter::Filter(const std::shared_ptr<Shader> & _shader) : Material(_shader),
-    m_srcUnit(0),
-    m_fb(FrameBuffer::Create(0, 0, 0))
+    m_srcUnit(0)
   {
     setTexture<Texture2D>("src", nullptr);
     getTextureUnit("src", &m_srcUnit);
@@ -27,20 +26,17 @@ namespace graphics {
       throw std::invalid_argument("same texture as source and destination");
     }
 
-    auto restore = Graphics::getContext().activeFrameBuffer.lock();
+    auto & fb = Graphics::getContext().captureFBO;
+    fb->Bind();
+    fb->Reset(_dst.getWidth(), _dst.getHeight(), _dst.getDepth());
 
-    m_fb->Bind();
-    m_fb->Reset(_dst.getWidth(), _dst.getHeight(), _dst.getDepth());
-
-    _dst.Bind(0);
-    m_fb->AttachTemp(_dst, FrameBufferAttachment::COLOUR, 0);
+    _dst.Bind();
+    fb->AttachTemp(_dst, FrameBufferAttachment::COLOUR, 0);
 
     Bind();
     _src.Bind(m_srcUnit);
 
     Graphics::RenderQuad();
-
-    restore->Bind();
   }
 
 } }

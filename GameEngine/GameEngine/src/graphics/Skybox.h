@@ -21,6 +21,9 @@ namespace graphics {
     ~Skybox();
     
     void Render(const Camera & _camera);
+
+    std::shared_ptr<TextureCube> getTexture() const;
+    void setTexture(const std::shared_ptr<TextureCube> & _texture);
   
    private:
     std::shared_ptr<Material> m_material;

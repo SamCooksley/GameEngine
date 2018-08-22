@@ -125,10 +125,13 @@
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)graphics\</XMLDocumentationFileName>
     </ClCompile>
     <ClCompile Include="src\graphics\DebugOutput.cpp" />
+    <ClCompile Include="src\graphics\EnvironmentCapture.cpp" />
+    <ClCompile Include="src\graphics\EnvironmentCaptureFactory.cpp" />
     <ClCompile Include="src\graphics\filter\Blur.cpp" />
     <ClCompile Include="src\graphics\filter\BlurArray.cpp" />
     <ClCompile Include="src\graphics\filter\Filter.cpp" />
     <ClCompile Include="src\graphics\filter\FilterArray.cpp" />
+    <ClCompile Include="src\graphics\filter\FilterCube.cpp" />
     <ClCompile Include="src\graphics\FrameBuffer.cpp">
       <AssemblerListingLocation Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)graphics\</AssemblerListingLocation>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)graphics\</ObjectFileName>
@@ -507,10 +510,13 @@
     <ClInclude Include="src\graphics\CommandBuffer.h" />
     <ClInclude Include="src\graphics\Context.h" />
     <ClInclude Include="src\graphics\DebugOutput.h" />
+    <ClInclude Include="src\graphics\EnvironmentCapture.h" />
+    <ClInclude Include="src\graphics\EnvironmentCaptureFactory.h" />
     <ClInclude Include="src\graphics\filter\Blur.h" />
     <ClInclude Include="src\graphics\filter\BlurArray.h" />
     <ClInclude Include="src\graphics\filter\Filter.h" />
     <ClInclude Include="src\graphics\filter\FilterArray.h" />
+    <ClInclude Include="src\graphics\filter\FilterCube.h" />
     <ClInclude Include="src\graphics\FrameBuffer.h" />
     <ClInclude Include="src\graphics\FrameBufferBase.h" />
     <ClInclude Include="src\graphics\FrameBufferDefault.h" />

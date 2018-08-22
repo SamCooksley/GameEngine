@@ -17,7 +17,7 @@ namespace graphics {
   public:
     CascadedShadowRenderer(
       int _size, int _cascadeCount,
-      const std::shared_ptr<Shader> & _depth = Shader::Load("resources/shaders/depth_csm.shader"),
+      const std::shared_ptr<Shader> & _depth = Shader::Load("resources/shaders/depth/depth_csm.glsl"),
       const std::shared_ptr<FilterArray> & _blur = std::make_shared<BlurArray>()
     );
     ~CascadedShadowRenderer();

@@ -9,6 +9,7 @@ namespace engine {
     if (!_context) { return; }
 
     _context->defaultFrameBuffer = nullptr;
+    _context->captureFBO = nullptr;
     _context->errorShader = nullptr;
     _context->depthShader = nullptr;
     _context->defaultMaterial = nullptr;

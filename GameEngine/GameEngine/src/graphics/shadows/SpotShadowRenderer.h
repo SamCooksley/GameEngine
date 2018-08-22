@@ -15,7 +15,7 @@ namespace graphics {
   public:
     SpotShadowRenderer(
       int _size,
-      const std::shared_ptr<Shader> & _depth = Shader::Load("resources/shaders/depth.shader"),
+      const std::shared_ptr<Shader> & _depth = Shader::Load("resources/shaders/depth/depth.glsl"),
       const std::shared_ptr<Filter> & _blur = std::make_shared<Blur>()
     );
     ~SpotShadowRenderer();

@@ -11,6 +11,11 @@ namespace graphics {
   class Texture : public NonCopyable, public NamedObject, public Asset
   {
     friend class FrameBuffer;
+    friend class DefaultRenderer;
+
+    friend class Texture2D;
+    friend class Texture2DArray; 
+    friend class TextureCube;
 
    protected:
     static int CalculateMipMapCount(int _width, int _height);
@@ -18,11 +23,16 @@ namespace graphics {
    public:  
     virtual ~Texture();
   
+    virtual void Bind() const = 0;
     virtual void Bind(int _unit) const = 0;
 
     int getWidth() const;
     int getHeight() const;
     int getDepth() const;
+    int getMipmapCount() const;
+
+    int getMipMapWidth(int _level) const;
+    int getMipMapHeight(int _level) const;
 
     TextureType getType() const;
 

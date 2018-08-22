@@ -118,6 +118,13 @@ namespace engine {
     return *this;
   }
 
+  Light & Light::setIntensity(float _intensity)
+  {
+    m_intensity = _intensity;
+
+    return *this;
+  }
+
   Light & Light::setDirectional()
   {
     m_type = LightType::DIRECTIONAL;

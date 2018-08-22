@@ -14,22 +14,27 @@ namespace graphics {
   DefaultRenderer::DefaultRenderer() :
     BaseRenderer(RenderFlags::None)
   { 
-    m_deferredAmbient = Resources::Load<Shader>("resources/shaders/deferred/ambient.shader");
+    m_deferredAmbient = Resources::Load<Shader>("resources/shaders/pbr/deferred/ibl.glsl");
+    m_deferredAmbient->setUniform("position", 0);
+    m_deferredAmbient->setUniform("normal", 1);
     m_deferredAmbient->setUniform("colour", 2);
+    m_deferredAmbient->setUniform("irradianceMap", 3);
+    m_deferredAmbient->setUniform("prefilterMap", 4);
+    m_deferredAmbient->setUniform("brdfLUT", 5);
 
-    m_deferredDirectional = Resources::Load<Shader>("resources/shaders/deferred/directional_csm.shader");
+    m_deferredDirectional = Resources::Load<Shader>("resources/shaders/pbr/deferred/directional_csm.glsl");
     m_deferredDirectional->setUniform("position", 0);
     m_deferredDirectional->setUniform("normal", 1);
     m_deferredDirectional->setUniform("colour", 2);
     m_deferredDirectional->setUniform("shadowMap", 3);
 
-    m_deferredPoint = Resources::Load<Shader>("resources/shaders/deferred/point_cube.shader");
+    m_deferredPoint = Resources::Load<Shader>("resources/shaders/pbr/deferred/point.glsl");
     m_deferredPoint->setUniform("position", 0);
     m_deferredPoint->setUniform("normal", 1);
     m_deferredPoint->setUniform("colour", 2);
     m_deferredPoint->setUniform("shadowMap", 3);
 
-    m_deferredSpot = Resources::Load<Shader>("resources/shaders/deferred/spot.shader");
+    m_deferredSpot = Resources::Load<Shader>("resources/shaders/pbr/deferred/spot.glsl");
     m_deferredSpot->setUniform("position", 0);
     m_deferredSpot->setUniform("normal", 1);
     m_deferredSpot->setUniform("colour", 2);
@@ -38,6 +43,27 @@ namespace graphics {
     m_directionalShadowRenderer = std::make_unique<CascadedShadowRenderer>(512, 4);
     m_pointShadowRenderer = std::make_unique<PointShadowRendererCube>(512);
     m_spotShadowRenderer = std::make_unique<SpotShadowRenderer>(512);
+
+    m_hdr = Resources::Load<Shader>("resources/shaders/filters/hdr.glsl");
+    m_hdr->setUniform("tex", 0);
+
+    m_environmentFactory = std::make_unique<EnvironmentCaptureFactory>();
+
+    auto brdf = Shader::Load("resources/shaders/pbr/ibl/brdf.glsl");
+    brdf->Bind();
+
+
+    m_brdfLUT = std::make_shared<Texture2D>(TextureFormat::RG32F, 512, 512);
+    m_brdfLUT->setWrap(TextureWrap::CLAMP_TO_EDGE);
+    m_brdfLUT->setFilter(TextureFilter::LINEAR);
+
+    auto & fb = Graphics::getContext().captureFBO;
+    fb->Bind();
+    fb->Reset(m_brdfLUT->getWidth(), m_brdfLUT->getHeight());
+    fb->Attach(m_brdfLUT, FrameBufferAttachment::COLOUR, 0);
+    fb->Clear();
+
+    Graphics::RenderQuad();
   }
   
   DefaultRenderer::~DefaultRenderer()
@@ -64,15 +90,31 @@ namespace graphics {
     GenerateShadows();
     GeneratePerCameraShadows();
 
-    target->Bind();
+    m_target->Bind();
 
     DeferredRender();
     ForwardRender();    
+
+    target->Bind();
+
+    PostProcess();    
   }
 
   void DefaultRenderer::Resize(int _width, int _height)
   {
     CreateGBuffer(_width, _height);
+    CreateTarget(_width, _height);
+  }
+
+  void DefaultRenderer::setSkybox(const std::shared_ptr<Skybox> & _skybox)
+  {
+    BaseRenderer::setSkybox(_skybox);
+
+    if (m_skybox)
+    {
+      m_environment = std::make_unique<EnvironmentCapture>();
+      *m_environment = m_environmentFactory->Create(*m_skybox->getTexture());
+    }
   }
   
   void DefaultRenderer::CreateGBuffer(int _width, int _height)
@@ -100,7 +142,25 @@ namespace graphics {
       std::make_shared<Texture2D>(TextureFormat::DEPTH_COMPONENT32, _width, _height, 1), 
       FrameBufferAttachment::DEPTH
     );
+  }
 
+  void DefaultRenderer::CreateTarget(int _width, int _height)
+  {
+    if (!m_target)
+    {
+      m_target = FrameBuffer::Create(_width, _height, 1);
+    }
+    else
+    {
+      m_target->Bind();
+      m_target->Reset(_width, _height, 1);
+    }
+    
+    auto tex = std::make_shared<Texture2D>(TextureFormat::RGBA32F, _width, _height, 1);
+    m_target->Attach(tex, FrameBufferAttachment::COLOUR, 0);
+
+    tex = std::make_shared<Texture2D>(TextureFormat::DEPTH_COMPONENT32, _width, _height, 1);
+    m_target->Attach(tex, FrameBufferAttachment::DEPTH);
   }
 
   void DefaultRenderer::GenerateShadows()
@@ -193,7 +253,9 @@ namespace graphics {
     m_colour->Bind(2);
 
     m_deferredAmbient->Bind();
-    m_deferredAmbient->setUniform("light", m_lights.ambient);
+    m_environment->irradiance->Bind(3);
+    m_environment->prefiltered->Bind(4);
+    m_brdfLUT->Bind(5);
 
     Graphics::RenderQuad();
 
@@ -334,6 +396,14 @@ namespace graphics {
 
       command.mesh->Render();
     }
+  }
+
+  void DefaultRenderer::PostProcess()
+  {
+    m_hdr->Bind();
+    m_target->getColourAttachment<Texture2D>(0)->Bind(0);
+
+    Graphics::RenderQuad();
   }
 
 } } // engine::graphics

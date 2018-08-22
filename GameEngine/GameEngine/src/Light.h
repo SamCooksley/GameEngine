@@ -28,6 +28,7 @@ namespace engine {
     ~Light();
 
     Light & setColour(const glm::vec3 & _colour);
+    Light & setIntensity(float _intensity);
 
     Light & setDirectional();
 

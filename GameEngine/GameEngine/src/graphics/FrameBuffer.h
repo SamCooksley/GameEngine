@@ -30,7 +30,7 @@ namespace graphics {
   class FrameBuffer : public FrameBufferBase
   {
    public:
-     FrameBufferBase & BindDefault(FrameBufferBind _bind = FrameBufferBind::WRITE);
+     static FrameBufferBase & BindDefault(FrameBufferBind _bind = FrameBufferBind::WRITE);
 
     static void Blit(
       int _srcX0, int _srcY0, int _srcX1, int _srcY1,
@@ -50,25 +50,25 @@ namespace graphics {
 
     void Blit(GLenum _mask, TextureFilter _filter = TextureFilter::NEAREST);
     
-    void Attach(const std::shared_ptr<Texture2D> & _texture, FrameBufferAttachment _attachment, int _colourIndex = -1);
-    void Attach(const std::shared_ptr<Texture2DArray> & _texture, FrameBufferAttachment _attachement, int _colourIndex = -1);
-    void Attach(const std::shared_ptr<Texture2DArray> & _texture, int _layer, FrameBufferAttachment _attachment, int _colourIndex = -1);
+    void Attach(const std::shared_ptr<Texture2D> & _texture, FrameBufferAttachment _attachment, int _colourIndex = -1, int _level = 0);
+    void Attach(const std::shared_ptr<Texture2DArray> & _texture, FrameBufferAttachment _attachement, int _colourIndex = -1, int _level = 0);
+    void Attach(const std::shared_ptr<Texture2DArray> & _texture, int _layer, FrameBufferAttachment _attachment, int _colourIndex = -1, int _level = 0);
     
-    void Attach(const std::shared_ptr<TextureCube> & _texture, FrameBufferAttachment _attachment, int _colourIndex = -1);
-    void Attach(const std::shared_ptr<TextureCube> & _texture, int _layer, FrameBufferAttachment _attachment, int _colourInidex = -1);
+    void Attach(const std::shared_ptr<TextureCube> & _texture, FrameBufferAttachment _attachment, int _colourIndex = -1, int _level = 0);
+    void Attach(const std::shared_ptr<TextureCube> & _texture, int _layer, FrameBufferAttachment _attachment, int _colourInidex = -1, int _level = 0);
 
-    void AttachDepth(const std::shared_ptr<Shadow2D> & _shadow);
-    void AttachDepth(const std::shared_ptr<Shadow2DArray> & _shadow);
-    void AttachDepth(const std::shared_ptr<Shadow2DArray> & _shadow, int _layer);
-    void AttachDepth(const std::shared_ptr<ShadowCube> & _shadow);
-    void AttachDepth(const std::shared_ptr<ShadowCube> & _shadow, int _layer);
+    void AttachDepth(const std::shared_ptr<Shadow2D> & _shadow, int _level = 0);
+    void AttachDepth(const std::shared_ptr<Shadow2DArray> & _shadow, int _level = 0);
+    void AttachDepth(const std::shared_ptr<Shadow2DArray> & _shadow, int _layer, int _level = 0);
+    void AttachDepth(const std::shared_ptr<ShadowCube> & _shadow, int _level = 0);
+    void AttachDepth(const std::shared_ptr<ShadowCube> & _shadow, int _layer, int _level = 0);
 
-    void AttachTemp(Texture2D & _texture, FrameBufferAttachment _attachment, int _colourIndex = 0);
-    void AttachTemp(Texture2DArray & _texture, FrameBufferAttachment _attachement, int _colourIndex = 0);
-    void AttachTemp(Texture2DArray & _texture, int _layer, FrameBufferAttachment _attachment, int _colourIndex = 0);
+    void AttachTemp(Texture2D & _texture, FrameBufferAttachment _attachment, int _colourIndex = 0, int _level = 0);
+    void AttachTemp(Texture2DArray & _texture, FrameBufferAttachment _attachement, int _colourIndex = 0, int _level = 0);
+    void AttachTemp(Texture2DArray & _texture, int _layer, FrameBufferAttachment _attachment, int _colourIndex = 0, int _level = 0);
     
-    void AttachTemp(TextureCube & _texture, FrameBufferAttachment _attachment, int _colourIndex = 0);
-    void AttachTemp(TextureCube & _texture, int _layer, FrameBufferAttachment _attachement, int _colourIndex = 0);
+    void AttachTemp(TextureCube & _texture, FrameBufferAttachment _attachment, int _colourIndex = 0, int _level = 0);
+    void AttachTemp(TextureCube & _texture, int _layer, FrameBufferAttachment _attachement, int _colourIndex = 0, int _level = 0);
 
     //void set(std::unique_ptr<RenderBuffer> _renderBuffer, FrameBufferAttachment _attachment, int _colourIndex = -1);
 

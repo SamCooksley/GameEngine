@@ -22,7 +22,7 @@ namespace graphics {
     }
 
     glGenTextures(1, &m_id);
-    glBindTexture(GL_TEXTURE_2D_ARRAY, m_id);
+    Bind();
 
     glTexStorage3D(
       GL_TEXTURE_2D_ARRAY, _mipmaps,
@@ -39,10 +39,15 @@ namespace graphics {
     glDeleteTextures(1, &m_id);
   }
 
+  void Texture2DArray::Bind() const
+  {
+    glBindTexture(GL_TEXTURE_2D_ARRAY, m_id);
+  }
+
   void Texture2DArray::Bind(int _unit) const
   {
     glActiveTexture(GL_TEXTURE0 + _unit);
-    glBindTexture(GL_TEXTURE_2D_ARRAY, m_id);
+    Bind();
   }
 
   void Texture2DArray::setWrap(TextureWrap _wrap)

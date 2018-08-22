@@ -7,7 +7,7 @@ namespace graphics {
 
   const String LightBuffer::NAME = "Lights";
 
-  const uint LightBuffer::MAX_DIRECTIONAL = 5u;
+  const uint LightBuffer::MAX_DIRECTIONAL = 2u;
   const uint LightBuffer::MAX_POINT = 10u;
   const uint LightBuffer::MAX_SPOT = 5u;
 
@@ -25,20 +25,20 @@ namespace graphics {
 
   const uint LightBuffer::POINT_OFFSET = LightBuffer::DIRECTIONAL_OFFSET + LightBuffer::Directional::SIZE * LightBuffer::MAX_DIRECTIONAL;
 
-  const uint LightBuffer::Point::COLOUR_OFFSET = 0u;
-  const uint LightBuffer::Point::POSITION_OFFSET = 16u;
-  const uint LightBuffer::Point::RADIUS_OFFSET = 32u;
+  const uint LightBuffer::Point::RADIUS_OFFSET = 0u;
+  const uint LightBuffer::Point::COLOUR_OFFSET = 16u;
+  const uint LightBuffer::Point::POSITION_OFFSET = 32u;
   const uint LightBuffer::Point::SIZE = 48u;
 
   const uint LightBuffer::SPOT_OFFSET = LightBuffer::POINT_OFFSET + LightBuffer::Point::SIZE * LightBuffer::MAX_POINT;
 
-  const uint LightBuffer::Spot::COLOUR_OFFSET = 0u;
-  const uint LightBuffer::Spot::POSITION_OFFSET = 16u;
-  const uint LightBuffer::Spot::DIRECTION_OFFSET = 32u;
-  const uint LightBuffer::Spot::CUTOFF_OFFSET = 48u;
-  const uint LightBuffer::Spot::OUTERCUTOFF_OFFSET = 52u;
-  const uint LightBuffer::Spot::RADIUS_OFFSET = 64u;
-  const uint LightBuffer::Spot::SIZE = 80u;
+  const uint LightBuffer::Spot::RADIUS_OFFSET = 0u;
+  const uint LightBuffer::Spot::CUTOFF_OFFSET = 4u;
+  const uint LightBuffer::Spot::OUTERCUTOFF_OFFSET = 8u;
+  const uint LightBuffer::Spot::COLOUR_OFFSET = 16u;
+  const uint LightBuffer::Spot::POSITION_OFFSET = 32u;
+  const uint LightBuffer::Spot::DIRECTION_OFFSET = 48u;
+  const uint LightBuffer::Spot::SIZE = 64u;
 
   const uint LightBuffer::SIZE = LightBuffer::SPOT_OFFSET + LightBuffer::Spot::SIZE * LightBuffer::MAX_SPOT;
 
@@ -79,6 +79,12 @@ namespace graphics {
       const PointLight & point = _lights.point[i];
       uint offset = LightBuffer::POINT_OFFSET + LightBuffer::Point::SIZE * i;
       
+      debug::Log(std::to_string(LightBuffer::POINT_OFFSET));
+      debug::Log(std::to_string(LightBuffer::Point::COLOUR_OFFSET));
+      debug::Log(std::to_string(LightBuffer::Point::POSITION_OFFSET));
+      debug::Log(std::to_string(LightBuffer::Point::RADIUS_OFFSET));
+      debug::Log("");
+
       memcpy(&data[offset + LightBuffer::Point::COLOUR_OFFSET],    glm::value_ptr(point.colour),   sizeof(glm::vec3));
       memcpy(&data[offset + LightBuffer::Point::POSITION_OFFSET],  glm::value_ptr(point.position), sizeof(glm::vec3));
       memcpy(&data[offset + LightBuffer::Point::RADIUS_OFFSET],    &point.radius,                  sizeof(float));

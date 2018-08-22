@@ -63,6 +63,7 @@ namespace engine {
     s_context->graphics->debug->AddFilter(false, graphics::DebugSource::API, graphics::DebugType::OTHER, graphics::DebugSeverity::ANY, { 131185u });
 
     s_context->graphics->defaultFrameBuffer = graphics::FrameBufferDefault::Create(s_context->window->getWidth(), s_context->window->getHeight());
+    s_context->graphics->captureFBO = graphics::FrameBuffer::Create(0, 0, 0);
 
     glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 
@@ -74,35 +75,57 @@ namespace engine {
       auto lights = std::make_unique<graphics::LightBuffer>();
       s_context->graphics->uniformBuffers.Add(std::move(lights));
     }
-
-    s_context->renderer = std::make_unique<graphics::DefaultRenderer>();
     
     s_context->graphics->quad = graphics::mesh::Quad().getMesh();
+    s_context->graphics->invCube = graphics::mesh::Skybox().getMesh();
     
-    s_context->graphics->errorShader = Resources::Load<graphics::Shader>("resources/shaders/error.shader");
+    s_context->graphics->errorShader = Resources::Load<graphics::Shader>("resources/shaders/error.glsl");
 
-    s_context->graphics->depthShader = Resources::Load<graphics::Shader>("resources/shaders/depth.shader");
+    //s_context->graphics->depthShader = Resources::Load<graphics::Shader>("resources/shaders/depth.glsl");
 
-    auto defaultShader = Resources::Load<graphics::Shader>("resources/shaders/gbuffer.shader");
+    auto defaultShader = Resources::Load<graphics::Shader>("resources/shaders/pbr/deferred/gbuffer.glsl");
     s_context->graphics->defaultMaterial = std::make_shared<graphics::Material>(defaultShader);
    
     auto texture = std::make_shared<graphics::Texture2D>(1, 1, glm::vec4(0.9f));
-    s_context->graphics->defaultMaterial->setTexture("diffuse", texture);
+    s_context->graphics->defaultMaterial->setTexture("albedo", texture);
 
     texture = std::make_shared<graphics::Texture2D>(1, 1, glm::vec4(.5f, .5f, 1.f, 1.f));
     s_context->graphics->defaultMaterial->setTexture("normal", texture);
 
+    texture = std::make_shared<graphics::Texture2D>(1, 1, glm::vec4(0.f));
+    s_context->graphics->defaultMaterial->setTexture("metallic", texture);
     texture = std::make_shared<graphics::Texture2D>(1, 1, glm::vec4(1.f));
-    s_context->graphics->defaultMaterial->setTexture("specular", texture);
-    texture = std::make_shared<graphics::Texture2D>(1, 1, glm::vec4(1.f));
-    s_context->graphics->defaultMaterial->setTexture("displacement", texture);
+    s_context->graphics->defaultMaterial->setTexture("roughness", texture);
 
     texture = std::make_shared<graphics::Texture2D>(1, 1, glm::vec4(1.f));
     s_context->graphics->defaultMaterial->setTexture("opacity", texture);
 
-    s_context->graphics->defaultMaterial->setUniform("displacementScale", 0.01f);
-        
-    s_context->graphics->defaultMaterial->setUniform("shininess", 5.f);
+    texture = std::make_shared<graphics::Texture2D>(1, 1, glm::vec4(1.f));
+    s_context->graphics->defaultMaterial->setTexture("displacement", texture);
+    s_context->graphics->defaultMaterial->setUniform("displacementScale", 0.0f);
+
+    texture = std::make_shared<graphics::Texture2D>(1, 1, glm::vec4(1.f));
+    s_context->graphics->defaultMaterial->setTexture("ao", texture);
+
+
+    s_context->renderer = std::make_unique<graphics::DefaultRenderer>();
+
+    {
+      auto skyboxShader = Resources::Load<graphics::Shader>("resources/shaders/skybox.glsl");
+      auto skyboxMaterial = std::make_shared<graphics::Material>(skyboxShader);
+
+      std::array<String, 6u> skyboxTexturePaths;
+      for (size_t i = 0u; i < 6u; ++i)
+      {
+        skyboxTexturePaths[i] = "resources/textures/skybox/skybox" + std::to_string(i + 1) + ".jpg";
+      }
+
+      auto skyboxCube = graphics::TextureCube::Load(skyboxTexturePaths);
+      skyboxMaterial->setTexture("cubemap", skyboxCube);
+
+      auto skybox = std::make_shared<graphics::Skybox>(skyboxMaterial);
+      s_context->renderer->setSkybox(skybox);
+    }
   }
 
   void Application::Loop()

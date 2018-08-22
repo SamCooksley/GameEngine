@@ -339,6 +339,15 @@
     <ClCompile Include="src\graphics\shadows\SpotShadowRenderer.cpp">
       <Filter>Source Files\graphics\shadows</Filter>
     </ClCompile>
+    <ClCompile Include="src\graphics\EnvironmentCapture.cpp">
+      <Filter>Source Files\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\graphics\filter\FilterCube.cpp">
+      <Filter>Source Files\graphics\filter</Filter>
+    </ClCompile>
+    <ClCompile Include="src\graphics\EnvironmentCaptureFactory.cpp">
+      <Filter>Source Files\graphics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\stdafx.h">
@@ -625,6 +634,15 @@
     </ClInclude>
     <ClInclude Include="src\graphics\shadows\SpotShadowRenderer.h">
       <Filter>Header Files\graphics\shadows</Filter>
+    </ClInclude>
+    <ClInclude Include="src\graphics\EnvironmentCapture.h">
+      <Filter>Header Files\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\graphics\filter\FilterCube.h">
+      <Filter>Header Files\graphics\filter</Filter>
+    </ClInclude>
+    <ClInclude Include="src\graphics\EnvironmentCaptureFactory.h">
+      <Filter>Header Files\graphics</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

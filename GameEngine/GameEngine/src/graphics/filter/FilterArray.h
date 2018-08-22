@@ -20,8 +20,6 @@ namespace graphics {
 
   protected:
     int m_srcUnit;
-
-    std::shared_ptr<FrameBuffer> m_fb;
   };
 
 } } // engine::graphics

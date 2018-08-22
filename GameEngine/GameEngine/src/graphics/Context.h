@@ -21,6 +21,8 @@ namespace graphics {
 
     std::shared_ptr<FrameBufferDefault> defaultFrameBuffer;
 
+    std::shared_ptr<FrameBuffer> captureFBO;
+
     std::vector<std::weak_ptr<Shader>> shaders;
     std::shared_ptr<Shader> errorShader;
 
@@ -29,6 +31,7 @@ namespace graphics {
     std::shared_ptr<Material> defaultMaterial;
 
     std::shared_ptr<Mesh> quad;
+    std::shared_ptr<Mesh> invCube;
 
     std::weak_ptr<Shader> activeShader;
     std::weak_ptr<FrameBufferBase> activeFrameBuffer;

@@ -38,6 +38,21 @@ namespace graphics {
     return m_depth;
   }
 
+  int Texture::getMipmapCount() const
+  {
+    return m_mipmaps;
+  }
+
+  int Texture::getMipMapWidth(int _level) const
+  {
+    return m_width / glm::pow(2, _level);
+  }
+
+  int Texture::getMipMapHeight(int _level) const
+  {
+    return m_height / glm::pow(2, _level);
+  }
+
   TextureType Texture::getType() const
   {
     return m_type;

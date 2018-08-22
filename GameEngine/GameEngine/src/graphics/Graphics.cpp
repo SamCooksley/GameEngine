@@ -32,4 +32,9 @@ namespace engine {
     getContext().quad->Render();
   }
 
+  void Graphics::RenderCube()
+  {
+    getContext().invCube->Render();
+  }
+
 } // engine

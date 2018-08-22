@@ -20,7 +20,7 @@ namespace graphics {
   public:
     PointShadowRendererDP(
       int _size,
-      const std::shared_ptr<Shader> & _depth = Shader::Load("resources/shaders/depth_dp.shader"),
+      const std::shared_ptr<Shader> & _depth = Shader::Load("resources/shaders/depth_dp.glsl"),
       const std::shared_ptr<FilterArray> & _blur = std::make_shared<BlurArray>()
     );
     ~PointShadowRendererDP();

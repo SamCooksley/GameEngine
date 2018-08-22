@@ -19,6 +19,8 @@ namespace graphics {
     float getNear() const;
     float getFar() const;
 
+    size_t size() const;
+
    private:
     std::array<Camera, 6> m_cameras;
   };

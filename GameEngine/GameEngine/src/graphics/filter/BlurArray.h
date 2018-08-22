@@ -10,7 +10,7 @@ namespace graphics {
   {
   public:
     BlurArray(
-      const std::shared_ptr<Shader> & _shader = Shader::Load("resources/shaders/filters/blur_array.shader")
+      const std::shared_ptr<Shader> & _shader = Shader::Load("resources/shaders/filters/blur_array.glsl")
     );
     ~BlurArray();
 

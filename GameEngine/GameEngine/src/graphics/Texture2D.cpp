@@ -2,6 +2,8 @@
 
 #include "Texture2D.h"
 
+#include "Texture2DArray.h"
+
 #include "utilities\Image.h"
 
 #include "Graphics.h"
@@ -9,16 +11,16 @@
 namespace engine {
 namespace graphics {
 
-  std::shared_ptr<Texture2D> Texture2D::Load(const String & _path, int _mipmaps)
+  std::shared_ptr<Texture2D> Texture2D::Load(const String & _path, bool _linear, int _mipmaps)
   {
     file::ImageData image;
     if (!file::LoadImagePowerOf2(_path, &image, false))
     {
-      throw std::runtime_error("Texture2D Error: failed to load file: " + _path);
+      return nullptr;
     }
   
     auto texture = std::make_shared<Texture2D>(
-      TextureFormat::RGBA8, 
+      _linear ? TextureFormat::RGBA8 : TextureFormat::SRGB_A8, 
       image.width, image.height,
       _mipmaps
     );
@@ -47,6 +49,7 @@ namespace graphics {
     m_format = _format;
     m_width = _width;
     m_height = _height;
+    m_depth = 1;
 
     m_mipmaps = _mipmaps;
     if (m_mipmaps <= 0)
@@ -55,7 +58,7 @@ namespace graphics {
     }
 
     glGenTextures(1, &m_id);
-    glBindTexture(GL_TEXTURE_2D, m_id);
+    Bind();
 
     glTexStorage2D(GL_TEXTURE_2D, m_mipmaps, TextureFormatToOpenGL(m_format), m_width, m_height);
 
@@ -83,16 +86,71 @@ namespace graphics {
     setWrap(TextureWrap::REPEAT);
     setFilter(TextureFilter::NEAREST);
   }
+
+  Texture2D::Texture2D(const Texture2D & _src, int _level, int _levelCount) :
+    Texture(TextureType::TEXTURE_2D)
+  {
+    m_format = _src.m_format;
+    m_width = _src.getMipMapWidth(_level);
+    m_height = _src.getMipMapHeight(_level);
+    m_depth = 1;
+
+    glGenTextures(1, &m_id);
+
+    glTextureView(
+      m_id,
+      GL_TEXTURE_2D,
+      _src.m_id,
+      TextureFormatToOpenGL(m_format),
+      _level, _levelCount,
+      0, 1
+    );
+
+    Bind();
+
+    setWrap(TextureWrap::REPEAT);
+    setFilter(TextureFilter::NEAREST);
+  }
+
+  Texture2D::Texture2D(const Texture2DArray & _src, int _depth, int _level, int _levelCount) :
+    Texture(TextureType::TEXTURE_2D)
+  {
+    m_format = _src.m_format;
+    m_width = _src.getMipMapWidth(_level);
+    m_height = _src.getMipMapHeight(_level);
+    m_depth = 1;
+
+    glGenTextures(1, &m_id);
+
+    glTextureView(
+      m_id,
+      GL_TEXTURE_2D,
+      _src.m_id,
+      TextureFormatToOpenGL(m_format),
+      _level, _levelCount,
+      _depth, 1
+    );
+
+    Bind();
+
+    setWrap(_src.m_wrap);
+    setFilter(_src.m_filter);
+  }
   
   Texture2D::~Texture2D()
   {
     glDeleteTextures(1, &m_id);
   }
   
+  void Texture2D::Bind() const
+  {
+    glBindTexture(GL_TEXTURE_2D, m_id);
+  }
+
   void Texture2D::Bind(int _unit) const
   {
     glActiveTexture(GL_TEXTURE0 + _unit);
-    glBindTexture(GL_TEXTURE_2D, m_id);
+    Bind();
   }
   
   void Texture2D::setWrap(TextureWrap _wrap)

@@ -90,6 +90,7 @@ namespace graphics {
       case GL_RGBA:            { return TextureBaseFormat::RGBA;            }
       case GL_DEPTH_COMPONENT: { return TextureBaseFormat::DEPTH_COMPONENT; }
       case GL_DEPTH_STENCIL:   { return TextureBaseFormat::DEPTH_STENCIL;   }
+
       default:                 { return TextureBaseFormat::NONE;            }
     }
   }
@@ -104,14 +105,24 @@ namespace graphics {
     switch (_format)
     {
       case GL_RG32F:              { return TextureFormat::RG32F;              }
+
+      case GL_RGB8:               { return TextureFormat::RGB8;               }
+      case GL_RGB16F:             { return TextureFormat::RGB16F;             }
+      case GL_RGB32F:             { return TextureFormat::RGB32F;             }
+
       case GL_RGBA8:              { return TextureFormat::RGBA8;              }
       case GL_RGBA16F:            { return TextureFormat::RGBA16F;            }
       case GL_RGBA32F:            { return TextureFormat::RGBA32F;            }
+
+      case GL_SRGB8:              { return TextureFormat::SRGB8;              }
+      case GL_SRGB8_ALPHA8:       { return TextureFormat::SRGB_A8;            }
+
       case GL_DEPTH_COMPONENT16:  { return TextureFormat::DEPTH_COMPONENT16;  }
       case GL_DEPTH_COMPONENT24:  { return TextureFormat::DEPTH_COMPONENT24;  }
       case GL_DEPTH_COMPONENT32:  { return TextureFormat::DEPTH_COMPONENT32;  }
       case GL_DEPTH_COMPONENT32F: { return TextureFormat::DEPTH_COMPONENT32F; }
       case GL_DEPTH24_STENCIL8:   { return TextureFormat::DEPTH24_STENCIL8;   }
+
       default:                    { return TextureFormat::NONE;               }
     }
   }
@@ -121,14 +132,24 @@ namespace graphics {
     switch (_format)
     {
       case TextureFormat::RG32F:              { return TextureBaseFormat::RG;              }
+
+      case TextureFormat::RGB8:               { return TextureBaseFormat::RGB;             }
+      case TextureFormat::RGB16F:             { return TextureBaseFormat::RGB;             }
+      case TextureFormat::RGB32F:             { return TextureBaseFormat::RGB;             }
+
       case TextureFormat::RGBA8:              { return TextureBaseFormat::RGBA;            }
       case TextureFormat::RGBA16F:            { return TextureBaseFormat::RGBA;            }
       case TextureFormat::RGBA32F:            { return TextureBaseFormat::RGBA;            }
+
+      case TextureFormat::SRGB8:              { return TextureBaseFormat::RGB;             }
+      case TextureFormat::SRGB_A8:            { return TextureBaseFormat::RGBA;            }
+
       case TextureFormat::DEPTH_COMPONENT16:  { return TextureBaseFormat::DEPTH_COMPONENT; }
       case TextureFormat::DEPTH_COMPONENT24:  { return TextureBaseFormat::DEPTH_COMPONENT; }
       case TextureFormat::DEPTH_COMPONENT32:  { return TextureBaseFormat::DEPTH_COMPONENT; }
       case TextureFormat::DEPTH_COMPONENT32F: { return TextureBaseFormat::DEPTH_COMPONENT; }
       case TextureFormat::DEPTH24_STENCIL8:   { return TextureBaseFormat::DEPTH_STENCIL;   }
+
       default:                                { return TextureBaseFormat::NONE;            }
     }
   }

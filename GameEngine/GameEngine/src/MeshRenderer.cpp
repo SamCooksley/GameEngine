@@ -48,14 +48,18 @@ namespace engine {
     _renderer.Add(m_mesh, m_material, model);
   }
 
-  void MeshRenderer::setMesh(const std::shared_ptr<graphics::Mesh> & _mesh)
+  MeshRenderer & MeshRenderer::setMesh(const std::shared_ptr<graphics::Mesh> & _mesh)
   {
     m_mesh = _mesh;
+
+    return *this;
   }
 
-  void MeshRenderer::setMaterial(const std::shared_ptr<graphics::Material> & _material)
+  MeshRenderer & MeshRenderer::setMaterial(const std::shared_ptr<graphics::Material> & _material)
   {
     m_material = _material;
+
+    return *this;
   }
 
 } // engine

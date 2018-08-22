@@ -15,6 +15,7 @@ namespace graphics {
     Texture2DArray(TextureFormat _format, int _width, int _height, int _layers, int _mipmaps);
     ~Texture2DArray();
 
+    void Bind() const override;
     void Bind(int _unit) const override;
     
     void setWrap(TextureWrap _wrap);

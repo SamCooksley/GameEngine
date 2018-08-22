@@ -19,7 +19,7 @@ namespace graphics {
   public:
     PointShadowRendererCube(
       int _size,
-      const std::shared_ptr<Shader> & _depth = Shader::Load("resources/shaders/depth_cube.shader")
+      const std::shared_ptr<Shader> & _depth = Shader::Load("resources/shaders/depth/depth_cube.glsl")
     );
     ~PointShadowRendererCube();
 

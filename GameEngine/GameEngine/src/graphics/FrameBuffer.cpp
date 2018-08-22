@@ -81,6 +81,11 @@ namespace graphics {
   FrameBuffer::~FrameBuffer()
   {
     glDeleteFramebuffers(1, &m_fbo);
+
+    if (Graphics::getContext().activeFrameBuffer.expired())
+    {
+      Graphics::getContext().activeFrameBuffer = Graphics::getContext().defaultFrameBuffer;
+    }
   }
   
   void FrameBuffer::Bind(FrameBufferBind _bind)
@@ -110,7 +115,7 @@ namespace graphics {
     );
   }
 
-  void FrameBuffer::Attach(const std::shared_ptr<Texture2D> & _texture, FrameBufferAttachment _attachment, int _colourIndex)
+  void FrameBuffer::Attach(const std::shared_ptr<Texture2D> & _texture, FrameBufferAttachment _attachment, int _colourIndex, int _level)
   {
     assert(_texture);
     GetColourIndex(_colourIndex);
@@ -122,13 +127,13 @@ namespace graphics {
       GL_DRAW_FRAMEBUFFER,
       FrameBufferAttachmentToOpenGL(_attachment, _colourIndex),
       _texture->m_id,
-      0
+      _level
     );
 
     Attach(*_texture, true, _texture, _attachment, _colourIndex);
   }
 
-  void FrameBuffer::Attach(const std::shared_ptr<Texture2DArray> & _texture, FrameBufferAttachment _attachment, int _colourIndex)
+  void FrameBuffer::Attach(const std::shared_ptr<Texture2DArray> & _texture, FrameBufferAttachment _attachment, int _colourIndex, int _level)
   {
     assert(_texture);
     GetColourIndex(_colourIndex);
@@ -140,13 +145,13 @@ namespace graphics {
       GL_DRAW_FRAMEBUFFER,
       FrameBufferAttachmentToOpenGL(_attachment, _colourIndex),
       _texture->m_id,
-      0
+      _level
     );
 
     Attach(*_texture, true, _texture, _attachment, _colourIndex);
   }
 
-  void FrameBuffer::Attach(const std::shared_ptr<Texture2DArray> & _texture, int _layer, FrameBufferAttachment _attachment, int _colourIndex)
+  void FrameBuffer::Attach(const std::shared_ptr<Texture2DArray> & _texture, int _layer, FrameBufferAttachment _attachment, int _colourIndex, int _level)
   {
     assert(_texture); 
     GetColourIndex(_colourIndex);
@@ -157,13 +162,15 @@ namespace graphics {
     glFramebufferTextureLayer(
       GL_DRAW_FRAMEBUFFER,
       FrameBufferAttachmentToOpenGL(_attachment, _colourIndex),
-      _texture->m_id, 0, _layer
+      _texture->m_id, 
+      _level,
+      _layer
     );
 
     Attach(*_texture, false, _texture, _attachment, _colourIndex);
   }
 
-  void FrameBuffer::Attach(const std::shared_ptr<TextureCube> & _texture, FrameBufferAttachment _attachment, int _colourIndex)
+  void FrameBuffer::Attach(const std::shared_ptr<TextureCube> & _texture, FrameBufferAttachment _attachment, int _colourIndex, int _level)
   {
     assert(_texture);
     GetColourIndex(_colourIndex);
@@ -175,13 +182,13 @@ namespace graphics {
       GL_DRAW_FRAMEBUFFER,
       FrameBufferAttachmentToOpenGL(_attachment, _colourIndex),
       _texture->m_id,
-      0
+      _level
     );
 
     Attach(*_texture, true, _texture, _attachment, _colourIndex);
   }
 
-  void FrameBuffer::Attach(const std::shared_ptr<TextureCube> & _texture, int _layer, FrameBufferAttachment _attachment, int _colourIndex)
+  void FrameBuffer::Attach(const std::shared_ptr<TextureCube> & _texture, int _layer, FrameBufferAttachment _attachment, int _colourIndex, int _level)
   {
     assert(_texture);
     GetColourIndex(_colourIndex);
@@ -192,13 +199,15 @@ namespace graphics {
     glFramebufferTextureLayer(
       GL_DRAW_FRAMEBUFFER,
       FrameBufferAttachmentToOpenGL(_attachment, _colourIndex),
-      _texture->m_id, 0, _layer
+      _texture->m_id, 
+      _level,
+      _layer
     );
 
     Attach(*_texture, false, _texture, _attachment, _colourIndex);
   }
 
-  void FrameBuffer::AttachDepth(const std::shared_ptr<Shadow2D> & _texture)
+  void FrameBuffer::AttachDepth(const std::shared_ptr<Shadow2D> & _texture, int _level)
   {
     assert(_texture);
 
@@ -216,7 +225,7 @@ namespace graphics {
     Attach(*_texture, true, _texture, FrameBufferAttachment::DEPTH);
   }
 
-  void FrameBuffer::AttachDepth(const std::shared_ptr<Shadow2DArray> & _texture)
+  void FrameBuffer::AttachDepth(const std::shared_ptr<Shadow2DArray> & _texture, int _level)
   {
     assert(_texture);
 
@@ -227,13 +236,13 @@ namespace graphics {
       GL_DRAW_FRAMEBUFFER,
       GL_DEPTH_ATTACHMENT,
       _texture->m_id,
-      0
+      _level
     );
 
     Attach(*_texture, true, _texture, FrameBufferAttachment::DEPTH);
   }
 
-  void FrameBuffer::AttachDepth(const std::shared_ptr<Shadow2DArray> & _texture, int _layer)
+  void FrameBuffer::AttachDepth(const std::shared_ptr<Shadow2DArray> & _texture, int _layer, int _level)
   {
     assert(_texture);
 
@@ -243,13 +252,15 @@ namespace graphics {
     glFramebufferTextureLayer(
       GL_DRAW_FRAMEBUFFER,
       GL_DEPTH_ATTACHMENT,
-      _texture->m_id, 0, _layer
+      _texture->m_id, 
+      _level,
+      _layer
     );
 
     Attach(*_texture, false, _texture, FrameBufferAttachment::DEPTH);
   }
 
-  void FrameBuffer::AttachDepth(const std::shared_ptr<ShadowCube> & _texture)
+  void FrameBuffer::AttachDepth(const std::shared_ptr<ShadowCube> & _texture, int _level)
   {
     assert(_texture);
 
@@ -260,13 +271,13 @@ namespace graphics {
       GL_DRAW_FRAMEBUFFER,
       GL_DEPTH_ATTACHMENT,
       _texture->m_id,
-      0
+      _level
     );
 
     Attach(*_texture, true, _texture, FrameBufferAttachment::DEPTH);
   }
 
-  void FrameBuffer::AttachDepth(const std::shared_ptr<ShadowCube> & _texture, int _layer)
+  void FrameBuffer::AttachDepth(const std::shared_ptr<ShadowCube> & _texture, int _layer, int _level)
   {
     assert(_texture);
 
@@ -276,13 +287,15 @@ namespace graphics {
     glFramebufferTextureLayer(
       GL_DRAW_FRAMEBUFFER,
       GL_DEPTH_ATTACHMENT,
-      _texture->m_id, 0, _layer
+      _texture->m_id,
+      _level,
+      _layer
     );
 
     Attach(*_texture, false, _texture, FrameBufferAttachment::DEPTH);
   }
 
-  void FrameBuffer::AttachTemp(Texture2D & _texture, FrameBufferAttachment _attachment, int _colourIndex)
+  void FrameBuffer::AttachTemp(Texture2D & _texture, FrameBufferAttachment _attachment, int _colourIndex, int _level)
   {
     GetColourIndex(_colourIndex);
 
@@ -293,13 +306,13 @@ namespace graphics {
       GL_DRAW_FRAMEBUFFER,
       FrameBufferAttachmentToOpenGL(_attachment, _colourIndex),
       _texture.m_id,
-      0
+      _level
     );
 
     Attach(_texture, true, nullptr, _attachment, _colourIndex);
   }
 
-  void FrameBuffer::AttachTemp(Texture2DArray & _texture, FrameBufferAttachment _attachment, int _colourIndex)
+  void FrameBuffer::AttachTemp(Texture2DArray & _texture, FrameBufferAttachment _attachment, int _colourIndex, int _level)
   {
     GetColourIndex(_colourIndex);
 
@@ -310,13 +323,13 @@ namespace graphics {
       GL_DRAW_FRAMEBUFFER,
       FrameBufferAttachmentToOpenGL(_attachment, _colourIndex),
       _texture.m_id,
-      0
+      _level
     );
 
     Attach(_texture, true, nullptr, _attachment, _colourIndex);
   }
 
-  void FrameBuffer::AttachTemp(Texture2DArray & _texture, int _layer, FrameBufferAttachment _attachment, int _colourIndex)
+  void FrameBuffer::AttachTemp(Texture2DArray & _texture, int _layer, FrameBufferAttachment _attachment, int _colourIndex, int _level)
   {
     GetColourIndex(_colourIndex);
 
@@ -326,13 +339,15 @@ namespace graphics {
     glFramebufferTextureLayer(
       GL_DRAW_FRAMEBUFFER,
       FrameBufferAttachmentToOpenGL(_attachment, _colourIndex),
-      _texture.m_id, 0, _layer
+      _texture.m_id, 
+      _level,
+      _layer
     );
 
     Attach(_texture, false, nullptr, _attachment, _colourIndex);
   }
 
-  void FrameBuffer::AttachTemp(TextureCube & _texture, FrameBufferAttachment _attachment, int _colourIndex)
+  void FrameBuffer::AttachTemp(TextureCube & _texture, FrameBufferAttachment _attachment, int _colourIndex, int _level)
   {
     GetColourIndex(_colourIndex);
 
@@ -343,24 +358,30 @@ namespace graphics {
       GL_DRAW_FRAMEBUFFER,
       FrameBufferAttachmentToOpenGL(_attachment, _colourIndex),
       _texture.m_id,
-      0
+      _level
     );
 
     Attach(_texture, true, nullptr, _attachment, _colourIndex);
   }
 
-  void FrameBuffer::AttachTemp(TextureCube & _texture, int _layer, FrameBufferAttachment _attachment, int _colourIndex)
+  void FrameBuffer::AttachTemp(TextureCube & _texture, int _layer, FrameBufferAttachment _attachment, int _colourIndex, int _level)
   {
     GetColourIndex(_colourIndex);
 
     ValidateFrameBuffer(_attachment, _colourIndex);
     ValidateTexture(_texture, false, _attachment);
-
-    glFramebufferTextureLayer(
+    glFramebufferTexture2D(
+      GL_DRAW_FRAMEBUFFER,
+      FrameBufferAttachmentToOpenGL(_attachment, _colourIndex),
+      GL_TEXTURE_CUBE_MAP_POSITIVE_X + _layer, 
+      _texture.m_id,
+      _level
+    );
+    /*glFramebufferTextureLayer(
       GL_DRAW_FRAMEBUFFER,
       FrameBufferAttachmentToOpenGL(_attachment, _colourIndex),
       _texture.m_id, 0, _layer
-    );
+    );*/
 
     Attach(_texture, false, nullptr, _attachment, _colourIndex);
   }
@@ -530,6 +551,8 @@ namespace graphics {
     m_stencilAttachment = nullptr;
 
     m_depthStencil = false;
+
+    glViewport(0, 0, m_width, m_height);
   }
 
 } } // engine::graphics

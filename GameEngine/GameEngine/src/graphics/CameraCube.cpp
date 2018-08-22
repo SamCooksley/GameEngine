@@ -60,4 +60,9 @@ namespace graphics {
     return m_cameras[0].far;
   }
 
+  size_t CameraCube::size() const
+  {
+    return m_cameras.size();
+  }
+
 } } // engine::graphics

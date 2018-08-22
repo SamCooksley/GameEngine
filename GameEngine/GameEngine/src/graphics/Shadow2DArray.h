@@ -15,6 +15,7 @@ namespace graphics {
     Shadow2DArray(TextureFormat _format, uint _width, uint _height, uint _count);
     ~Shadow2DArray();
 
+    void Bind() const override;
     void Bind(int _unit) const override;
   };
 

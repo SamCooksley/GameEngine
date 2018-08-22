@@ -19,7 +19,7 @@ namespace graphics {
     m_depth = _count;
 
     glGenTextures(1, &m_id);
-    glBindTexture(GL_TEXTURE_2D_ARRAY, m_id);
+    Bind();
 
     glTexStorage3D(
       GL_TEXTURE_2D_ARRAY, 1,
@@ -47,10 +47,15 @@ namespace graphics {
     glDeleteTextures(1, &m_id);
   }
 
+  void Shadow2DArray::Bind() const
+  {
+    glBindTexture(GL_TEXTURE_2D_ARRAY, m_id);
+  }
+
   void Shadow2DArray::Bind(int _unit) const
   {
     glActiveTexture(GL_TEXTURE0 + _unit);
-    glBindTexture(GL_TEXTURE_2D_ARRAY, m_id);
+    Bind();
   }
 
 } } // engine::graphics

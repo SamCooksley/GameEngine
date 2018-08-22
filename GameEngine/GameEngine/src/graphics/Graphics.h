@@ -31,6 +31,7 @@ namespace engine {
     static graphics::Context & getContext();
 
     static void RenderQuad();
+    static void RenderCube();
   };
 
 } // engine

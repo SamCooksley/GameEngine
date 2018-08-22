@@ -41,6 +41,12 @@ namespace graphics {
 
     glm::mat4 cam = glm::inverse(_camera.view);
 
+    glm::vec3 up(0.f, 1.f, 0.f);
+    {
+      glm::vec3 right = glm::cross(up, _direction);
+      up = glm::cross(_direction, right);
+    }
+
     std::vector<float> dist(cascadeCount + 1);
 
     float weight = .5f;
@@ -68,7 +74,6 @@ namespace graphics {
     std::vector<glm::vec3> frustumPoints = _camera.getFrustumPoints(dist.data(), dist.size());
     assert(frustumPoints.size() / 4 - 1 == cascadeCount);
 
-    debug::Log(""); debug::Log("");
     for (size_t i = 0u; i < cascadeCount; ++i)
     {
       glm::vec3 * points = &frustumPoints[i * 4u];
@@ -93,7 +98,7 @@ namespace graphics {
       // TODO: search scene for furthest possible caster and adjust padding accordingly.
       float padding = 20.f;
       
-      glm::mat4 view = glm::lookAt(centre, centre - _direction, glm::vec3(0.f, 1.f, 0.f));
+      glm::mat4 view = glm::lookAt(centre, centre - _direction, up);
       glm::mat4 proj = glm::ortho(-radius, radius, -radius, radius, -radius - padding, radius);
       glm::mat4 & vp = m_vps[i];
       vp = proj * view;

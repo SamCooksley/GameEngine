@@ -15,6 +15,7 @@ namespace graphics {
     Shadow2D(TextureFormat _format, int _width, int _height);
     ~Shadow2D();
 
+    void Bind() const override;
     void Bind(int _unit) const override;
   };
 

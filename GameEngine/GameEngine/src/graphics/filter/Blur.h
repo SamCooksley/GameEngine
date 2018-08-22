@@ -9,7 +9,7 @@ namespace graphics {
   class Blur : public Filter
   {
   public:
-    Blur(const std::shared_ptr<Shader> & _shader = Shader::Load("resources/shaders/filters/blur.shader"));
+    Blur(const std::shared_ptr<Shader> & _shader = Shader::Load("resources/shaders/filters/blur.glsl"));
     ~Blur();
 
     void Apply(Texture2D & _src, Texture2D & _dst) override;

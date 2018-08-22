@@ -19,7 +19,7 @@ namespace graphics {
     m_depth = 6;
 
     glGenTextures(1, &m_id);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, m_id);
+    Bind();
 
     glTexStorage2D(
       GL_TEXTURE_CUBE_MAP, 1,
@@ -45,10 +45,15 @@ namespace graphics {
     glDeleteTextures(1, &m_id);
   }
 
+  void ShadowCube::Bind() const
+  {
+    glBindTexture(GL_TEXTURE_CUBE_MAP, m_id);
+  }
+
   void ShadowCube::Bind(int _unit) const
   {
     glActiveTexture(GL_TEXTURE0 + _unit);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, m_id);
+    Bind();
   }
 
 } } // engine::graphics

@@ -15,13 +15,10 @@ namespace graphics {
   { }
 
   void Blur::Apply(Texture2D & _src, Texture2D & _dst)
-  {
-    auto restore = Graphics::getContext().activeFrameBuffer.lock();
-
-    Bind();
-    
-    m_fb->Bind();
-    m_fb->Reset(_dst.getWidth(), _dst.getHeight());
+  {    
+    auto & fb = Graphics::getContext().captureFBO;
+    fb->Bind();
+    fb->Reset(_dst.getWidth(), _dst.getHeight());
 
     if (!m_temp[0] ||
          m_temp[0]->getFormat() != _dst.getFormat() ||
@@ -36,6 +33,8 @@ namespace graphics {
       }
     }
 
+    Bind();
+
     int passes = m_passes * 2;
 
     for (int pass = 0; pass < passes; ++pass)
@@ -44,13 +43,13 @@ namespace graphics {
 
       if (pass < passes - 1)
       {
-        m_temp[pingpong]->Bind(0);
-        m_fb->AttachTemp(*m_temp[pingpong], FrameBufferAttachment::COLOUR, 0);
+        m_temp[pingpong]->Bind();
+        fb->AttachTemp(*m_temp[pingpong], FrameBufferAttachment::COLOUR, 0);
       }
       else
       {
-        _dst.Bind(0);
-        m_fb->AttachTemp(_dst, FrameBufferAttachment::COLOUR, 0);
+        _dst.Bind();
+        fb->AttachTemp(_dst, FrameBufferAttachment::COLOUR, 0);
       }
 
       if (pass == 0)
@@ -59,15 +58,13 @@ namespace graphics {
       }
       else
       {
-        m_temp[!pingpong]->Bind(0);
+        m_temp[!pingpong]->Bind(m_srcUnit);
       }
 
       getShader()->setUniform("scale", (pingpong) ? glm::vec2(1, 0) : glm::vec2(0, 1));
 
       Graphics::RenderQuad();
     }
-
-    restore->Bind();
   }
 
 } } // engine::graphics

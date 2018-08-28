@@ -24,9 +24,10 @@ namespace engine {
     
       aiString name;
       
-      if (aimat->Get(AI_MATKEY_NAME, name) == AI_SUCCESS)
+      if (aimat->Get(AI_MATKEY_NAME, name) == aiReturn_SUCCESS)
       {
         mat->setName(name.C_Str());
+        debug::Log(mat->getName());
       }
 
       aiColor3D colour;
@@ -35,46 +36,28 @@ namespace engine {
 
       std::shared_ptr<graphics::Texture2D> texture;
 
-      if (aimat->GetTexture(aiTextureType_DIFFUSE, 0, &path) == AI_SUCCESS)
+      if (aimat->GetTexture(aiTextureType_DIFFUSE, 0, &path) == aiReturn_SUCCESS)
       {
-        texture = Resources::Load<graphics::Texture2D>(_directory + path.C_Str());
+        texture = graphics::Texture2D::Load(_directory + path.C_Str());
+        debug::Log("Found Albedo");
       }
-      else if (aimat->Get(AI_MATKEY_COLOR_DIFFUSE, colour) == AI_SUCCESS)
+      else if (aimat->Get(AI_MATKEY_COLOR_DIFFUSE, colour) == aiReturn_SUCCESS)
       {
-        texture = std::make_shared<graphics::Texture2D>(64, 64, glm::vec4(colour.r, colour.g, colour.b, 1.f));
-      }
-
-      if (texture)
-      {
-        mat->setTexture("diffuse", texture);
-      }
-
-      texture.reset();
-
-      if (aimat->GetTexture(aiTextureType_SPECULAR, 0, &path) == AI_SUCCESS)
-      {
-        texture = Resources::Load<graphics::Texture2D>(_directory + path.C_Str());
-      }
-      else if (aimat->Get(AI_MATKEY_COLOR_SPECULAR, colour) == AI_SUCCESS)
-      {
-        texture = std::make_shared<graphics::Texture2D>(64, 64, glm::vec4(colour.r, colour.r, colour.r, 1.f));
+        texture = std::make_shared<graphics::Texture2D>(1, 1, glm::vec4(colour.r, colour.g, colour.b, 1.f));
       }
 
       if (texture)
       {
-        mat->setTexture("specular", texture);
+        mat->setTexture("albedo", texture);
       }
 
       texture.reset();
-      //use shininess as assimp does not seem to support norm in mtl files?
-      //AI_MATKEY_TEXTURE_NORMALS
-      if (aimat->GetTexture(aiTextureType_SHININESS, 0, &path) == AI_SUCCESS)
+
+      // assimp does not support norm in mtl files. Used the disp instead.
+      if (aimat->GetTexture(aiTextureType_DISPLACEMENT, 0, &path) == aiReturn_SUCCESS)
       {
-        texture = Resources::Load<graphics::Texture2D>(_directory + path.C_Str());
-      }
-      else
-      {
-        texture = std::make_shared<graphics::Texture2D>(64, 64, glm::vec4(.5f, .5f, 1.f, 1.f));
+        texture = graphics::Texture2D::Load(_directory + path.C_Str(), true);
+        debug::Log("Found normal");
       }
 
       if (texture)
@@ -84,13 +67,44 @@ namespace engine {
 
       texture.reset();
 
-      if (aimat->GetTexture(aiTextureType_OPACITY, 0, &path) == AI_SUCCESS)
+      if (aimat->GetTexture(aiTextureType_SPECULAR, 0, &path) == aiReturn_SUCCESS)
       {
-        texture = Resources::Load<graphics::Texture2D>(_directory + path.C_Str());
+        texture = graphics::Texture2D::Load(_directory + path.C_Str(), true);
+        debug::Log("Found Roughness");
       }
-      else
+      else if (aimat->Get(AI_MATKEY_COLOR_SPECULAR, colour) == aiReturn_SUCCESS)
       {
-        texture = std::make_shared<graphics::Texture2D>(64, 64, glm::vec4(1.f));
+        texture = std::make_shared<graphics::Texture2D>(1, 1, glm::vec4(colour.r));
+      }
+
+      if (texture)
+      {
+        mat->setTexture("roughness", texture);
+      }
+
+      texture.reset();
+
+      if (aimat->GetTexture(aiTextureType_AMBIENT, 0, &path) == aiReturn_SUCCESS)
+      {
+        texture = graphics::Texture2D::Load(_directory + path.C_Str(), true);
+        debug::Log("Found Metallic");
+      }
+      else if (aimat->Get(AI_MATKEY_COLOR_AMBIENT, colour) == aiReturn_SUCCESS)
+      {
+        texture = std::make_shared<graphics::Texture2D>(1, 1, glm::vec4(colour.r));
+      }
+
+      if (texture)
+      {
+        mat->setTexture("metallic", texture);
+      }
+
+      texture.reset();
+
+      if (aimat->GetTexture(aiTextureType_OPACITY, 0, &path) == aiReturn_SUCCESS)
+      {
+        texture = graphics::Texture2D::Load(_directory + path.C_Str(), true);
+        debug::Log("Found Opacity");
       }
 
       if (texture)
@@ -100,32 +114,28 @@ namespace engine {
 
       texture.reset();
 
-      if (aimat->GetTexture(aiTextureType_HEIGHT, 0, &path) == AI_SUCCESS)
+      if (aimat->GetTexture(aiTextureType_HEIGHT, 0, &path) == aiReturn_SUCCESS)
       {
-        texture = Resources::Load<graphics::Texture2D>(_directory + path.C_Str());
-      }
-      else
-      {
-        texture = std::make_shared<graphics::Texture2D>(64, 64, glm::vec4(0.f));// 0.f, 0.f, 1.f));
+        texture = graphics::Texture2D::Load(_directory + path.C_Str(), true);
+        debug::Log("Found Height");
       }
 
       if (texture)
       {
-        mat->setTexture("displacement", texture);
+        mat->setTexture("height", texture);
+        // assimp ignores -bm texture option so this does not work.
+        // hard code the value for now. 
+        scalar = 0.01f;
+        //aimat->Get(AI_MATKEY_BUMPSCALING, scalar);
+        debug::Log(std::to_string(scalar));
+
+        mat->setUniform("heightScale", scalar);
       }
 
-      if (aimat->Get(AI_MATKEY_SHININESS, scalar) == AI_SUCCESS)
-      {
-        mat->setUniform<float>("shininess", scalar);
-      }
+      debug::Log("");
 
       _outMaterials.push_back(mat);
     }
-  }
-
-  static std::shared_ptr<graphics::Mesh> LoadMesh()
-  {
-    return nullptr;
   }
 
   std::shared_ptr<GameObject> Load(const String & _path, std::shared_ptr<graphics::Material> _baseMaterial)
@@ -133,7 +143,7 @@ namespace engine {
     Assimp::Importer importer;
 
     const aiScene * scene = importer.ReadFile(_path,
-      //aiProcess_CalcTangentSpace      |
+      aiProcess_CalcTangentSpace      |
       aiProcess_Triangulate           |
       aiProcess_JoinIdenticalVertices |
       aiProcess_SortByPType
@@ -163,6 +173,10 @@ namespace engine {
       meshData.positions.resize(aimesh->mNumVertices);
       meshData.uvs.resize(aimesh->mNumVertices);
       meshData.normals.resize(aimesh->mNumVertices);
+      meshData.tangents.resize(aimesh->mNumVertices);
+      meshData.bitangents.resize(aimesh->mNumVertices);
+
+      bool hasTangents = aimesh->HasTangentsAndBitangents();
 
       for (uint j = 0; j < aimesh->mNumVertices; ++j)
       {
@@ -180,6 +194,15 @@ namespace engine {
           const aiVector3D n = aimesh->mNormals[j];
           meshData.normals[j] = glm::vec3(n.x, n.y, n.z);
         }
+
+        if (hasTangents)
+        {
+          const aiVector3D t = aimesh->mTangents[j];
+          const aiVector3D b = aimesh->mBitangents[j];
+
+          meshData.tangents[j] = glm::vec3(t.x, t.y, t.z);
+          meshData.bitangents[j] = glm::vec3(b.x, b.y, b.z);
+        }
       }
 
       for (uint j = 0; j < aimesh->mNumFaces; ++j)
@@ -189,15 +212,6 @@ namespace engine {
         {
           meshData.indices.add(aiface.mIndices[k]);
         }
-      }
-
-      if (aimesh->HasTextureCoords(0) && aimesh->HasNormals())
-      {
-        processor.CalculateTangents(
-          meshData.indices, 
-          meshData.positions, meshData.uvs, meshData.normals, 
-          &meshData.tangents, &meshData.bitangents
-        );
       }
 
       auto mesh = std::make_shared<graphics::Mesh>(meshData);

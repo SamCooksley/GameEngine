@@ -67,20 +67,29 @@ namespace graphics {
   }
 
   Texture2D::Texture2D(int _width, int _height, const glm::vec4 & _colour) :
-    Texture2D(TextureFormat::RGBA8, _width, _height, 1)
+    Texture2D(
+      CreateTextureFormat(ChannelCountToTextureBaseFormat(_colour.length()), 8),
+      _width, _height, 1
+    )
   {
-    std::vector<float> pixels(m_width * m_height * 4);
+    using value_type = glm::vec4::value_type;
+    auto count = _colour.length();
+    TextureBaseFormat format = ChannelCountToTextureBaseFormat(count);
 
-    for (size_t i = 0; i < pixels.size(); i += 4)
+    std::vector<value_type> pixels(m_width * m_height * count);
+
+    for (size_t i = 0; i < pixels.size(); i += count)
     {
-      memcpy(&pixels[i], glm::value_ptr(_colour), sizeof(float) * 4u);
+      memcpy(&pixels[i], glm::value_ptr(_colour), sizeof(value_type) * count);
     }
 
     glTexSubImage2D(
       GL_TEXTURE_2D, 0,
       0, 0,
       _width, _height,
-      GL_RGBA, GL_FLOAT, &pixels[0]
+      TextureBaseFormatToOpenGL(format),
+      TypeToOpenGL(TypeData<value_type>::type),
+      &pixels[0]
     );
 
     setWrap(TextureWrap::REPEAT);

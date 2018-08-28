@@ -94,19 +94,18 @@ namespace engine {
 
     texture = std::make_shared<graphics::Texture2D>(1, 1, glm::vec4(0.f));
     s_context->graphics->defaultMaterial->setTexture("metallic", texture);
-    texture = std::make_shared<graphics::Texture2D>(1, 1, glm::vec4(1.f));
+    texture = std::make_shared<graphics::Texture2D>(1, 1, glm::vec4(.5f));
     s_context->graphics->defaultMaterial->setTexture("roughness", texture);
 
     texture = std::make_shared<graphics::Texture2D>(1, 1, glm::vec4(1.f));
     s_context->graphics->defaultMaterial->setTexture("opacity", texture);
 
     texture = std::make_shared<graphics::Texture2D>(1, 1, glm::vec4(1.f));
-    s_context->graphics->defaultMaterial->setTexture("displacement", texture);
-    s_context->graphics->defaultMaterial->setUniform("displacementScale", 0.0f);
+    s_context->graphics->defaultMaterial->setTexture("height", texture);
+    s_context->graphics->defaultMaterial->setUniform("heightScale", 0.0f);
 
     texture = std::make_shared<graphics::Texture2D>(1, 1, glm::vec4(1.f));
     s_context->graphics->defaultMaterial->setTexture("ao", texture);
-
 
     s_context->renderer = std::make_unique<graphics::DefaultRenderer>();
 

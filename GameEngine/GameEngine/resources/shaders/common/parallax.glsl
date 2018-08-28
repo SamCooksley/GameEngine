@@ -1,4 +1,4 @@
-vec3 ParallaxMapping(const vec2 _texCoords, const vec3 _viewDir, const float _scale, const sampler2D _parallax)
+vec3 ParallaxMapping(const vec2 _texCoords, const vec3 _viewDir, const float _scale, const sampler2D _height)
 { 
     const float minLayers = 8.0;
 	const float maxLayers = 64.0;
@@ -12,19 +12,19 @@ vec3 ParallaxMapping(const vec2 _texCoords, const vec3 _viewDir, const float _sc
     vec2 deltaTexCoords =  P / layerCount;
 
     vec2  curTexCoords = _texCoords;
-	float curMapHeight = texture(_parallax, curTexCoords).r;
+	float curMapHeight = texture(_height, curTexCoords).r;
   
 	while(curHeight > curMapHeight)
 	{
 	    curTexCoords -= deltaTexCoords;
-	    curMapHeight = texture(_parallax, curTexCoords).r;  
+	    curMapHeight = texture(_height, curTexCoords).r;  
 	    curHeight -= layerStep;  
 	}
 
 	vec2 prevTexCoords = curTexCoords + deltaTexCoords;
 
 	float afterHeightDelta  = curMapHeight - curHeight;
-	float beforeHeightDelta = texture(_parallax, prevTexCoords).r - curHeight - layerStep;
+	float beforeHeightDelta = texture(_height, prevTexCoords).r - curHeight - layerStep;
 
 	float weight = afterHeightDelta / (afterHeightDelta - beforeHeightDelta);
 	vec2 texCoords = mix(curTexCoords, prevTexCoords, weight);

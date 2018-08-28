@@ -79,12 +79,6 @@ namespace graphics {
       const PointLight & point = _lights.point[i];
       uint offset = LightBuffer::POINT_OFFSET + LightBuffer::Point::SIZE * i;
       
-      debug::Log(std::to_string(LightBuffer::POINT_OFFSET));
-      debug::Log(std::to_string(LightBuffer::Point::COLOUR_OFFSET));
-      debug::Log(std::to_string(LightBuffer::Point::POSITION_OFFSET));
-      debug::Log(std::to_string(LightBuffer::Point::RADIUS_OFFSET));
-      debug::Log("");
-
       memcpy(&data[offset + LightBuffer::Point::COLOUR_OFFSET],    glm::value_ptr(point.colour),   sizeof(glm::vec3));
       memcpy(&data[offset + LightBuffer::Point::POSITION_OFFSET],  glm::value_ptr(point.position), sizeof(glm::vec3));
       memcpy(&data[offset + LightBuffer::Point::RADIUS_OFFSET],    &point.radius,                  sizeof(float));

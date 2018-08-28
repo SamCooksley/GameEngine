@@ -94,9 +94,25 @@ namespace graphics {
       default:                 { return TextureBaseFormat::NONE;            }
     }
   }
+
+  TextureBaseFormat ChannelCountToTextureBaseFormat(int _count)
+  {
+    switch (_count)
+    {
+      case 1:  { return TextureBaseFormat::R;    }
+      case 2:  { return TextureBaseFormat::RG;   }
+      case 3:  { return TextureBaseFormat::RGB;  }
+      case 4:  { return TextureBaseFormat::RGBA; }
+      default: { return TextureBaseFormat::NONE; }
+    }
+  }
   
   GLenum TextureFormatToOpenGL(TextureFormat _format)
   {
+    if (_format == TextureFormat::NONE)
+    {
+      throw std::invalid_argument("invalid texture format");
+    }
     return static_cast<GLenum>(_format);
   }
   
@@ -104,6 +120,12 @@ namespace graphics {
   {
     switch (_format)
     {
+      case GL_R8:                 { return TextureFormat::R8;                 }
+      case GL_R16F:               { return TextureFormat::R16F;               }
+      case GL_R32F:               { return TextureFormat::R32F;               }
+
+      case GL_RG8:                { return TextureFormat::RG8;                }
+      case GL_RG16F:              { return TextureFormat::RG16F;              }
       case GL_RG32F:              { return TextureFormat::RG32F;              }
 
       case GL_RGB8:               { return TextureFormat::RGB8;               }
@@ -131,6 +153,12 @@ namespace graphics {
   {
     switch (_format)
     {
+      case TextureFormat::R8:                 { return TextureBaseFormat::R;               }
+      case TextureFormat::R16F:               { return TextureBaseFormat::R;               }
+      case TextureFormat::R32F:               { return TextureBaseFormat::R;               }
+
+      case TextureFormat::RG8:                { return TextureBaseFormat::RG;              }
+      case TextureFormat::RG16F:              { return TextureBaseFormat::RG;              }
       case TextureFormat::RG32F:              { return TextureBaseFormat::RG;              }
 
       case TextureFormat::RGB8:               { return TextureBaseFormat::RGB;             }
@@ -152,6 +180,65 @@ namespace graphics {
 
       default:                                { return TextureBaseFormat::NONE;            }
     }
+  }
+
+  TextureFormat CreateTextureFormat(TextureBaseFormat _base, int _size, bool _float)
+  {
+    switch (_base)
+    {
+      case TextureBaseFormat::R:
+      {
+        switch (_size)
+        {
+          case 8:  { return TextureFormat::R8;   }
+          case 16: { return TextureFormat::R16F; }
+          case 32: { return TextureFormat::R32F; }
+        }
+        break;
+      }
+      case TextureBaseFormat::RG:
+      {
+        switch (_size)
+        {
+          case 8:  { return TextureFormat::RG8;   }
+          case 16: { return TextureFormat::RG16F; }
+          case 32: { return TextureFormat::RG32F; }
+        }
+        break;
+      }
+      case TextureBaseFormat::RGB:
+      {
+        switch (_size)
+        {
+          case 8:  { return TextureFormat::RGB8;   }
+          case 16: { return TextureFormat::RGB16F; }
+          case 32: { return TextureFormat::RGB32F; }
+        }
+        break;
+      }
+      case TextureBaseFormat::RGBA:
+      {
+        switch (_size)
+        {
+          case 8:  { return TextureFormat::RGBA8;   }
+          case 16: { return TextureFormat::RGBA16F; }
+          case 32: { return TextureFormat::RGBA32F; }
+        }
+        break;
+      }
+      case TextureBaseFormat::DEPTH_COMPONENT:
+      {
+        switch (_size)
+        {
+          case 16: { return TextureFormat::DEPTH_COMPONENT16; }
+          case 24: { return TextureFormat::DEPTH_COMPONENT24; }
+          case 32: { return _float ? TextureFormat::DEPTH_COMPONENT32F : TextureFormat::DEPTH_COMPONENT32; }
+        }
+        break;
+      }
+    }
+
+    return TextureFormat::NONE;
   }
   
   GLenum TextureDataTypeToOpenGL(TextureDataType _type)

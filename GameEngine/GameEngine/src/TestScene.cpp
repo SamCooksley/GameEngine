@@ -38,8 +38,8 @@ namespace engine {
     material->setTexture("normal", graphics::Texture2D::Load("resources/textures/floor/normal.png", true));
     //material->setTexture("metallicness", graphics::Texture2D::Load("resources/textures/floor/metallicness.png", true));
     material->setTexture("roughness", graphics::Texture2D::Load("resources/textures/floor/roughness.png", true));
-    material->setTexture("displacement", graphics::Texture2D::Load("resources/textures/floor/displacement.png", true));
-    material->setUniform("displacementScale", .02f);
+    material->setTexture("height", graphics::Texture2D::Load("resources/textures/floor/displacement.png", true));
+    material->setUniform("heightScale", .02f);
     material->setTexture("ao", graphics::Texture2D::Load("resources/textures/floor/ao.png", true));
 
     auto material2 = std::make_shared<graphics::Material>(*Graphics::getContext().defaultMaterial);
@@ -50,10 +50,10 @@ namespace engine {
     auto material3 = std::make_shared<graphics::Material>(*Graphics::getContext().defaultMaterial);
     material3->setTexture("albedo", graphics::Texture2D::Load("resources/textures/rock/albedo.png"));
     material3->setTexture("ao", graphics::Texture2D::Load("resources/textures/rock/ao.png"));
-    material3->setTexture("displacement", graphics::Texture2D::Load("resources/textures/rock/height.png"));
+    material3->setTexture("height", graphics::Texture2D::Load("resources/textures/rock/height.png"));
     material3->setTexture("normal", graphics::Texture2D::Load("resources/textures/rock/normal.png"));
     material3->setTexture("roughness", graphics::Texture2D::Load("resources/textures/rock/roughness.png"));
-    material3->setUniform("displacementScale", .02f);
+    material3->setUniform("heighttScale", .02f);
     auto go = GameObject::Instantiate();
 
     go->AddComponent<MeshRenderer>()
@@ -73,8 +73,8 @@ namespace engine {
     transMat->setTexture("metallic", std::make_shared<graphics::Texture2D>(1, 1, glm::vec4(0.f)));
     transMat->setTexture("roughness", std::make_shared<graphics::Texture2D>(1, 1, glm::vec4(0.1f)));
     transMat->setTexture("ao", std::make_shared<graphics::Texture2D>(1, 1, glm::vec4(1.f)));
-    transMat->setTexture("displacement", graphics::Texture2D::Load("resources/textures/window/height.png", true));
-    transMat->setUniform("displacementScale", 0.1f);
+    transMat->setTexture("height", graphics::Texture2D::Load("resources/textures/window/height.png", true));
+    transMat->setUniform("heightScale", 0.1f);
 
     go = GameObject::Instantiate();
 
@@ -136,7 +136,7 @@ namespace engine {
       .setLocalScale(glm::vec3(0.1f));
 
     
-    
+    /*
     go = GameObject::Instantiate();
     
     go->AddComponent<Light>()
@@ -171,7 +171,7 @@ namespace engine {
     go->getComponent<Transform>()
       ->setPosition(glm::vec3(0.f, 5.f, 0.f))
       .setRotation(glm::quat(glm::radians(glm::vec3(-90.f, 0.f, 0.f))))
-      .setLocalScale(glm::vec3(0.1f));
+      .setLocalScale(glm::vec3(0.1f));*/
     
     int count = 10;
     for (int i = 0; i <= count; ++i)
@@ -191,8 +191,8 @@ namespace engine {
         ->setPosition(glm::vec3(x, 0, y));
     }
 
-    //auto sponza = Load("resources/sponza/sponza.obj");
-    //sponza->getComponent<Transform>()->setLocalScale(glm::vec3(0.01f)).setRotation(glm::quat(glm::radians(glm::vec3(0.f, 90.f, 0.f))));
+    auto sponza = Load("resources/sponza/sponza.obj");
+    sponza->getComponent<Transform>()->setLocalScale(glm::vec3(0.01f)).setRotation(glm::quat(glm::radians(glm::vec3(0.f, 90.f, 0.f))));
   }
 
 } // engine

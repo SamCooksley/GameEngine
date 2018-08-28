@@ -36,10 +36,19 @@ namespace graphics {
   
   GLenum TextureBaseFormatToOpenGL(TextureBaseFormat _format);
   TextureBaseFormat OpenGLToTextureBaseFormat(GLenum _format);
+
+  TextureBaseFormat ChannelCountToTextureBaseFormat(int _count);
   
   enum class TextureFormat : GLenum
   {
     NONE,
+
+    R8 = GL_R8,
+    R16F = GL_R16F,
+    R32F = GL_R32F,
+
+    RG8 = GL_RG8,
+    RG16F = GL_RG16F,
     RG32F = GL_RG32F,
 
     RGB8 = GL_RGB8,
@@ -63,6 +72,8 @@ namespace graphics {
   GLenum TextureFormatToOpenGL(TextureFormat _format);
   TextureFormat OpenGLToTextureFormat(GLenum _format);
   
+  TextureFormat CreateTextureFormat(TextureBaseFormat _base, int _size, bool _float = false);
+
   TextureBaseFormat TextureFormatBase(TextureFormat _format);
   
   enum class TextureDataType : GLenum

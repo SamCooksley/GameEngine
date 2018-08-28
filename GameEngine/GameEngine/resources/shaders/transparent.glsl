@@ -33,8 +33,8 @@ uniform sampler2D specular;
 
 uniform float shininess = 2;
 
-uniform sampler2D displacement;
-uniform float displacementScale = 0.1;
+uniform sampler2D height;
+uniform float heightScale = 0.1;
 
 void main()
 {
@@ -42,7 +42,7 @@ void main()
 
 	vec3 viewDir_tan = normalize(fs_in.view_position_tan - fs_in.position_tan);
 
-	vec2 texCoords = fs_in.texCoords;//ParallaxMapping(fs_in.texCoords, viewDir_tan, displacementScale, displacement);
+	vec2 texCoords = ParallaxMapping(fs_in.texCoords, viewDir_tan, heightScale, height);
 
 	Surface surf;
 	surf.position = fs_in.position_world;

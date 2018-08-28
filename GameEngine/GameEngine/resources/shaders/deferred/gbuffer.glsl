@@ -73,15 +73,15 @@ uniform sampler2D diffuse;
 uniform sampler2D normal;
 uniform sampler2D specular;
 uniform sampler2D opacity;
-uniform sampler2D displacement;
+uniform sampler2D height;
 
-uniform float displacementScale = 0.1;
+uniform float heightScale = 0.1;
 uniform float shininess = 2;
 
 void main()
 {
     vec3 viewDir_tan = normalize(fs_in.view_position_tan - fs_in.position_tan);
-	vec2 texCoords = ParallaxMapping(fs_in.texCoords, viewDir_tan, displacementScale, displacement).xy;
+	vec2 texCoords = ParallaxMapping(fs_in.texCoords, viewDir_tan, heightScale, height).xy;
 
     if (texture(opacity, texCoords).r < 0.1)
 	{

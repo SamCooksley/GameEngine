@@ -71,18 +71,18 @@ layout (location = 2) out vec4 out_colour;
 
 uniform sampler2D albedo;
 uniform sampler2D normal;
-uniform sampler2D displacement;
+uniform sampler2D height;
 uniform sampler2D metallic;
 uniform sampler2D roughness;
 uniform sampler2D ao;
 uniform sampler2D opacity;
 
-uniform float displacementScale = 0.1;
+uniform float heightScale = 0.1;
 
 void main()
 {
     vec3 viewDir_tan = normalize(fs_in.view_position_tan - fs_in.position_tan);
-	vec2 texCoords = ParallaxMapping(fs_in.texCoords, viewDir_tan, displacementScale, displacement).xy;
+	vec2 texCoords = ParallaxMapping(fs_in.texCoords, viewDir_tan, heightScale, height).xy;
 
     if (texture(opacity, texCoords).r < 0.1)
 	{

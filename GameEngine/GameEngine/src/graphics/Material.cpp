@@ -15,6 +15,8 @@ namespace graphics {
       throw std::invalid_argument("null shader");
     }
 
+    setName(m_shader->getName());
+
     m_shader->RetreiveUniformData(m_uniformData);
 
     // TODO: default texture - has to be one for each texture type
@@ -36,6 +38,16 @@ namespace graphics {
     for (auto & uniform : m_shader->m_uniforms)
     {
       m_shader->setUniform(uniform.location, uniform.type, &m_uniformData[uniform.offset]);
+    }
+
+    for (auto & sampler : m_shader->m_samplers)
+    {
+      int out = 0;
+      getUniform<int>(sampler.name, &out);
+      if (out < 0)
+      {
+        debug::Log(getName() + ": " + sampler.name);
+      }
     }
   
     for (auto & unit : m_textures)

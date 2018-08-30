@@ -21,6 +21,9 @@ uniform samplerCube irradianceMap;
 uniform samplerCube prefilterMap;
 uniform sampler2D brdfLUT;
 
+uniform int hasAO = 0;
+uniform sampler2D ssao;
+
 void main()
 {
     Surface surf = SamplersToSurface(in_texCoords, position, normal, colour);
@@ -28,5 +31,11 @@ void main()
     vec3 viewDir_world = normalize(camera.position_world - surf.position);
 
     vec3 result = IBL(surf, viewDir_world, irradianceMap, prefilterMap, brdfLUT);
+
+    if (hasAO > 0)
+    {
+        result *= texture(ssao, in_texCoords).r;
+    }
+
     out_colour = vec4(result, 1.0);
 }

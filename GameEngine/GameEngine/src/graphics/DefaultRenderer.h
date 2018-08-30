@@ -18,6 +18,8 @@
 
 #include "filter\FilterCube.h"
 
+#include "SSAO.h"
+
 namespace engine {
 namespace graphics {
 
@@ -68,6 +70,9 @@ namespace graphics {
     std::unique_ptr<EnvironmentCapture> m_environment;
 
     std::shared_ptr<Texture2D> m_brdfLUT;
+
+    std::unique_ptr<SSAO> m_ssaoProcess;
+    std::unique_ptr<Texture2D>  m_ssao;
   };
 
 } } // engine::graphics

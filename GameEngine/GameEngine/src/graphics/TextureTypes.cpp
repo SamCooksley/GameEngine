@@ -95,6 +95,20 @@ namespace graphics {
     }
   }
 
+  int TextureBaseFormatToChannelCount(TextureBaseFormat _format)
+  {
+    switch (_format)
+    {
+      case TextureBaseFormat::R:               { return 1; }
+      case TextureBaseFormat::RG:              { return 2; }
+      case TextureBaseFormat::RGB:             { return 3; }
+      case TextureBaseFormat::RGBA:            { return 4; }
+      case TextureBaseFormat::DEPTH_COMPONENT: { return 1; }
+      case TextureBaseFormat::DEPTH_STENCIL:   { return 2; } // not sure if correct?
+      default:                                 { return 0; }
+    }
+  }
+
   TextureBaseFormat ChannelCountToTextureBaseFormat(int _count)
   {
     switch (_count)

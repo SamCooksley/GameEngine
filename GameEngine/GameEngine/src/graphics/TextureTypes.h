@@ -37,6 +37,7 @@ namespace graphics {
   GLenum TextureBaseFormatToOpenGL(TextureBaseFormat _format);
   TextureBaseFormat OpenGLToTextureBaseFormat(GLenum _format);
 
+  int TextureBaseFormatToChannelCount(TextureBaseFormat _format);
   TextureBaseFormat ChannelCountToTextureBaseFormat(int _count);
   
   enum class TextureFormat : GLenum

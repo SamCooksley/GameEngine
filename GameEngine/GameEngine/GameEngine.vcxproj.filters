@@ -348,6 +348,15 @@
     <ClCompile Include="src\graphics\EnvironmentCaptureFactory.cpp">
       <Filter>Source Files\graphics</Filter>
     </ClCompile>
+    <ClCompile Include="src\graphics\TextureNoiseGenerator.cpp">
+      <Filter>Source Files\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Random.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\graphics\SSAO.cpp">
+      <Filter>Source Files\graphics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\stdafx.h">
@@ -642,6 +651,15 @@
       <Filter>Header Files\graphics\filter</Filter>
     </ClInclude>
     <ClInclude Include="src\graphics\EnvironmentCaptureFactory.h">
+      <Filter>Header Files\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\graphics\TextureNoiseGenerator.h">
+      <Filter>Header Files\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Random.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\graphics\SSAO.h">
       <Filter>Header Files\graphics</Filter>
     </ClInclude>
   </ItemGroup>

@@ -48,6 +48,9 @@ namespace graphics {
     template <typename T>
     void setUniform(const String & _name, const T & _value);
 
+    template <typename T>
+    T getUniform(const String & _name) const;
+
     RenderQueue::Queue getRenderQueue() const;
   
    protected:

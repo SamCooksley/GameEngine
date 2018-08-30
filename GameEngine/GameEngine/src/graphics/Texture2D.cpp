@@ -42,6 +42,23 @@ namespace graphics {
 
     return texture;
   }
+
+  std::unique_ptr<Texture2D> Texture2D::CloneFormat(const Texture2D & _src)
+  {
+    auto texture = std::make_unique<Texture2D>(_src.m_format, _src.m_width, _src.m_height, _src.m_mipmaps);
+    texture->setWrap(_src.m_wrap);
+    texture->setFilter(_src.m_filter);
+
+    return texture;
+  }
+
+  bool Texture2D::CompareFormat(const Texture2D & _lhs, const Texture2D & _rhs)
+  {
+    return _lhs.m_format  == _rhs.m_format 
+        && _lhs.m_width   == _rhs.m_width 
+        && _lhs.m_height  == _rhs.m_height
+        && _lhs.m_mipmaps == _rhs.m_mipmaps;
+  }
   
   Texture2D::Texture2D(TextureFormat _format, int _width, int _height, int _mipmaps) :
     Texture(TextureType::TEXTURE_2D)
@@ -160,6 +177,26 @@ namespace graphics {
   {
     glActiveTexture(GL_TEXTURE0 + _unit);
     Bind();
+  }
+
+  void Texture2D::setData(TextureBaseFormat _format, TextureDataType _type, const void * _data, size_t _count)
+  {
+    int channels = TextureBaseFormatToChannelCount(_format);
+    int pixelCount = _count / channels;
+
+    if (pixelCount != m_width * m_height)
+    {
+      throw std::invalid_argument("pixel data size not matching texture size");
+    }
+
+    glTexSubImage2D(
+      GL_TEXTURE_2D, 0,
+      0, 0,
+      m_width, m_height,
+      TextureBaseFormatToOpenGL(_format),
+      TextureDataTypeToOpenGL(_type),
+      _data
+    );
   }
   
   void Texture2D::setWrap(TextureWrap _wrap)

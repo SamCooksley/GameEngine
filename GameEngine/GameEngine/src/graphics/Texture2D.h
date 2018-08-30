@@ -15,6 +15,10 @@ namespace graphics {
   
     static std::shared_ptr<Texture2D> Load(const String & _path, bool _linear = false, int _mipmaps = 0);
 
+    static std::unique_ptr<Texture2D> CloneFormat(const Texture2D & _src);
+
+    static bool CompareFormat(const Texture2D & _lhs, const Texture2D & _rhs);
+
    public:
     Texture2D(TextureFormat _format, int _width, int _height, int _mipmaps = 1);
     Texture2D(int _width, int _height, const glm::vec4 & _colour);
@@ -24,6 +28,8 @@ namespace graphics {
   
     void Bind() const override;
     void Bind(int _unit) const override;
+
+    void setData(TextureBaseFormat _format, TextureDataType _type, const void * _data, size_t _count);
 
     void setWrap(TextureWrap _wrap);
     void setFilter(TextureFilter _filter);

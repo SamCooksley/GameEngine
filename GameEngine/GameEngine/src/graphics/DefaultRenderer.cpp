@@ -7,6 +7,7 @@
 #include "CameraBuffer.h"
 
 #include "Lights.h"
+#include "Input.h"
 
 namespace engine {
 namespace graphics {
@@ -21,6 +22,7 @@ namespace graphics {
     m_deferredAmbient->setUniform("irradianceMap", 3);
     m_deferredAmbient->setUniform("prefilterMap", 4);
     m_deferredAmbient->setUniform("brdfLUT", 5);
+    m_deferredAmbient->setUniform("ssao", 6);
 
     m_deferredDirectional = Resources::Load<Shader>("resources/shaders/pbr/deferred/directional_csm.glsl");
     m_deferredDirectional->setUniform("position", 0);
@@ -64,6 +66,8 @@ namespace graphics {
     fb->Clear();
 
     Graphics::RenderQuad();
+
+    m_ssaoProcess = std::make_unique<SSAO>();
   }
   
   DefaultRenderer::~DefaultRenderer()
@@ -97,13 +101,15 @@ namespace graphics {
 
     target->Bind();
 
-    PostProcess();    
+    PostProcess();
   }
 
   void DefaultRenderer::Resize(int _width, int _height)
   {
     CreateGBuffer(_width, _height);
     CreateTarget(_width, _height);
+
+    m_ssao = std::make_unique<Texture2D>(TextureFormat::R16F, m_position->getWidth(), m_position->getHeight());
   }
 
   void DefaultRenderer::setSkybox(const std::shared_ptr<Skybox> & _skybox)
@@ -130,12 +136,18 @@ namespace graphics {
     }
 
     m_position = std::make_shared<Texture2D>(TextureFormat::RGBA32F, _width, _height, 1);
+    m_position->setWrap(TextureWrap::CLAMP_TO_EDGE);
+    m_position->setFilter(TextureFilter::NEAREST);
     m_gBuffer->Attach(m_position, FrameBufferAttachment::COLOUR, 0);
 
     m_normal = std::make_shared<Texture2D>(TextureFormat::RGBA32F, _width, _height, 1);
+    m_normal->setWrap(TextureWrap::CLAMP_TO_EDGE);
+    m_normal->setFilter(TextureFilter::NEAREST);
     m_gBuffer->Attach(m_normal, FrameBufferAttachment::COLOUR, 1);
 
     m_colour = std::make_shared<Texture2D>(TextureFormat::RGBA32F, _width, _height, 1);
+    m_colour->setWrap(TextureWrap::CLAMP_TO_EDGE);
+    m_colour->setFilter(TextureFilter::NEAREST);
     m_gBuffer->Attach(m_colour, FrameBufferAttachment::COLOUR, 2);
 
     m_gBuffer->Attach(
@@ -246,6 +258,11 @@ namespace graphics {
       command.mesh->Render();
     }
 
+    if (m_ssaoProcess)
+    {
+      m_ssaoProcess->GenerateAO(*m_ssao, m_camera, *m_position, *m_normal);
+    }
+
     target->Bind();
 
     m_position->Bind(0);
@@ -256,6 +273,15 @@ namespace graphics {
     m_environment->irradiance->Bind(3);
     m_environment->prefiltered->Bind(4);
     m_brdfLUT->Bind(5);
+    if (m_ssao && !Input::getKey(KeyCode::Q))
+    {
+      m_deferredAmbient->setUniform<int>("hasAO", 1);
+      m_ssao->Bind(6);
+    }
+    else
+    {
+      m_deferredAmbient->setUniform<int>("hasAO", 0);
+    }
 
     Graphics::RenderQuad();
 

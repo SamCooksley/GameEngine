@@ -7,11 +7,22 @@ namespace graphics {
     ShaderUniform uniform;
     if (!getUniform(_name, &uniform))
     {
-      debug::Log(getName() + ": " + _name);
       return;
     }
 
     setUniform(uniform.location, _value);
+  }
+
+  template <typename T> 
+  T Shader::getUniform(const String & _name) const
+  {
+    ShaderUniform uniform;
+    if (!getUniform(_name, &uniform))
+    {
+      return T(0);
+    }
+
+    return RetreiveUniformValue<T>(uniform);
   }
 
   template <typename T>

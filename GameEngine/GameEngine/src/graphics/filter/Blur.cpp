@@ -30,6 +30,7 @@ namespace graphics {
       {
         m_temp[i] = std::make_unique<Texture2D>(_dst.getFormat(), _dst.getWidth(), _dst.getHeight(), 1);
         m_temp[i]->setFilter(_src.getFilter());
+        m_temp[i]->setWrap(_src.getWrap());
       }
     }
 

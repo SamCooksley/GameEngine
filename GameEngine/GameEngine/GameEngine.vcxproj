@@ -322,6 +322,7 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)graphics\</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)graphics\</XMLDocumentationFileName>
     </ClCompile>
+    <ClCompile Include="src\graphics\SSAO.cpp" />
     <ClCompile Include="src\graphics\Texture.cpp">
       <AssemblerListingLocation Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)graphics\</AssemblerListingLocation>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)graphics\</ObjectFileName>
@@ -348,6 +349,7 @@
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)graphics\</ObjectFileName>
       <XMLDocumentationFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)graphics\</XMLDocumentationFileName>
     </ClCompile>
+    <ClCompile Include="src\graphics\TextureNoiseGenerator.cpp" />
     <ClCompile Include="src\graphics\TextureTypes.cpp">
       <AssemblerListingLocation Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)graphics\</AssemblerListingLocation>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)graphics\</ObjectFileName>
@@ -418,6 +420,7 @@
     <ClCompile Include="src\LoadObjects.cpp" />
     <ClCompile Include="src\Main.cpp" />
     <ClCompile Include="src\MeshRenderer.cpp" />
+    <ClCompile Include="src\Random.cpp" />
     <ClCompile Include="src\Resources.cpp" />
     <ClCompile Include="src\Scene.cpp" />
     <ClCompile Include="src\Screen.cpp" />
@@ -552,11 +555,13 @@
     <ClInclude Include="src\graphics\shadows\PointShadowRendererDP.h" />
     <ClInclude Include="src\graphics\shadows\SpotShadowRenderer.h" />
     <ClInclude Include="src\graphics\Skybox.h" />
+    <ClInclude Include="src\graphics\SSAO.h" />
     <ClInclude Include="src\graphics\Texture.h" />
     <ClInclude Include="src\graphics\Texture2D.h" />
     <ClInclude Include="src\graphics\Shadow2D.h" />
     <ClInclude Include="src\graphics\Texture2DArray.h" />
     <ClInclude Include="src\graphics\TextureCube.h" />
+    <ClInclude Include="src\graphics\TextureNoiseGenerator.h" />
     <ClInclude Include="src\graphics\TextureTypes.h" />
     <ClInclude Include="src\graphics\TypeData.h" />
     <ClInclude Include="src\graphics\Types.h" />
@@ -570,6 +575,7 @@
     <ClInclude Include="src\Light.h" />
     <ClInclude Include="src\LoadObjects.h" />
     <ClInclude Include="src\MeshRenderer.h" />
+    <ClInclude Include="src\Random.h" />
     <ClInclude Include="src\Resources.h" />
     <ClInclude Include="src\Scene.h" />
     <ClInclude Include="src\Screen.h" />

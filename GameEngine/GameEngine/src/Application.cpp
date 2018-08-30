@@ -23,6 +23,8 @@
 
 #include "glfw\glfw3.h"
 
+#include "Random.h"
+
 namespace engine {
 
   std::unique_ptr<Context> Application::s_context;
@@ -37,6 +39,8 @@ namespace engine {
     {
       s_context->args.push_back(_argv[i]);
     }
+
+    Random::Init();
 
     s_context->glfwContext.reset(new glfw());
 
